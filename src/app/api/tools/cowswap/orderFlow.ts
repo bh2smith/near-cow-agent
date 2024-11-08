@@ -11,6 +11,8 @@ import {
 import { OrderBookApi } from "@cowprotocol/cow-sdk";
 import { signRequestFor } from "../util";
 
+const slippageBps = parseInt(process.env.SLIPPAGE_BPS || "100");
+
 export async function orderRequestFlow({
   chainId,
   quoteRequest,
@@ -36,17 +38,10 @@ export async function orderRequestFlow({
     BigInt(sellAmount) + BigInt(feeAmount)
   ).toString();
 
-  const slippageBps = BigInt(9950); // 99.50% (100% - 0.5%)
-  const scaleFactor = BigInt(10000);
-  quoteResponse.quote.buyAmount = (
-    (BigInt(quoteResponse.quote.buyAmount) * scaleFactor) /
-    slippageBps
-  ).toString();
   // Apply Slippage based on OrderKind
   quoteResponse.quote = {
     ...quoteResponse.quote,
-    // This is 0.5% slippage (in BPS)
-    ...applySlippage(quoteResponse.quote, 50),
+    ...applySlippage(quoteResponse.quote, slippageBps),
   };
   // Post Unsigned Order to Orderbook (this might be spam if the user doesn't sign)
   quoteResponse.quote.appData = await buildAndPostAppData(

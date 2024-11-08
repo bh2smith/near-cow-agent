@@ -154,7 +154,7 @@ export function applySlippage(
 ): { buyAmount?: string; sellAmount?: string } {
   const scaleFactor = BigInt(10000);
   if (order.kind === OrderKind.SELL) {
-    const slippageBps = BigInt(10000 - bps); // 99.50% (100% - 0.5%)
+    const slippageBps = BigInt(10000 - bps);
     return {
       buyAmount: (
         (BigInt(order.buyAmount) * slippageBps) /
@@ -162,7 +162,7 @@ export function applySlippage(
       ).toString(),
     };
   } else if (order.kind === OrderKind.BUY) {
-    const slippageBps = BigInt(10000 + bps); // 99.50% (100% - 0.5%)
+    const slippageBps = BigInt(10000 + bps);
     return {
       sellAmount: (
         (BigInt(order.sellAmount) * slippageBps) /
