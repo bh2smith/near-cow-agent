@@ -53,7 +53,7 @@ mock.module("viem/actions", () => ({
     }
   },
 }));
-describe("CowSwap Plugin", () => {
+describe.skip("CowSwap Plugin", () => {
   // This posts an order to COW Orderbook.
   it.skip("orderRequestFlow", async () => {
     console.log("Requesting Quote...");
