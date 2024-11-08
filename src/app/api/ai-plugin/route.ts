@@ -140,7 +140,7 @@ export async function GET() {
               schema: {
                 type: "string",
               },
-              description: "The ERC-20 token symbol or address to be sold.",
+              description: "The ERC-20 token symbol or address to be sold, if provided with the symbol do not try to infer the address.",
             },
             {
               in: "query",
@@ -149,7 +149,7 @@ export async function GET() {
               schema: {
                 type: "string",
               },
-              description: "The ERC-20 token symbol or address to be bought.",
+              description: "The ERC-20 token symbol or address to be bought, if provided with the symbol do not try to infer the address..",
             },
             {
               in: "query",
