@@ -38,21 +38,6 @@ const quoteRequest = {
   sellAmountBeforeFee: "2000000000000000000",
 };
 
-import { mock, describe, it, expect } from "bun:test";
-
-// Mock the readContract function
-mock.module("viem/actions", () => ({
-  readContract: async ({ functionName }: { functionName: string }) => {
-    switch (functionName) {
-      case "decimals":
-        return 18;
-      case "allowance":
-        return "1000000000000000000";
-      default:
-        return "0";
-    }
-  },
-}));
 describe.skip("CowSwap Plugin", () => {
   // This posts an order to COW Orderbook.
   it.skip("orderRequestFlow", async () => {
