@@ -1,7 +1,7 @@
 import { Address, checksumAddress } from "viem";
 import { UserToken, ZerionAPI } from "zerion-sdk";
 
-export interface TokenBalance {
+interface TokenBalance {
   tokenAddress: string | null; // null for native token
   token: {
     name: string;
@@ -42,7 +42,9 @@ export async function getSafeBalances(
 ): Promise<TokenBalance[]> {
   const baseUrl = safeTxServiceUrlFor(chainId);
   if (!baseUrl) {
-    console.warn(`Chain ID ${chainId} not supported by Safe Transaction Service`);
+    console.warn(
+      `Chain ID ${chainId} not supported by Safe Transaction Service`,
+    );
     return [];
   }
   const trusted = chainId === 11155111 ? false : true;
@@ -64,7 +66,9 @@ export async function getSafeBalances(
           const zerion = new ZerionAPI(process.env.ZERION_API_KEY!);
           // TODO(bh2smith): This is not super efficient, but it works for now.
           // Zerion API has its own network filter (but its not by chainID).
-          const balances = await zerion.ui.getUserBalances(address,  {options: {supportedChains: [chainId]}});
+          const balances = await zerion.ui.getUserBalances(address, {
+            options: { supportedChains: [chainId] },
+          });
           return zerionToTokenBalances(balances.tokens);
         } catch {
           return [];
@@ -90,7 +94,7 @@ export function balancesMap(balances: TokenBalance[]): TokenBalanceMap {
 // TODO(bh2smith): Move this into Zerion SDK
 function zerionToTokenBalance(userToken: UserToken): TokenBalance {
   const { meta, balances } = userToken;
-  
+
   return {
     tokenAddress: meta.contractAddress || null,
     token: {
@@ -108,6 +112,6 @@ function zerionToTokenBalance(userToken: UserToken): TokenBalance {
 // Helper function to convert array of UserTokens to TokenBalances
 export function zerionToTokenBalances(userTokens: UserToken[]): TokenBalance[] {
   return userTokens
-    .filter(token => !token.meta.isSpam) // Filter out spam tokens
+    .filter((token) => !token.meta.isSpam) // Filter out spam tokens
     .map(zerionToTokenBalance);
 }
