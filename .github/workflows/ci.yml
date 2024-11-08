@@ -23,8 +23,8 @@ jobs:
           echo "BUN_INSTALL=$HOME/.bun" >> $GITHUB_ENV
           echo "$BUN_INSTALL/bin" >> $GITHUB_PATH
 
-      - name: Install dependencies
-        run: bun install
+      - name: Install dependencies with npm
+        run: npm install
 
       - name: Run lint & Test
         run: |
