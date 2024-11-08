@@ -136,7 +136,7 @@ describe("CowSwap Plugin", () => {
   });
 
   it("loadTokenMapping", async () => {
-    const tokenMap = await loadTokenMapping("public/data/tokenlist.csv");
+    const tokenMap = await loadTokenMapping("public/tokenlist.csv");
     console.log(tokenMap[11155111]);
   });
 

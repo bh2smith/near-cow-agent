@@ -57,6 +57,15 @@ export async function loadTokenMapping(
 // type DuneNetwork = "ethereum" | "gnosis" | "arbitrum";
 let tokenMap: BlockchainMapping;
 
+// Initialize tokenMap when module is loaded
+const initializeTokenMap = async () => {
+  const filePath = path.join(process.cwd(), "public", "tokenlist.csv");
+  tokenMap = await loadTokenMapping(filePath);
+};
+
+// Start loading immediately
+const tokenMapPromise = initializeTokenMap();
+
 export async function getTokenDetails(
   chainId: number,
   symbolOrAddress: string,
@@ -68,12 +77,8 @@ export async function getTokenDetails(
     };
   }
   console.log("Seeking TokenMap for Symbol -> Address conversion");
-  // TODO. Load once and cache.
-  // Token data comes from https://dune.com/queries/4055949
-  //  curl -X GET https://api.dune.com/api/v1/query/4055949/results/csv -H "x-dune-api-key: $DUNE_API_KEY"  > tokens.csv
   if (!tokenMap) {
-    const filePath = path.join(process.cwd(), "public", "tokenlist.csv");
-    tokenMap = await loadTokenMapping(filePath);
+    await tokenMapPromise;
   }
   return tokenMap[chainId][symbolOrAddress];
 }
