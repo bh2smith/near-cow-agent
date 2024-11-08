@@ -24,9 +24,9 @@ export async function orderRequestFlow({
       `This agent does not currently support Native Asset Sell Orders.`,
     );
   }
+
   const orderbook = new OrderBookApi({ chainId });
   console.log(`Requesting quote for ${JSON.stringify(quoteRequest, null, 2)}`);
-
   const quoteResponse = await orderbook.getQuote(quoteRequest);
   console.log("Received quote", quoteResponse);
   const { sellAmount, feeAmount } = quoteResponse.quote;

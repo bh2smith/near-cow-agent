@@ -46,7 +46,9 @@ export async function parseQuoteRequest(
   console.log("Raw Request Body:", requestBody);
   // TODO: Validate input with new validation tools:
   const { sellToken, buyToken, chainId, sellAmountBeforeFee } = requestBody;
-
+  if (sellAmountBeforeFee === "0") {
+    throw new Error("Sell amount cannot be 0");
+  }
   const [buyTokenData, sellTokenData] = await Promise.all([
     getTokenDetails(chainId, buyToken),
     getTokenDetails(chainId, sellToken),
