@@ -25,6 +25,7 @@
   },
   "devDependencies": {
     "@cowprotocol/app-data": "^2.3.0",
+    "@types/bun": "^1.1.13",
     "@types/jest": "^29.5.14",
     "@types/node": "^22.9.0",
     "@types/react": "npm:types-react@19.0.0-rc.1",

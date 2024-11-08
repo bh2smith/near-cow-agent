@@ -26,7 +26,7 @@ export async function GET() {
         description:
           "An assistant that generates transaction data for CoW Protocol Interactions",
         instructions:
-          "Encodes transactions as signature requests on EVM networks. This assistant is only for EVM networks. Passes the the transaction fields of the response to generate-evm-tx tool for signing and displays the meta content of the response to the user after signing. For selling native assets, such as ETH, xDAI, POL, BNB it uses 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE as the sellToken. It does not infer the chainId.",
+          "Encodes transactions as signature requests on EVM networks. This assistant is only for EVM networks. Passes the the transaction fields of the response to generate-evm-tx tool for signing and displays the meta content of the response to the user after signing. For selling native assets, such as ETH, xDAI, POL, BNB it uses 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE as the sellToken. It does not infer the chainId. Do not infer the token decimals. Use Token Units for sellAmountBeforeFee.",
         tools: [{ type: "generate-evm-tx" }],
       },
     },
@@ -169,7 +169,7 @@ export async function GET() {
                 type: "string",
               },
               description:
-                "The amount of tokens to sell before fees, represented as a string.",
+                "The amount of tokens to sell before fees, represented as a decimal string in token units. Not Atoms.",
             },
           ],
           requestBody: {
