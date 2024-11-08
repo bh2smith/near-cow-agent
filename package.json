@@ -20,7 +20,8 @@
     "react-dom": "19.0.0-rc-69d4b800-20241021",
     "swagger-ui-react": "^5.18.1",
     "vercel-url": "^0.2.1",
-    "viem": "^2.21.41"
+    "viem": "^2.21.41",
+    "zerion-sdk": "^0.0.6"
   },
   "devDependencies": {
     "@cowprotocol/app-data": "^2.3.0",
