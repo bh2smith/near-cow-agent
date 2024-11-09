@@ -8,7 +8,7 @@ interface TokenBalance {
     symbol: string;
     decimals: number;
     logoUri: string;
-  };
+  } | null;
   balance: string;
   fiatBalance: string;
   fiatConversion: string;
@@ -35,6 +35,16 @@ export function safeTxServiceUrlFor(chainId: number): string | undefined {
 }
 
 export type TokenBalanceMap = { [symbol: string]: TokenBalance };
+
+interface BalancesResponse {
+  balances: {
+    token: string | null;
+    balance: string;
+    symbol: string | null;
+    decimals: number;
+    logoUri: string | null;
+  }[];
+}
 
 export async function getSafeBalances(
   chainId: number,
@@ -84,11 +94,21 @@ export async function getSafeBalances(
   }
 }
 
-export function balancesMap(balances: TokenBalance[]): TokenBalanceMap {
-  return balances.reduce((acc, balance) => {
-    acc[balance.token.symbol] = balance;
-    return acc;
-  }, {} as TokenBalanceMap);
+export async function flatSafeBalances(
+  chainId: number,
+  address: Address,
+): Promise<BalancesResponse> {
+  const balances = await getSafeBalances(chainId, address);
+  // Flatten the balance Response
+  return {
+    balances: balances.map((b) => ({
+      token: b.tokenAddress,
+      balance: b.balance,
+      symbol: b.token?.symbol || null,
+      decimals: b.token?.decimals || 18,
+      logoUri: b.token?.logoUri || null,
+    })),
+  };
 }
 
 // TODO(bh2smith): Move this into Zerion SDK

@@ -21,7 +21,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
         },
       ],
     });
-    return NextResponse.json(signRequest, { status: 200 });
+    return NextResponse.json({ transaction: signRequest }, { status: 200 });
   } catch (error: unknown) {
     const message =
       error instanceof Error

@@ -1,29 +1,29 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Address, encodeFunctionData, erc20Abi } from "viem";
 import { signRequestFor } from "../util";
-import { readContract } from "viem/actions";
 import { parseUnits } from "viem/utils";
 import {
   addressField,
+  addressOrSymbolField,
   FieldParser,
   floatField,
   numberField,
   validateInput,
 } from "../validate";
-import { getClient } from "near-safe";
+import { getTokenDetails } from "../cowswap/util/tokens";
 
 // Declare Route Input
 interface Input {
   chainId: number;
   amount: number;
-  token: Address;
+  token: string;
   recipient: Address;
 }
 
 const parsers: FieldParser<Input> = {
   chainId: numberField,
   amount: floatField,
-  token: addressField,
+  token: addressOrSymbolField,
   recipient: addressField,
 };
 
@@ -35,11 +35,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       search,
       parsers,
     );
-    const decimals = await readContract(getClient(chainId), {
-      address: token,
-      functionName: "decimals",
-      abi: erc20Abi,
-    });
+    const { decimals } = await getTokenDetails(chainId, token);
     const signRequest = signRequestFor({
       chainId,
       metaTransactions: [
@@ -54,7 +50,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
         },
       ],
     });
-    return NextResponse.json(signRequest, { status: 200 });
+    return NextResponse.json({ transaction: signRequest }, { status: 200 });
   } catch (error: unknown) {
     const message =
       error instanceof Error

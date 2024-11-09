@@ -103,6 +103,11 @@ export async function GET() {
                           description: "Token decimals",
                           example: 18,
                         },
+                        logoUri: {
+                          type: "string",
+                          description: "Token logo URI",
+                          example: "https://example.com/token-logo.png",
+                        },
                       },
                       required: ["token", "balance", "symbol", "decimals"],
                     },
