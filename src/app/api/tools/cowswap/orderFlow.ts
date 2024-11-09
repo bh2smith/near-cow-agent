@@ -10,7 +10,7 @@ import {
 } from "./util/protocol";
 import { OrderBookApi } from "@cowprotocol/cow-sdk";
 import { signRequestFor } from "../util";
-import { wrapMetaTransaction } from "../weth/utils";
+import { getWethAddress, wrapMetaTransaction } from "../weth/utils";
 
 const slippageBps = parseInt(process.env.SLIPPAGE_BPS || "100");
 
@@ -84,7 +84,3 @@ export async function orderRequestFlow({
     meta: { orderUrl: `explorer.cow.fi/orders/${orderUid}` },
   };
 }
-function getWethAddress(chainId: number): string {
-  throw new Error("Function not implemented.");
-}
-

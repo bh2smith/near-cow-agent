@@ -59,7 +59,7 @@ export const wrapMetaTransaction = (
   };
 };
 
-function getWethAddress(chainId: number): Address {
+export function getWethAddress(chainId: number): Address {
   const network = Network.fromChainId(chainId);
   const wethAddress = network.nativeCurrency.wrappedAddress;
   if (!wethAddress) {
