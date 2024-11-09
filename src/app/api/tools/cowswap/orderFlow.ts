@@ -31,6 +31,7 @@ export async function orderRequestFlow({
     metaTransactions.push(
       wrapMetaTransaction(chainId, BigInt(quoteRequest.sellAmountBeforeFee)),
     );
+    quoteRequest.sellToken = getWethAddress(chainId);
   }
 
   const orderbook = new OrderBookApi({ chainId });
@@ -83,3 +84,7 @@ export async function orderRequestFlow({
     meta: { orderUrl: `explorer.cow.fi/orders/${orderUid}` },
   };
 }
+function getWethAddress(chainId: number): string {
+  throw new Error("Function not implemented.");
+}
+
