@@ -1,9 +1,7 @@
 import { getSafeBalances } from "@/src/app/api/tools/safe-util";
 import { zeroAddress } from "viem";
 describe("getSafeBalances", () => {
-
   describe("with mocked responses", () => {
-
     it("should throw error for unsupported chain ID", async () => {
       await expect(getSafeBalances(999, zeroAddress)).resolves.toEqual([]);
     });
@@ -18,16 +16,18 @@ describe("getSafeBalances", () => {
           tokenAddress: null,
           token: null,
           balance: "131757599414115",
-        }, {
+        },
+        {
           tokenAddress: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
           token: {
             name: "USD Coin",
             symbol: "USDC",
             decimals: 6,
-            logoUri: "https://assets.coingecko.com/coins/images/6319/thumb/usdc.png?1696506694",
+            logoUri:
+              "https://assets.coingecko.com/coins/images/6319/thumb/usdc.png?1696506694",
           },
           balance: "89877",
-        }
+        },
       ]);
     });
   });

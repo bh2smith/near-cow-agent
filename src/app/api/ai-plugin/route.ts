@@ -308,7 +308,8 @@ export async function GET() {
         chainId: {
           name: "chainId",
           in: "query",
-          description: "EVM Network on which to assests live and transactions are to be constructed",
+          description:
+            "EVM Network on which to assests live and transactions are to be constructed",
           required: true,
           schema: {
             type: "number",
@@ -318,7 +319,8 @@ export async function GET() {
       },
       responses: {
         SignRequest200: {
-          description: "Generic Structure representing an EVM Signature Request",
+          description:
+            "Generic Structure representing an EVM Signature Request",
           content: {
             "application/json": {
               schema: {
