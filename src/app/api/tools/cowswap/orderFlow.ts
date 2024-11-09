@@ -1,4 +1,4 @@
-import { SignRequestData } from "near-safe";
+import { MetaTransaction, SignRequestData } from "near-safe";
 import {
   applySlippage,
   buildAndPostAppData,
@@ -10,6 +10,7 @@ import {
 } from "./util/protocol";
 import { OrderBookApi } from "@cowprotocol/cow-sdk";
 import { signRequestFor } from "../util";
+import { wrapMetaTransaction } from "../weth/utils";
 
 const slippageBps = parseInt(process.env.SLIPPAGE_BPS || "100");
 
@@ -20,10 +21,15 @@ export async function orderRequestFlow({
   transaction: SignRequestData;
   meta: { orderUrl: string };
 }> {
+  if (
+    !(quoteRequest.kind === "sell" && "sellAmountBeforeFee" in quoteRequest)
+  ) {
+    throw new Error(`Quote Request is not a sell order`);
+  }
+  const metaTransactions: MetaTransaction[] = [];
   if (isNativeAsset(quoteRequest.sellToken)) {
-    // TODO: Integrate EthFlow
-    throw new Error(
-      `This agent does not currently support Native Asset Sell Orders.`,
+    metaTransactions.push(
+      wrapMetaTransaction(chainId, BigInt(quoteRequest.sellAmountBeforeFee)),
     );
   }
 
@@ -61,12 +67,15 @@ export async function orderRequestFlow({
     chainId,
     sellAmount: quoteResponse.quote.sellAmount,
   });
+  if (approvalTx) {
+    metaTransactions.push(approvalTx);
+  }
 
   return {
     transaction: signRequestFor({
       chainId,
       metaTransactions: [
-        ...(approvalTx ? [approvalTx] : []),
+        ...(metaTransactions.length > 0 ? metaTransactions : []),
         // Encode setPresignature (this is onchain confirmation of order signature.)
         setPresignatureTx(orderUid),
       ],
