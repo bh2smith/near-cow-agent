@@ -29,7 +29,7 @@ export async function parseQuoteRequest(
   }
 
   const { safeAddress: sender } = await extractAccountId(req);
-  
+
   const [balances, buyTokenData] = await Promise.all([
     getSafeBalances(chainId, sender),
     getTokenDetails(chainId, buyToken),
