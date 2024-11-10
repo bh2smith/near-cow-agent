@@ -26,7 +26,7 @@ export async function extractAccountId(
   req: NextRequest,
 ): Promise<{ nearAccount: string; safeAddress: Address }> {
   const metadataHeader = req.headers.get("mb-metadata");
-
+  console.log("metadataHeader", metadataHeader);
   if (metadataHeader) {
     try {
       const metadata = JSON.parse(metadataHeader);

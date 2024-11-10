@@ -25,7 +25,7 @@ export type TokenBalanceMap = { [symbol: string]: TokenBalance };
 export async function getSafeBalances(
   chainId: number,
   address: Address,
-): Promise<TokenBalanceMap> {
+): Promise<TokenBalance[]> {
   const baseUrl = SAFE_SERVICE_URLS[chainId];
   if (!baseUrl) {
     throw new Error(
@@ -47,13 +47,7 @@ export async function getSafeBalances(
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const balances: TokenBalance[] = await response.json();
-
-    // Convert array to map using symbol as key
-    return balances.reduce((acc, balance) => {
-      acc[balance.token.symbol] = balance;
-      return acc;
-    }, {} as TokenBalanceMap);
+    return response.json();
   } catch (error) {
     console.error("Error fetching Safe balances:", error);
     throw error;

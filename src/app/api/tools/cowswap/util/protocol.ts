@@ -5,24 +5,18 @@ import {
   Hex,
   isHex,
   parseAbi,
-  parseUnits,
 } from "viem";
-import { NextRequest } from "next/server";
 import {
   OrderBookApi,
   OrderCreation,
-  OrderQuoteRequest,
   OrderQuoteResponse,
-  OrderQuoteSideKindSell,
   SigningScheme,
   OrderParameters,
   OrderKind,
 } from "@cowprotocol/cow-sdk";
 import { getClient, MetaTransaction } from "near-safe";
-import { getTokenDetails } from "./tokens";
 // @ts-expect-error: something is wrong with the app-data package
 import { MetadataApi } from "@cowprotocol/app-data";
-import { extractAccountId } from "../../util";
 
 const MAX_APPROVAL = BigInt(
   "115792089237316195423570985008687907853269984665640564039457584007913129639935",
@@ -32,49 +26,6 @@ const MAX_APPROVAL = BigInt(
 export const NATIVE_ASSET = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
 const GPV2SettlementContract = "0x9008D19f58AAbD9eD0D60971565AA8510560ab41";
 const GPv2VaultRelayer = "0xC92E8bdf79f0507f65a392b0ab4667716BFE0110";
-
-export interface ParsedQuoteRequest {
-  quoteRequest: OrderQuoteRequest;
-  chainId: number;
-}
-
-export async function parseQuoteRequest(
-  req: NextRequest,
-): Promise<ParsedQuoteRequest> {
-  // TODO - Add Type Guard on Request (to determine better if it needs processing below.)
-  const requestBody = await req.json();
-  console.log("Raw Request Body:", requestBody);
-  // TODO: Validate input with new validation tools:
-  const { sellToken, buyToken, chainId, sellAmountBeforeFee } = requestBody;
-  if (sellAmountBeforeFee === "0") {
-    throw new Error("Sell amount cannot be 0");
-  }
-  const [buyTokenData, sellTokenData] = await Promise.all([
-    getTokenDetails(chainId, buyToken),
-    getTokenDetails(chainId, sellToken),
-  ]);
-
-  const { safeAddress: sender } = await extractAccountId(req);
-
-  return {
-    chainId,
-    quoteRequest: {
-      sellToken: sellTokenData.address,
-      buyToken: buyTokenData.address,
-      sellAmountBeforeFee: parseUnits(
-        sellAmountBeforeFee,
-        sellTokenData.decimals,
-      ).toString(),
-      // TODO - change this when we want to enable buy orders.
-      kind: OrderQuoteSideKindSell.SELL,
-      // TODO - change this when we want to enable alternate recipients.
-      receiver: sender,
-      from: sender,
-      // manually add PRESIGN (since this is a safe);
-      signingScheme: SigningScheme.PRESIGN,
-    },
-  };
-}
 
 export function setPresignatureTx(orderUid: string): MetaTransaction {
   if (!isHex(orderUid)) {

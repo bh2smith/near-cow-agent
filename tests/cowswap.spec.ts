@@ -5,7 +5,6 @@ import {
   generateAppData,
   isNativeAsset,
   NATIVE_ASSET,
-  parseQuoteRequest,
   sellTokenApprovalTx,
   setPresignatureTx,
 } from "@/src/app/api/tools/cowswap/util/protocol";
@@ -21,6 +20,7 @@ import {
 import { NextRequest } from "next/server";
 import { checksumAddress, zeroAddress } from "viem";
 import { loadTokenMapping } from "@/src/app/api/tools/cowswap/util/tokens";
+import { parseQuoteRequest } from "@/src/app/api/tools/cowswap/util/parse";
 
 const SEPOLIA_DAI = "0xb4f1737af37711e9a5890d9510c9bb60e170cb0d";
 const SEPOLIA_COW = "0x0625afb445c3b6b7b929342a04a22599fd5dbb59";

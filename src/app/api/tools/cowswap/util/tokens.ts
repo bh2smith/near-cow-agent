@@ -4,7 +4,7 @@ import { Address, erc20Abi, getAddress, isAddress } from "viem";
 import { getClient } from "near-safe";
 import path from "path";
 
-interface TokenInfo {
+export interface TokenInfo {
   address: Address;
   decimals: number;
 }

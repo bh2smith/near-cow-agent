@@ -1,7 +1,7 @@
 import { Address, checksumAddress } from "viem";
 import { UserToken, ZerionAPI } from "zerion-sdk";
 
-interface TokenBalance {
+export interface TokenBalance {
   tokenAddress: string | null; // null for native token
   token: {
     name: string;
