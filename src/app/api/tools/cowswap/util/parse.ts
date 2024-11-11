@@ -60,11 +60,13 @@ function sellTokenAvailable(
   balances: TokenBalance[],
   sellTokenSymbolOrAddress: string,
 ): TokenInfo {
+  console.log("sellTokenAvailable", balances, sellTokenSymbolOrAddress);
   let balance: TokenBalance | undefined;
-  if (isAddress(sellTokenSymbolOrAddress)) {
+  if (isAddress(sellTokenSymbolOrAddress, { strict: false })) {
     balance = balances.find(
       (b) =>
-        getAddress(b.tokenAddress || NATIVE_ASSET) === sellTokenSymbolOrAddress,
+        getAddress(b.tokenAddress || NATIVE_ASSET) ===
+        getAddress(sellTokenSymbolOrAddress),
     );
   } else {
     balance = balances.find(

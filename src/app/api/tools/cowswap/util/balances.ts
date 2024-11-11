@@ -26,6 +26,7 @@ export async function getSafeBalances(
   chainId: number,
   address: Address,
 ): Promise<TokenBalance[]> {
+  console.log("getSafeBalances", chainId, address);
   const baseUrl = SAFE_SERVICE_URLS[chainId];
   if (!baseUrl) {
     throw new Error(

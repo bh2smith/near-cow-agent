@@ -18,14 +18,14 @@ import {
   SigningScheme,
 } from "@cowprotocol/cow-sdk";
 import { NextRequest } from "next/server";
-import { checksumAddress, zeroAddress } from "viem";
+import { checksumAddress, getAddress, zeroAddress } from "viem";
 import { loadTokenMapping } from "@/src/app/api/tools/cowswap/util/tokens";
 import { parseQuoteRequest } from "@/src/app/api/tools/cowswap/util/parse";
 
-const SEPOLIA_DAI = "0xb4f1737af37711e9a5890d9510c9bb60e170cb0d";
-const SEPOLIA_COW = "0x0625afb445c3b6b7b929342a04a22599fd5dbb59";
-// Safe Associated with neareth-dev.testnet & DEFAULT_SAFE_NONCE
-const DEPLOYED_SAFE = "0x7fa8e8264985C7525Fc50F98aC1A9b3765405489";
+const SEPOLIA_DAI = getAddress("0xb4f1737af37711e9a5890d9510c9bb60e170cb0d");
+const SEPOLIA_COW = getAddress("0x0625afb445c3b6b7b929342a04a22599fd5dbb59");
+// Safe Associated with neareth-dev.testnet on Bitte Wallet.
+const DEPLOYED_SAFE = getAddress("0x5E1E315D96BD81c8f65c576CFD6E793aa091b480");
 
 const chainId = 11155111;
 const quoteRequest = {
@@ -88,7 +88,7 @@ describe("CowSwap Plugin", () => {
     // already approved
     expect(
       await sellTokenApprovalTx({
-        from: DEPLOYED_SAFE,
+        from: "0x7fa8e8264985C7525Fc50F98aC1A9b3765405489",
         sellToken: SEPOLIA_DAI,
         sellAmount: "100",
         chainId,
@@ -106,7 +106,7 @@ describe("CowSwap Plugin", () => {
         chainId,
       }),
     ).toStrictEqual({
-      to: "0x0625afb445c3b6b7b929342a04a22599fd5dbb59",
+      to: SEPOLIA_COW,
       value: "0x0",
       data: "0x095ea7b3000000000000000000000000c92e8bdf79f0507f65a392b0ab4667716bfe0110ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
     });
@@ -155,22 +155,22 @@ describe("CowSwap Plugin", () => {
     expect(await parseQuoteRequest(request)).toStrictEqual({
       chainId: 11155111,
       quoteRequest: {
-        buyToken: "0x0625afb445c3b6b7b929342a04a22599fd5dbb59",
-        from: "0x5E1E315D96BD81c8f65c576CFD6E793aa091b480",
+        buyToken: SEPOLIA_COW,
+        from: DEPLOYED_SAFE,
         kind: "sell",
-        receiver: "0x5E1E315D96BD81c8f65c576CFD6E793aa091b480",
+        receiver: DEPLOYED_SAFE,
         sellAmountBeforeFee: "2000000000000000000000000000000000000",
-        sellToken: "0xb4f1737af37711e9a5890d9510c9bb60e170cb0d",
+        sellToken: SEPOLIA_DAI,
         signingScheme: "presign",
       },
     });
   });
 
-  it("parseQuoteRequest", () => {
+  it("createOrder", () => {
     const commonFields = {
-      sellToken: "0xb4f1737af37711e9a5890d9510c9bb60e170cb0d",
-      buyToken: "0x0625afb445c3b6b7b929342a04a22599fd5dbb59",
-      receiver: "0x7fa8e8264985c7525fc50f98ac1a9b3765405489",
+      sellToken: SEPOLIA_DAI,
+      buyToken: SEPOLIA_COW,
+      receiver: DEPLOYED_SAFE,
       sellAmount: "1911566262405367520",
       buyAmount: "1580230386982546854",
       validTo: 1730022042,
@@ -189,7 +189,7 @@ describe("CowSwap Plugin", () => {
         buyTokenBalance: BuyTokenDestination.ERC20,
         signingScheme: SigningScheme.PRESIGN,
       },
-      from: "0x7fa8e8264985c7525fc50f98ac1a9b3765405489",
+      from: DEPLOYED_SAFE,
       expiration: "2024-10-27T09:12:42.738162481Z",
       id: 470630,
       verified: true,
@@ -197,7 +197,7 @@ describe("CowSwap Plugin", () => {
     expect(createOrder(quoteResponse)).toStrictEqual({
       ...commonFields,
       quoteId: 470630,
-      from: "0x7fa8e8264985c7525fc50f98ac1a9b3765405489",
+      from: DEPLOYED_SAFE,
       feeAmount: "0",
       kind: "sell",
       sellTokenBalance: "erc20",
