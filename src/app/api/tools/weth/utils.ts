@@ -1,13 +1,12 @@
-import { Network } from "near-safe";
-import { Address, isAddress } from "viem";
+import { MetaTransaction, Network, SignRequestData } from "near-safe";
+import { Address, getAddress, parseEther, toHex } from "viem";
+import { signRequestFor } from "../util";
 
-interface ValidInput {
+export function validateWethInput(params: URLSearchParams): {
   chainId: number;
-  amount: number;
+  amount: bigint;
   wethAddress: Address;
-}
-
-export function validateWethInput(params: URLSearchParams): ValidInput {
+} {
   const chainIdStr = params.get("chainId");
   const amountStr = params.get("amount");
 
@@ -31,13 +30,42 @@ export function validateWethInput(params: URLSearchParams): ValidInput {
     throw new Error("Invalid amount, must be a positive float");
   }
 
+  return {
+    chainId,
+    amount: parseEther(amount.toString()),
+    wethAddress: getWethAddress(chainId),
+  };
+}
+
+export function wrapSignRequest(
+  chainId: number,
+  amount: bigint,
+): SignRequestData {
+  return signRequestFor({
+    chainId,
+    metaTransactions: [wrapMetaTransaction(chainId, amount)],
+  });
+}
+
+export const wrapMetaTransaction = (
+  chainId: number,
+  amount: bigint,
+): MetaTransaction => {
+  return {
+    to: getWethAddress(chainId),
+    value: toHex(amount),
+    // methodId for weth.deposit
+    data: "0xd0e30db0",
+  };
+};
+
+export function getWethAddress(chainId: number): Address {
   const network = Network.fromChainId(chainId);
   const wethAddress = network.nativeCurrency.wrappedAddress;
-  if (!wethAddress || !isAddress(wethAddress, { strict: false })) {
+  if (!wethAddress) {
     throw new Error(
       `Couldn't find wrapped address for Network ${network.name} (chainId=${chainId})`,
     );
   }
-
-  return { chainId, amount, wethAddress };
+  return getAddress(wethAddress);
 }
