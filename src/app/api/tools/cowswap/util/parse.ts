@@ -6,8 +6,7 @@ import {
   SigningScheme,
 } from "@cowprotocol/cow-sdk";
 import { getAddress, isAddress, parseUnits } from "viem";
-import { getSafeBalances } from "./balances";
-import { TokenBalance } from "../../safe-util";
+import { getSafeBalances, TokenBalance } from "../../safe-util";
 import { NATIVE_ASSET } from "./protocol";
 
 export interface ParsedQuoteRequest {
