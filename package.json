@@ -16,8 +16,8 @@
     "csv-parser": "^3.0.0",
     "near-safe": "^0.8.7",
     "next": "15.0.1",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
+    "react": "19.0.0-rc-69d4b800-20241021",
+    "react-dom": "19.0.0-rc-69d4b800-20241021",
     "swagger-ui-react": "^5.18.2",
     "vercel-url": "^0.2.1",
     "viem": "^2.21.44",
@@ -28,8 +28,8 @@
     "@types/bun": "^1.1.13",
     "@types/jest": "^29.5.14",
     "@types/node": "^22.9.0",
-    "@types/react": "^18.3.12",
-    "@types/react-dom": "^18.3.1",
+    "@types/react": "npm:types-react@19.0.0-rc.1",
+    "@types/react-dom": "npm:types-react-dom@19.0.0-rc.1",
     "@types/swagger-ui-react": "^4.18.3",
     "concurrently": "^9.1.0",
     "dotenv": "^16.4.5",
@@ -41,5 +41,9 @@
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
     "typescript": "^5.6.3"
+  },
+  "overrides": {
+    "@types/react": "npm:types-react@19.0.0-rc.1",
+    "@types/react-dom": "npm:types-react-dom@19.0.0-rc.1"
   }
 }
