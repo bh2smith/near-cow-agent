@@ -10,7 +10,7 @@ import {
 } from "./util/protocol";
 import { OrderBookApi } from "@cowprotocol/cow-sdk";
 import { signRequestFor } from "../util";
-import { getWethAddress, wrapMetaTransaction } from "../weth/utils";
+import { getNativeAsset, wrapMetaTransaction } from "../weth/utils";
 
 const slippageBps = parseInt(process.env.SLIPPAGE_BPS || "100");
 
@@ -31,7 +31,7 @@ export async function orderRequestFlow({
     metaTransactions.push(
       wrapMetaTransaction(chainId, BigInt(quoteRequest.sellAmountBeforeFee)),
     );
-    quoteRequest.sellToken = getWethAddress(chainId);
+    quoteRequest.sellToken = getNativeAsset(chainId).address;
   }
 
   const orderbook = new OrderBookApi({ chainId });
