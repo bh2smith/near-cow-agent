@@ -38,7 +38,7 @@ const quoteRequest = {
   sellAmountBeforeFee: "2000000000000000000",
 };
 
-describe.skip("CowSwap Plugin", () => {
+describe("CowSwap Plugin", () => {
   // This posts an order to COW Orderbook.
   it.skip("orderRequestFlow", async () => {
     console.log("Requesting Quote...");

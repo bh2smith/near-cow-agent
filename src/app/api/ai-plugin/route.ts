@@ -104,6 +104,11 @@ export async function GET() {
                           description: "Token decimals",
                           example: 18,
                         },
+                        logoUri: {
+                          type: "string",
+                          description: "Token logo URI",
+                          example: "https://example.com/token-logo.png",
+                        },
                       },
                       required: ["token", "balance", "symbol", "decimals"],
                     },
@@ -175,17 +180,17 @@ export async function GET() {
                 "The amount of tokens to sell before fees, represented as a decimal string in token units. Not Atoms.",
             },
           ],
-          requestBody: {
-            description: "The order parameters to compute a quote for.",
-            required: true,
-            content: {
-              "application/json": {
-                schema: {
-                  $ref: "#/components/schemas/OrderQuoteRequest",
-                },
-              },
-            },
-          },
+          // requestBody: {
+          //   description: "The order parameters to compute a quote for.",
+          //   required: true,
+          //   content: {
+          //     "application/json": {
+          //       schema: {
+          //         $ref: "#/components/schemas/OrderQuoteRequest",
+          //       },
+          //     },
+          //   },
+          // },
           responses: {
             "200": { $ref: "#/components/responses/SignRequestResponse200" },
             "400": {
@@ -223,7 +228,7 @@ export async function GET() {
             { $ref: "#/components/parameters/token" },
           ],
           responses: {
-            "200": { $ref: "#/components/responses/MetaTransaction200" },
+            "200": { $ref: "#/components/responses/SignRequest200" },
             "400": { $ref: "#/components/responses/BadRequest400" },
           },
         },
@@ -239,7 +244,7 @@ export async function GET() {
             { $ref: "#/components/parameters/chainId" },
           ],
           responses: {
-            "200": { $ref: "#/components/responses/MetaTransaction200" },
+            "200": { $ref: "#/components/responses/SignRequest200" },
             "400": { $ref: "#/components/responses/BadRequest400" },
           },
         },
@@ -255,7 +260,7 @@ export async function GET() {
             { $ref: "#/components/parameters/chainId" },
           ],
           responses: {
-            "200": { $ref: "#/components/responses/MetaTransaction200" },
+            "200": { $ref: "#/components/responses/SignRequest200" },
             "400": { $ref: "#/components/responses/BadRequest400" },
           },
         },
@@ -309,17 +314,19 @@ export async function GET() {
         chainId: {
           name: "chainId",
           in: "query",
-          description: "Network on which to wrap the native asset",
+          description:
+            "EVM Network on which to assests live and transactions are to be constructed",
           required: true,
           schema: {
             type: "number",
           },
-          example: 1,
+          example: 100,
         },
       },
       responses: {
-        MetaTransaction200: {
-          description: "MetaTransaction for Wrap or Unwrap Eth",
+        SignRequest200: {
+          description:
+            "Generic Structure representing an EVM Signature Request",
           content: {
             "application/json": {
               schema: {
@@ -346,6 +353,7 @@ export async function GET() {
                     additionalProperties: true,
                     example: {
                       orderUrl: "https://explorer.cow.fi/orders/0x123...",
+                      message: "Order submitted successfully",
                     },
                   },
                 },
@@ -402,7 +410,7 @@ export async function GET() {
               type: "integer",
               description:
                 "The ID of the Ethereum chain where the transaction or signing is taking place.",
-              example: 1,
+              example: 100,
             },
             params: {
               oneOf: [

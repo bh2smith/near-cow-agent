@@ -2,10 +2,17 @@ import { MetaTransaction, Network, SignRequestData } from "near-safe";
 import { Address, getAddress, parseEther, toHex } from "viem";
 import { signRequestFor } from "../util";
 
+type NativeAsset = {
+  address: Address;
+  symbol: string;
+  scanUrl: string;
+  decimals: number;
+};
+
 export function validateWethInput(params: URLSearchParams): {
   chainId: number;
   amount: bigint;
-  wethAddress: Address;
+  nativeAsset: NativeAsset;
 } {
   const chainIdStr = params.get("chainId");
   const amountStr = params.get("amount");
@@ -33,7 +40,7 @@ export function validateWethInput(params: URLSearchParams): {
   return {
     chainId,
     amount: parseEther(amount.toString()),
-    wethAddress: getWethAddress(chainId),
+    nativeAsset: getNativeAsset(chainId),
   };
 }
 
@@ -52,14 +59,14 @@ export const wrapMetaTransaction = (
   amount: bigint,
 ): MetaTransaction => {
   return {
-    to: getWethAddress(chainId),
+    to: getNativeAsset(chainId).address,
     value: toHex(amount),
     // methodId for weth.deposit
     data: "0xd0e30db0",
   };
 };
 
-export function getWethAddress(chainId: number): Address {
+export function getNativeAsset(chainId: number): NativeAsset {
   const network = Network.fromChainId(chainId);
   const wethAddress = network.nativeCurrency.wrappedAddress;
   if (!wethAddress) {
@@ -67,5 +74,10 @@ export function getWethAddress(chainId: number): Address {
       `Couldn't find wrapped address for Network ${network.name} (chainId=${chainId})`,
     );
   }
-  return getAddress(wethAddress);
+  return {
+    address: getAddress(wethAddress),
+    symbol: network.nativeCurrency.symbol,
+    scanUrl: `${network.scanUrl}/address/${wethAddress}`,
+    decimals: network.nativeCurrency.decimals,
+  };
 }

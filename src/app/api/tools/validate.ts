@@ -20,6 +20,24 @@ export function addressField(param: string | null, name: string): Address {
   return parseField(param, name, getAddress, "Invalid Address field");
 }
 
+export function addressOrSymbolField(
+  param: string | null,
+  name: string,
+): Address | string {
+  return parseField(
+    param,
+    name,
+    (value) => {
+      try {
+        return getAddress(value);
+      } catch {
+        return value;
+      }
+    },
+    "Invalid Address or Symbol field",
+  );
+}
+
 export function numberField(param: string | null, name: string): number {
   const value = parseField(param, name, parseInt, "Invalid Float field");
   if (isNaN(value)) {

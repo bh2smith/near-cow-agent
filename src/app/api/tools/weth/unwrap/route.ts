@@ -1,27 +1,39 @@
 import { NextRequest, NextResponse } from "next/server";
-import { encodeFunctionData, parseAbi, parseEther } from "viem";
+import { encodeFunctionData, formatUnits, parseAbi, parseEther } from "viem";
 import { validateWethInput } from "../utils";
 import { signRequestFor } from "../../util";
+
 export async function GET(req: NextRequest): Promise<NextResponse> {
   const search = req.nextUrl.searchParams;
   console.log("unwrap/", search);
   try {
-    const { chainId, amount, wethAddress } = validateWethInput(search);
-    const signRequest = signRequestFor({
+    const {
       chainId,
-      metaTransactions: [
-        {
-          to: wethAddress,
-          value: "0x",
-          data: encodeFunctionData({
-            abi: parseAbi(["function withdraw(uint wad)"]),
-            functionName: "withdraw",
-            args: [parseEther(amount.toString())],
-          }),
+      amount,
+      nativeAsset: { address, symbol, scanUrl, decimals },
+    } = validateWethInput(search);
+    return NextResponse.json(
+      {
+        transaction: signRequestFor({
+          chainId,
+          metaTransactions: [
+            {
+              to: address,
+              value: "0x",
+              data: encodeFunctionData({
+                abi: parseAbi(["function withdraw(uint wad)"]),
+                functionName: "withdraw",
+                args: [parseEther(amount.toString())],
+              }),
+            },
+          ],
+        }),
+        meta: {
+          description: `Withdraws ${formatUnits(amount, decimals)} ${symbol} from contract ${scanUrl}.`,
         },
-      ],
-    });
-    return NextResponse.json(signRequest, { status: 200 });
+      },
+      { status: 200 },
+    );
   } catch (error: unknown) {
     const message =
       error instanceof Error

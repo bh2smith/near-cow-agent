@@ -13,11 +13,12 @@ const parsers: FieldParser<Input> = {
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
   const search = req.nextUrl.searchParams;
-  console.log("balances/", search);
+  console.log("Request: balances/", search);
   const { safeAddress } = await extractAccountId(req);
   try {
     const { chainId } = validateInput<Input>(search, parsers);
     const balances = await getSafeBalances(chainId, safeAddress);
+    console.log("Response: balances/", balances);
     return NextResponse.json(balances, { status: 200 });
   } catch (error: unknown) {
     const message =

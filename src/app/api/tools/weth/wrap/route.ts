@@ -1,12 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
-import { validateWethInput } from "../utils";
+import { validateWethInput, wrapSignRequest } from "../utils";
+import { formatUnits } from "viem";
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
   const search = req.nextUrl.searchParams;
   console.log("wrap/", search);
   try {
-    const signRequest = validateWethInput(search);
-    return NextResponse.json(signRequest, { status: 200 });
+    const {
+      chainId,
+      amount,
+      nativeAsset: { symbol, scanUrl, decimals },
+    } = validateWethInput(search);
+    return NextResponse.json(
+      {
+        transaction: wrapSignRequest(chainId, amount),
+        meta: {
+          description: `Wraps ${formatUnits(amount, decimals)} ${symbol} to ${scanUrl}.`,
+        },
+      },
+      { status: 200 },
+    );
   } catch (error: unknown) {
     const message =
       error instanceof Error
