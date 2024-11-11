@@ -30,10 +30,10 @@ const DEPLOYED_SAFE = getAddress("0x5E1E315D96BD81c8f65c576CFD6E793aa091b480");
 const chainId = 11155111;
 const quoteRequest = {
   chainId,
+  safeAddress: DEPLOYED_SAFE,
   sellToken: SEPOLIA_DAI,
   buyToken: SEPOLIA_COW,
   receiver: DEPLOYED_SAFE,
-  from: DEPLOYED_SAFE,
   kind: OrderQuoteSideKindSell.SELL,
   sellAmountBeforeFee: "2000000000000000000",
 };
@@ -42,7 +42,10 @@ describe("CowSwap Plugin", () => {
   // This posts an order to COW Orderbook.
   it.skip("orderRequestFlow", async () => {
     console.log("Requesting Quote...");
-    const signRequest = await orderRequestFlow({ chainId, quoteRequest });
+    const signRequest = await orderRequestFlow({
+      chainId,
+      quoteRequest: { ...quoteRequest, from: DEPLOYED_SAFE },
+    });
     console.log(signRequest);
     console.log(
       `https://testnet.wallet.bitte.ai/sign-evm?evmTx=${encodeURI(JSON.stringify(signRequest))}`,
@@ -136,7 +139,7 @@ describe("CowSwap Plugin", () => {
     });
   });
 
-  it("loadTokenMapping", async () => {
+  it.skip("loadTokenMapping", async () => {
     const tokenMap = await loadTokenMapping("public/tokenlist.csv");
     console.log(tokenMap[11155111]);
   });

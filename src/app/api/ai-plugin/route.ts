@@ -66,15 +66,8 @@ export async function GET() {
           description: "Returns token balances for the connected wallet",
           operationId: "get-balances",
           parameters: [
-            {
-              in: "query",
-              name: "chainId",
-              required: true,
-              schema: {
-                type: "number",
-              },
-              description: "The network ID to check balances on",
-            },
+            { $ref: "#/components/parameters/chainId" },
+            { $ref: "#/components/parameters/safeAddress" },
           ],
           responses: {
             "200": {
@@ -129,16 +122,8 @@ export async function GET() {
           description:
             "Given a partial order compute the minimum fee and a price estimate for the order. Return a full order that can be used directly for signing, and with an included signature, passed directly to the order creation endpoint.",
           parameters: [
-            {
-              in: "query",
-              name: "chainId",
-              required: true,
-              schema: {
-                type: "number",
-              },
-              description:
-                "The network on which the order is to be placed (see cow supported networks here: https://github.com/cowprotocol/cow-sdk/blob/d30a891353805ac3e19c22e75ab39dcdc035d5f0/src/common/chains.ts#L5-L10).",
-            },
+            { $ref: "#/components/parameters/chainId" },
+            { $ref: "#/components/parameters/safeAddress" },
             {
               in: "query",
               name: "sellToken",
@@ -180,17 +165,6 @@ export async function GET() {
                 "The amount of tokens to sell before fees, represented as a decimal string in token units. Not Atoms.",
             },
           ],
-          // requestBody: {
-          //   description: "The order parameters to compute a quote for.",
-          //   required: true,
-          //   content: {
-          //     "application/json": {
-          //       schema: {
-          //         $ref: "#/components/schemas/OrderQuoteRequest",
-          //       },
-          //     },
-          //   },
-          // },
           responses: {
             "200": { $ref: "#/components/responses/SignRequestResponse200" },
             "400": {
@@ -268,6 +242,17 @@ export async function GET() {
     },
     components: {
       parameters: {
+        chainId: {
+          name: "chainId",
+          in: "query",
+          description:
+            "EVM Network on which to assests live and transactions are to be constructed",
+          required: true,
+          schema: {
+            type: "number",
+          },
+          example: 100,
+        },
         amount: {
           name: "amount",
           in: "query",
@@ -289,38 +274,31 @@ export async function GET() {
           },
           example: "0x6810e776880c02933d47db1b9fc05908e5386b96",
         },
+        safeAddress: {
+          name: "safeAddress",
+          in: "query",
+          required: true,
+          description: "The Safe address (i.e. the connected user address)",
+          schema: {
+            $ref: "#/components/schemas/Address",
+          },
+        },
         recipient: {
           name: "recipient",
           in: "query",
-          description:
-            "20 byte Ethereum address encoded as a hex with `0x` prefix.",
           required: true,
+          description: "Recipient address of the transferred token.",
           schema: {
-            type: "string",
+            $ref: "#/components/schemas/Address",
           },
-          example: "0x6810e776880c02933d47db1b9fc05908e5386b96",
         },
         token: {
           name: "token",
           in: "query",
-          description:
-            "20 byte Ethereum address encoded as a hex with `0x` prefix.",
-          required: true,
+          description: "Token address to be transferred.",
           schema: {
-            type: "string",
+            $ref: "#/components/schemas/Address",
           },
-          example: "0x6810e776880c02933d47db1b9fc05908e5386b96",
-        },
-        chainId: {
-          name: "chainId",
-          in: "query",
-          description:
-            "EVM Network on which to assests live and transactions are to be constructed",
-          required: true,
-          schema: {
-            type: "number",
-          },
-          example: 100,
         },
       },
       responses: {

@@ -1,5 +1,4 @@
 import { getTokenDetails, TokenInfo } from "./tokens";
-import { extractAccountId } from "../../util";
 import { NextRequest } from "next/server";
 import {
   OrderQuoteRequest,
@@ -23,12 +22,16 @@ export async function parseQuoteRequest(
   const requestBody = await req.json();
   console.log("Raw Request Body:", requestBody);
   // TODO: Validate input with new validation tools:
-  const { sellToken, buyToken, chainId, sellAmountBeforeFee } = requestBody;
+  const {
+    sellToken,
+    buyToken,
+    chainId,
+    sellAmountBeforeFee,
+    safeAddress: sender,
+  } = requestBody;
   if (sellAmountBeforeFee === "0") {
     throw new Error("Sell amount cannot be 0");
   }
-
-  const { safeAddress: sender } = await extractAccountId(req);
 
   const [balances, buyTokenData] = await Promise.all([
     getSafeBalances(chainId, sender),
