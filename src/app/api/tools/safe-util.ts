@@ -1,4 +1,4 @@
-import { Address, checksumAddress } from "viem";
+import { Address, checksumAddress, parseUnits } from "viem";
 import { UserToken, ZerionAPI } from "zerion-sdk";
 
 export interface TokenBalance {
@@ -114,7 +114,6 @@ export async function flatSafeBalances(
 // TODO(bh2smith): Move this into Zerion SDK
 function zerionToTokenBalance(userToken: UserToken): TokenBalance {
   const { meta, balances } = userToken;
-
   return {
     tokenAddress: meta.contractAddress || null,
     token: {
@@ -123,7 +122,7 @@ function zerionToTokenBalance(userToken: UserToken): TokenBalance {
       decimals: meta.decimals,
       logoUri: meta.tokenIcon || "",
     },
-    balance: balances.balance.toFixed(), // Convert number to string
+    balance: parseUnits(balances.balance.toString(), meta.decimals).toString(), // Convert number to string
     fiatBalance: balances.usdBalance.toFixed(2),
     fiatConversion: (balances.price || 0).toFixed(2),
   };
