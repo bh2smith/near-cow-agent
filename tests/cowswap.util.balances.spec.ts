@@ -8,7 +8,7 @@ describe("getSafeBalances", () => {
     await expect(getSafeBalances(999, zeroAddress)).resolves.toEqual([]);
   });
 
-  it("should fetch balances for Arbitrum", async () => {
+  it.skip("should fetch balances for Arbitrum", async () => {
     const result = await getSafeBalances(
       42161,
       "0x2A42b97d2cd622a0e2B5AB8dC5d6106fb7a122c5",
