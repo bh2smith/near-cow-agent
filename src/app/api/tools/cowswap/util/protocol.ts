@@ -146,11 +146,15 @@ async function checkAllowance(
 export async function generateAppData(
   appCode: string,
   referrerAddress: string,
+  partnerFee: {
+    bps: number;
+    recipient: string;
+  },
 ): Promise<{ hash: Hex; data: string; cid: string }> {
   const metadataApi = new MetadataApi();
   const appDataDoc = await metadataApi.generateAppDataDoc({
     appCode,
-    metadata: { referrer: { address: referrerAddress } },
+    metadata: { referrer: { address: referrerAddress }, partnerFee },
   });
   const appData = await metadataApi.appDataToCid(appDataDoc);
 
@@ -169,8 +173,12 @@ export async function buildAndPostAppData(
   orderbook: OrderBookApi,
   appCode: string,
   referrerAddress: string,
+  partnerFee: {
+    bps: number;
+    recipient: string;
+  },
 ): Promise<Hex> {
-  const appData = await generateAppData(appCode, referrerAddress);
+  const appData = await generateAppData(appCode, referrerAddress, partnerFee);
 
   const exists = await orderbook
     .getAppData(appData.hash)

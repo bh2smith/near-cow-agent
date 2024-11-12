@@ -55,6 +55,10 @@ export async function orderRequestFlow({
     orderbook,
     "bitte.ai/CowAgent",
     "0x8d99F8b2710e6A3B94d9bf465A98E5273069aCBd",
+    {
+      recipient: "0x54F08c27e75BeA0cdDdb8aA9D69FD61551B19BbA",
+      bps: 10,
+    },
   );
   const order = createOrder(quoteResponse);
   console.log("Built Order", order);
