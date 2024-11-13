@@ -34,7 +34,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "types"
-  ],
+, "scripts/generateTokenMap.ts"  ],
   "exclude": [
     "node_modules"
   ]

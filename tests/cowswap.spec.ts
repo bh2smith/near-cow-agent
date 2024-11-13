@@ -139,11 +139,6 @@ describe("CowSwap Plugin", () => {
     });
   });
 
-  it.skip("loadTokenMapping", async () => {
-    const tokenMap = await loadTokenMapping("public/tokenlist.csv");
-    console.log(tokenMap[11155111]);
-  });
-
   it("parseQuoteRequest", async () => {
     const request = new NextRequest("https://fake-url.xyz", {
       method: "POST",
