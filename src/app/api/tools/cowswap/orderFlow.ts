@@ -48,7 +48,7 @@ export async function orderRequestFlow({
       ...quoteRequest,
       chainId,
       sellAmount: quoteRequest.sellAmountBeforeFee,
-    })
+    }),
   ]);
   if (approvalTx) {
     metaTransactions.push(approvalTx);
@@ -66,8 +66,9 @@ export async function orderRequestFlow({
     ...quoteResponse.quote,
     ...applySlippage(quoteResponse.quote, slippageBps),
   };
-  
-  quoteResponse.quote.appData = "0x5a8bb9f6dd0c7f1b4730d9c5a811c2dfe559e67ce9b5ed6965b05e59b8c86b80"
+
+  quoteResponse.quote.appData =
+    "0x5a8bb9f6dd0c7f1b4730d9c5a811c2dfe559e67ce9b5ed6965b05e59b8c86b80";
   // TODO: This shit is too Slow.
   // await buildAndPostAppData(
   //   orderbook,
