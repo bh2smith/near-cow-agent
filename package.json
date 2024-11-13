@@ -15,13 +15,13 @@
     "@cowprotocol/cow-sdk": "5.6.0",
     "csv-parser": "^3.0.0",
     "near-safe": "^0.8.8",
-    "next": "15.0.1",
+    "next": "^15.0.3",
     "react": "19.0.0-rc-69d4b800-20241021",
     "react-dom": "19.0.0-rc-69d4b800-20241021",
     "swagger-ui-react": "^5.18.2",
     "vercel-url": "^0.2.1",
-    "viem": "^2.21.44",
-    "zerion-sdk": "^0.0.7"
+    "viem": "^2.21.45",
+    "zerion-sdk": "^0.0.10"
   },
   "devDependencies": {
     "@cowprotocol/app-data": "^2.3.0",
@@ -34,7 +34,7 @@
     "concurrently": "^9.1.0",
     "dotenv": "^16.4.5",
     "eslint": "^8.57.1",
-    "eslint-config-next": "15.0.1",
+    "eslint-config-next": "^15.0.3",
     "jest": "^29.7.0",
     "make-agent": "^0.0.24-rc.2",
     "prettier": "^3.3.3",
