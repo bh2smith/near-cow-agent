@@ -1,7 +1,7 @@
 import { MetaTransaction, SignRequestData } from "near-safe";
 import {
   applySlippage,
-  buildAndPostAppData,
+  // buildAndPostAppData,
   createOrder,
   isNativeAsset,
   sellTokenApprovalTx,
@@ -13,11 +13,11 @@ import { ParsedQuoteRequest } from "./util/parse";
 import { getNativeAsset, wrapMetaTransaction } from "../weth/utils";
 
 const slippageBps = parseInt(process.env.SLIPPAGE_BPS || "100");
-const referralAddress =
-  process.env.REFERRAL_ADDRESS || "0x8d99F8b2710e6A3B94d9bf465A98E5273069aCBd";
-const partnerAddress =
-  process.env.PARTNER_ADDRESS || "0x54F08c27e75BeA0cdDdb8aA9D69FD61551B19BbA";
-const partnerBps = parseInt(process.env.PARTNER_BPS || "10");
+// const referralAddress =
+//   process.env.REFERRAL_ADDRESS || "0x8d99F8b2710e6A3B94d9bf465A98E5273069aCBd";
+// const partnerAddress =
+//   process.env.PARTNER_ADDRESS || "0x54F08c27e75BeA0cdDdb8aA9D69FD61551B19BbA";
+// const partnerBps = parseInt(process.env.PARTNER_BPS || "10");
 
 export async function orderRequestFlow({
   chainId,
