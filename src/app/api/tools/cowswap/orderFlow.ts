@@ -41,8 +41,19 @@ export async function orderRequestFlow({
 
   const orderbook = new OrderBookApi({ chainId });
   console.log(`Requesting quote for ${JSON.stringify(quoteRequest, null, 2)}`);
-  const quoteResponse = await orderbook.getQuote(quoteRequest);
-  console.log("Received quote", quoteResponse);
+
+  const [quoteResponse, approvalTx] = await Promise.all([
+    orderbook.getQuote(quoteRequest),
+    sellTokenApprovalTx({
+      ...quoteRequest,
+      chainId,
+      sellAmount: quoteRequest.sellAmountBeforeFee,
+    })
+  ]);
+  if (approvalTx) {
+    metaTransactions.push(approvalTx);
+  }
+
   const { sellAmount, feeAmount } = quoteResponse.quote;
   // Adjust the sellAmount to account for the fee.
   // cf: https://learn.cow.fi/tutorial/submit-order
@@ -55,32 +66,24 @@ export async function orderRequestFlow({
     ...quoteResponse.quote,
     ...applySlippage(quoteResponse.quote, slippageBps),
   };
+  
+  quoteResponse.quote.appData = "0x5a8bb9f6dd0c7f1b4730d9c5a811c2dfe559e67ce9b5ed6965b05e59b8c86b80"
+  // TODO: This shit is too Slow.
+  // await buildAndPostAppData(
+  //   orderbook,
+  //   "bitte.ai/CowAgent",
+  //   referralAddress,
+  //   {
+  //     recipient: partnerAddress,
+  //     bps: partnerBps,
+  //   },
+  // );
   // Post Unsigned Order to Orderbook (this might be spam if the user doesn't sign)
-  quoteResponse.quote.appData = await buildAndPostAppData(
-    orderbook,
-    "bitte.ai/CowAgent",
-    referralAddress,
-    {
-      recipient: partnerAddress,
-      bps: partnerBps,
-    },
-  );
   const order = createOrder(quoteResponse);
   console.log("Built Order", order);
 
   const orderUid = await orderbook.sendOrder(order);
   console.log("Order Posted", orderbook.getOrderLink(orderUid));
-
-  // User must approve the sellToken to trade.
-  const approvalTx = await sellTokenApprovalTx({
-    ...quoteRequest,
-    chainId,
-    sellAmount: quoteResponse.quote.sellAmount,
-  });
-  if (approvalTx) {
-    console.debug("Appending token approval...", approvalTx);
-    metaTransactions.push(approvalTx);
-  }
 
   return {
     transaction: signRequestFor({
