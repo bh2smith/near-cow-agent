@@ -33,7 +33,7 @@ describe("getSafeBalances", () => {
     ]);
   });
 
-  it.skip("should fetch balances for Arbitrum", async () => {
+  it.skip("should fetch balances for Mainnet", async () => {
     const result = await flatSafeBalances(
       1,
       "0x54F08c27e75BeA0cdDdb8aA9D69FD61551B19BbA",

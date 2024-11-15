@@ -163,6 +163,17 @@ export async function GET() {
                 "The amount of tokens to sell before fees, represented as a decimal string in token units. Not Atoms.",
             },
           ],
+          // requestBody: {
+          //   description: "The order parameters to compute a quote for.",
+          //   required: true,
+          //   content: {
+          //     "application/json": {
+          //       schema: {
+          //         $ref: "#/components/schemas/OrderQuoteRequest",
+          //       },
+          //     },
+          //   },
+          // },
           responses: {
             "200": { $ref: "#/components/responses/SignRequestResponse200" },
             "400": {

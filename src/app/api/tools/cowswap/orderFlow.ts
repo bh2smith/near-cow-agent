@@ -11,6 +11,7 @@ import { OrderBookApi } from "@cowprotocol/cow-sdk";
 import { signRequestFor } from "../util";
 import { ParsedQuoteRequest } from "./util/parse";
 import { getNativeAsset, wrapMetaTransaction } from "../weth/utils";
+import { getAddress, zeroAddress } from "viem";
 
 const slippageBps = parseInt(process.env.SLIPPAGE_BPS || "100");
 const referralAddress =
@@ -89,6 +90,7 @@ export async function orderRequestFlow({
 
   return {
     transaction: signRequestFor({
+      from: getAddress(order.from || zeroAddress),
       chainId,
       metaTransactions: [
         ...(metaTransactions.length > 0 ? metaTransactions : []),
