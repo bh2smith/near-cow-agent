@@ -31,15 +31,17 @@ export async function loadTokenMapping(
     fs.createReadStream(filePath)
       .pipe(csv())
       .on("data", (row) => {
-        const { blockchain, address, symbol, decimals } = row;
+        const { blockchain, address, decimals } = row;
         const chainId = DuneNetworkMap[blockchain];
         // Ensure blockchain key exists in the mapping
         if (!mapping[chainId]) {
           mapping[chainId] = {};
         }
+        // Convert symbol to lowercase (data sanitization)
+        const lowerCaseSymbol = row.symbol.toLowerCase();
 
         // Map symbol to address and decimals
-        mapping[chainId][symbol] = {
+        mapping[chainId][lowerCaseSymbol] = {
           address,
           decimals: parseInt(decimals, 10),
         };

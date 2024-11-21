@@ -17,15 +17,15 @@ export async function getTokenDetails(
 ): Promise<TokenInfo> {
   if (isAddress(symbolOrAddress, { strict: false })) {
     return {
-      address: symbolOrAddress as Address,
+      address: symbolOrAddress,
       decimals: await getTokenDecimals(chainId, symbolOrAddress),
     };
   }
-  console.log(
-    "Seeking TokenMap for Symbol -> Address conversion",
-    symbolOrAddress,
-  );
-  return (tokenMap as BlockchainMapping)[chainId][symbolOrAddress];
+  console.log("Seeking TokenMap for Symbol", symbolOrAddress);
+  return (tokenMap as BlockchainMapping)[chainId][
+    // TokenMap has lower cased (sanitized) symbols
+    symbolOrAddress.toLowerCase()
+  ];
 }
 
 // Function to request token decimals

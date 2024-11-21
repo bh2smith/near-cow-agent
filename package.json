@@ -5,11 +5,12 @@
   "scripts": {
     "dev": "concurrently \"next dev --turbopack\" \"make-agent dev -p 3000\"",
     "dev-testnet": "concurrently \"next dev --turbopack\" \"make-agent dev -p 3000 -t\"",
-    "build:next": "next build",
+    "build:next": "bun generate-token-map && next build",
     "start": "next start",
     "lint": "next lint && prettier --check '{src/app,tests}/**/*.{js,jsx,ts,tsx}'",
     "fmt": "next lint --fix && prettier --write '{src/app,tests}/**/*.{js,jsx,ts,tsx}'",
-    "test": "jest --config jest.config.ts"
+    "test": "jest --config jest.config.ts",
+    "generate-token-map": "bun scripts/generateTokenMap.ts"
   },
   "dependencies": {
     "@cowprotocol/cow-sdk": "5.6.0",
