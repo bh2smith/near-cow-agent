@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Address } from "viem";
-import { validateRequest } from "../util";
+import { validateRequest, getSafeSaltNonce, getZerionKey } from "../util";
 import {
   addressField,
   FieldParser,
@@ -8,7 +8,6 @@ import {
   numberField,
   validateInput,
 } from "@bitteprotocol/agent-sdk";
-import { getSafeSaltNonce, getZerionKey } from "../../constants";
 
 interface Input {
   chainId: number;

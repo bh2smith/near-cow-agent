@@ -1,8 +1,7 @@
 import { parseQuoteRequest } from "@/src/app/api/tools/cowswap/util/parse";
 import { type NextRequest, NextResponse } from "next/server";
 import { orderRequestFlow } from "./orderFlow";
-import { validateRequest } from "../util";
-import { getSafeSaltNonce, getZerionKey } from "../../constants";
+import { validateRequest, getSafeSaltNonce, getZerionKey } from "../util";
 
 // Refer to https://api.cow.fi/docs/#/ for Specifics on Quoting and Order posting.
 
