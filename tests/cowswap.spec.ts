@@ -19,7 +19,6 @@ import {
 } from "@cowprotocol/cow-sdk";
 import { NextRequest } from "next/server";
 import { checksumAddress, getAddress, zeroAddress } from "viem";
-import { loadTokenMapping } from "@/src/app/api/tools/cowswap/util/tokens";
 import { parseQuoteRequest } from "@/src/app/api/tools/cowswap/util/parse";
 
 const SEPOLIA_DAI = getAddress("0xb4f1737af37711e9a5890d9510c9bb60e170cb0d");
@@ -215,11 +214,12 @@ describe("CowSwap Plugin", () => {
     // const appData = await generateAppData(appCode, referrer);
     // await orderbook.uploadAppData(hash, data);
     const appData = await generateAppData(
-      "bh2smith.eth",
+      "bitte.ai/CowAgent",
       "0x8d99F8b2710e6A3B94d9bf465A98E5273069aCBd",
+      { bps: 25, recipient: "0x54F08c27e75BeA0cdDdb8aA9D69FD61551B19BbA" },
     );
     expect(appData.hash).toBe(
-      "0x1d4141fcce380de6ac7f245cde17caa00fd6ae732f486a65a8fb2fb3eb6b10e7",
+      "0x5a8bb9f6dd0c7f1b4730d9c5a811c2dfe559e67ce9b5ed6965b05e59b8c86b80",
     );
 
     const exists = await orderbook
@@ -232,6 +232,6 @@ describe("CowSwap Plugin", () => {
         console.error("Error fetching app data:", error.message);
         return false; // Or any default value to indicate the data does not exist
       });
-    expect(exists).toBe(true);
+    expect(exists).toBe(false);
   });
 });

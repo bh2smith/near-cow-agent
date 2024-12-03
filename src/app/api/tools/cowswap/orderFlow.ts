@@ -8,10 +8,13 @@ import {
   setPresignatureTx,
 } from "./util/protocol";
 import { OrderBookApi } from "@cowprotocol/cow-sdk";
-import { signRequestFor } from "../util";
 import { ParsedQuoteRequest } from "./util/parse";
-import { getNativeAsset, wrapMetaTransaction } from "../weth/utils";
 import { getAddress, zeroAddress } from "viem";
+import {
+  getNativeAsset,
+  wrapMetaTransaction,
+  signRequestFor,
+} from "@bitteprotocol/agent-sdk";
 
 const slippageBps = parseInt(process.env.SLIPPAGE_BPS || "100");
 const referralAddress =

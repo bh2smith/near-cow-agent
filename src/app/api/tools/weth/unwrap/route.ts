@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { encodeFunctionData, formatUnits, parseAbi, parseEther } from "viem";
-import { validateWethInput } from "../utils";
-import { signRequestFor } from "../../util";
+import { formatUnits } from "viem";
+import {
+  signRequestFor,
+  unwrapMetaTransaction,
+  validateWethInput,
+} from "@bitteprotocol/agent-sdk";
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
   const search = req.nextUrl.searchParams;
@@ -10,23 +13,13 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     const {
       chainId,
       amount,
-      nativeAsset: { address, symbol, scanUrl, decimals },
+      nativeAsset: { symbol, scanUrl, decimals },
     } = validateWethInput(search);
     return NextResponse.json(
       {
         transaction: signRequestFor({
           chainId,
-          metaTransactions: [
-            {
-              to: address,
-              value: "0x0",
-              data: encodeFunctionData({
-                abi: parseAbi(["function withdraw(uint wad)"]),
-                functionName: "withdraw",
-                args: [parseEther(amount.toString())],
-              }),
-            },
-          ],
+          metaTransactions: [unwrapMetaTransaction(chainId, amount)],
         }),
         meta: {
           description: `Withdraws ${formatUnits(amount, decimals)} ${symbol} from contract ${scanUrl}.`,

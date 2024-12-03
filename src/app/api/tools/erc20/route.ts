@@ -1,18 +1,17 @@
-import { NextRequest, NextResponse } from "next/server";
-import { Address, encodeFunctionData, erc20Abi } from "viem";
-import { signRequestFor } from "../util";
-import { parseUnits } from "viem/utils";
+import { parseUnits, type Address } from "viem";
 import {
+  erc20Transfer,
   addressField,
-  addressOrSymbolField,
-  FieldParser,
   floatField,
   numberField,
   validateInput,
-} from "../validate";
-import { getTokenDetails } from "../cowswap/util/tokens";
+  addressOrSymbolField,
+  type FieldParser,
+  signRequestFor,
+  getTokenDetails,
+} from "@bitteprotocol/agent-sdk";
+import { NextRequest, NextResponse } from "next/server";
 
-// Declare Route Input
 interface Input {
   chainId: number;
   amount: number;
@@ -22,35 +21,37 @@ interface Input {
 
 const parsers: FieldParser<Input> = {
   chainId: numberField,
+  // Note that this is a float (i.e. token units)
   amount: floatField,
   token: addressOrSymbolField,
   recipient: addressField,
 };
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
-  const search = req.nextUrl.searchParams;
+  const url = new URL(req.url);
+  const search = url.searchParams;
   console.log("erc20/", search);
   try {
     const { chainId, amount, token, recipient } = validateInput<Input>(
       search,
       parsers,
     );
-    const { decimals } = await getTokenDetails(chainId, token);
-    const signRequest = signRequestFor({
-      chainId,
-      metaTransactions: [
-        {
-          to: token,
-          value: "0x",
-          data: encodeFunctionData({
-            abi: erc20Abi,
-            functionName: "transfer",
-            args: [recipient, parseUnits(amount.toString(), decimals)],
-          }),
-        },
-      ],
-    });
-    return NextResponse.json({ transaction: signRequest }, { status: 200 });
+    const { decimals, address } = await getTokenDetails(chainId, token);
+    return NextResponse.json(
+      {
+        transaction: signRequestFor({
+          chainId,
+          metaTransactions: [
+            erc20Transfer({
+              token: address,
+              to: recipient,
+              amount: parseUnits(amount.toString(), decimals),
+            }),
+          ],
+        }),
+      },
+      { status: 200 },
+    );
   } catch (error: unknown) {
     const message =
       error instanceof Error

@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
+import { Address } from "viem";
+import { validateRequest } from "../util";
 import {
   addressField,
   FieldParser,
+  getSafeBalances,
   numberField,
   validateInput,
-} from "../validate";
-import { getSafeBalances } from "../safe-util";
-import { Address } from "viem";
-import { validateRequest } from "../util";
+} from "@bitteprotocol/agent-sdk";
+import { zerionKey } from "../../constants";
 
 interface Input {
   chainId: number;
@@ -27,7 +28,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   console.log("Request: balances/", search);
   try {
     const { chainId, safeAddress } = validateInput<Input>(search, parsers);
-    const balances = await getSafeBalances(chainId, safeAddress);
+    const balances = await getSafeBalances(chainId, safeAddress, zerionKey);
     console.log(`Retrieved ${balances.length} balances for ${safeAddress}`);
     return NextResponse.json(balances, { status: 200 });
   } catch (error: unknown) {
