@@ -8,7 +8,7 @@ import {
   numberField,
   validateInput,
 } from "@bitteprotocol/agent-sdk";
-import { zerionKey } from "../../constants";
+import { getZerionKey } from "../../constants";
 
 interface Input {
   chainId: number;
@@ -28,7 +28,11 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   console.log("Request: balances/", search);
   try {
     const { chainId, safeAddress } = validateInput<Input>(search, parsers);
-    const balances = await getSafeBalances(chainId, safeAddress, zerionKey);
+    const balances = await getSafeBalances(
+      chainId,
+      safeAddress,
+      getZerionKey(),
+    );
     console.log(`Retrieved ${balances.length} balances for ${safeAddress}`);
     return NextResponse.json(balances, { status: 200 });
   } catch (error: unknown) {

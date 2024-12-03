@@ -6,7 +6,6 @@ import {
 } from "@cowprotocol/cow-sdk";
 import { getAddress, isAddress, parseUnits } from "viem";
 import { NATIVE_ASSET } from "./protocol";
-import { zerionKey } from "../../../constants";
 import {
   getSafeBalances,
   TokenBalance,
@@ -21,6 +20,7 @@ export interface ParsedQuoteRequest {
 
 export async function parseQuoteRequest(
   req: NextRequest,
+  zerionKey?: string,
 ): Promise<ParsedQuoteRequest> {
   // TODO - Add Type Guard on Request (to determine better if it needs processing below.)
   const requestBody = await req.json();

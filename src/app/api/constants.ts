@@ -1,10 +1,15 @@
-export const zerionKey = process.env.ZERION_API_KEY;
-
-if (!zerionKey) {
-  throw new Error("ZERION_API_KEY is not set!");
+function getEnvVar(key: string): string {
+  const value = process.env[key];
+  if (!value) {
+    throw new Error(`${key} is not set`);
+  }
+  return value;
+}
+export function getZerionKey(): string {
+  return getEnvVar("ZERION_API_KEY");
 }
 
-export const safeSaltNonce = process.env.SAFE_SALT_NONCE;
-if (!safeSaltNonce) {
-  throw new Error("SAFE_SALT_NONCE is not set");
+export function getSafeSaltNonce(): string {
+  const bitteProtocolSaltNonce = "130811896738364156958237239906781888512";
+  return process.env.SAFE_SALT_NONCE || bitteProtocolSaltNonce;
 }
