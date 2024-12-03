@@ -2,12 +2,12 @@ import { parseQuoteRequest } from "@/src/app/api/tools/cowswap/util/parse";
 import { type NextRequest, NextResponse } from "next/server";
 import { orderRequestFlow } from "./orderFlow";
 import { validateRequest } from "../util";
-import { getZerionKey } from "../../constants";
+import { getSafeSaltNonce, getZerionKey } from "../../constants";
 
 // Refer to https://api.cow.fi/docs/#/ for Specifics on Quoting and Order posting.
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
-  const headerError = await validateRequest(req);
+  const headerError = await validateRequest(req, getSafeSaltNonce());
   if (headerError) return headerError;
 
   try {

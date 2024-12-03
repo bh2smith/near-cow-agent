@@ -8,7 +8,7 @@ import {
   numberField,
   validateInput,
 } from "@bitteprotocol/agent-sdk";
-import { getZerionKey } from "../../constants";
+import { getSafeSaltNonce, getZerionKey } from "../../constants";
 
 interface Input {
   chainId: number;
@@ -21,7 +21,7 @@ const parsers: FieldParser<Input> = {
 };
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
-  const headerError = await validateRequest(req);
+  const headerError = await validateRequest(req, getSafeSaltNonce());
   if (headerError) return headerError;
 
   const search = req.nextUrl.searchParams;
