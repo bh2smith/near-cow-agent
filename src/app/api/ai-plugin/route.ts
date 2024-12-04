@@ -208,7 +208,7 @@ export async function GET() {
             { $ref: "#/components/parameters/chainId" },
             { $ref: "#/components/parameters/amount" },
             { $ref: "#/components/parameters/recipient" },
-            { $ref: "#/components/parameters/token" },
+            { $ref: "#/components/parameters/tokenOrSymbol" },
           ],
           responses: {
             "200": { $ref: "#/components/responses/SignRequest200" },
@@ -307,6 +307,14 @@ export async function GET() {
           description: "Token address to be transferred.",
           schema: {
             $ref: "#/components/schemas/Address",
+          },
+        },
+        tokenOrSymbol: {
+          name: "tokenOrSymbol",
+          in: "query",
+          description: "The ERC-20 token symbol or address to be sold, if provided with the symbol do not try to infer the address.",
+          schema: {
+            type: "string",
           },
         },
       },
