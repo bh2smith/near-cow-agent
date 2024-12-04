@@ -8,9 +8,9 @@ import {
   addressOrSymbolField,
   type FieldParser,
   signRequestFor,
-  getTokenDetails,
 } from "@bitteprotocol/agent-sdk";
 import { NextRequest, NextResponse } from "next/server";
+import { tokenDetails } from "../util";
 
 interface Input {
   chainId: number;
@@ -36,7 +36,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       search,
       parsers,
     );
-    const { decimals, address } = await getTokenDetails(chainId, token);
+    const { decimals, address } = await tokenDetails(chainId, token);
     return NextResponse.json(
       {
         transaction: signRequestFor({

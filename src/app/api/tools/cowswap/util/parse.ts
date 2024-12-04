@@ -9,9 +9,9 @@ import { NATIVE_ASSET } from "./protocol";
 import {
   getSafeBalances,
   TokenBalance,
-  getTokenDetails,
   TokenInfo,
 } from "@bitteprotocol/agent-sdk";
+import { tokenDetails } from "../../util";
 
 export interface ParsedQuoteRequest {
   quoteRequest: OrderQuoteRequest;
@@ -39,7 +39,7 @@ export async function parseQuoteRequest(
 
   const [balances, buyTokenData] = await Promise.all([
     getSafeBalances(chainId, sender, zerionKey),
-    getTokenDetails(chainId, buyToken),
+    tokenDetails(chainId, buyToken),
   ]);
   const sellTokenData = sellTokenAvailable(balances, sellToken);
 

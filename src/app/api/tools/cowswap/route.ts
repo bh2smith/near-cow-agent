@@ -1,14 +1,17 @@
 import { parseQuoteRequest } from "@/src/app/api/tools/cowswap/util/parse";
 import { type NextRequest, NextResponse } from "next/server";
 import { orderRequestFlow } from "./orderFlow";
-import { validateRequest, getSafeSaltNonce, getZerionKey } from "../util";
+import { validateNextRequest, getSafeSaltNonce, getZerionKey } from "../util";
 
 // Refer to https://api.cow.fi/docs/#/ for Specifics on Quoting and Order posting.
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
-  const headerError = await validateRequest(req, getSafeSaltNonce());
-  if (headerError) return headerError;
-
+  console.log("swap/", req.url);
+  const headerError = await validateNextRequest(req, getSafeSaltNonce());
+  if (headerError) {
+    console.error("Header Error", headerError);
+    return headerError;
+  }
   try {
     const parsedRequest = await parseQuoteRequest(req, getZerionKey());
     console.log("POST Request for quote:", parsedRequest);
@@ -17,7 +20,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json(orderData, { status: 200 });
   } catch (e: unknown) {
     const message = JSON.stringify(e);
-    console.error(message);
+    console.error("CoWSwap Error:", e, JSON.stringify(e));
     return NextResponse.json({ error: message }, { status: 400 });
   }
 }
