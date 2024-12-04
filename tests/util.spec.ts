@@ -1,7 +1,6 @@
 import { NextRequest } from "next/server";
 import {
   getSafeSaltNonce,
-  tokenDetails,
   validateNextRequest,
 } from "@/src/app/api/tools/util";
 import { zeroAddress } from "viem";
@@ -29,10 +28,5 @@ describe("validateRequest", () => {
     console.log(JSON.stringify(result, null, 2));
     // Assert
     expect(result).not.toBeNull();
-  });
-
-  it.only("gettokendetails", async () => {
-    const details = await tokenDetails(100, "cow");
-    console.log(JSON.stringify(details, null, 2));
   });
 });
