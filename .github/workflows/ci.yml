@@ -31,6 +31,7 @@ jobs:
       - name: Lint, Test & Build
         env:
           SAFE_SALT_NONCE: "0"
+          TOKEN_MAP_URL:  ${{secrets.TOKEN_MAP_URL}}
         run: |
           bun lint
           bun test
