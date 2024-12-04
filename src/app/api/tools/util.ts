@@ -34,16 +34,23 @@ export function getSafeSaltNonce(): string {
   return process.env.SAFE_SALT_NONCE || bitteProtocolSaltNonce;
 }
 
-let cachedTokenMap: BlockchainMapping | null = null;
+import { unstable_cache } from "next/cache";
 
 async function getTokenMap(): Promise<BlockchainMapping> {
-  if (!cachedTokenMap) {
-    console.log("Loading TokenMap...");
-    cachedTokenMap = await loadTokenMap(getEnvVar("TOKEN_MAP_URL"));
-  }
-  return cachedTokenMap;
-}
+  const getCachedTokenMap = unstable_cache(
+    async () => {
+      console.log("Loading TokenMap...");
+      return loadTokenMap(getEnvVar("TOKEN_MAP_URL"));
+    },
+    ["token-map"], // cache key
+    {
+      revalidate: 86400, // revalidate 24 hours
+      tags: ["token-map"],
+    },
+  );
 
+  return getCachedTokenMap();
+}
 export async function tokenDetails(chainId: number, symbolOrAddress: string) {
   const tokenMap = await getTokenMap();
   return getTokenDetails(chainId, symbolOrAddress, tokenMap);
