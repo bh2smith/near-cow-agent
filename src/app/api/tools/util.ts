@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { unstable_cache } from "next/cache";
 import {
-  getTokenDetails,
   loadTokenMap,
   validateRequest,
   BlockchainMapping,
@@ -34,9 +34,7 @@ export function getSafeSaltNonce(): string {
   return process.env.SAFE_SALT_NONCE || bitteProtocolSaltNonce;
 }
 
-import { unstable_cache } from "next/cache";
-
-async function getTokenMap(): Promise<BlockchainMapping> {
+export async function getTokenMap(): Promise<BlockchainMapping> {
   const getCachedTokenMap = unstable_cache(
     async () => {
       console.log("Loading TokenMap...");
@@ -50,8 +48,4 @@ async function getTokenMap(): Promise<BlockchainMapping> {
   );
 
   return getCachedTokenMap();
-}
-export async function tokenDetails(chainId: number, symbolOrAddress: string) {
-  const tokenMap = await getTokenMap();
-  return getTokenDetails(chainId, symbolOrAddress, tokenMap);
 }

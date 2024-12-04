@@ -20,6 +20,7 @@ import {
 import { NextRequest } from "next/server";
 import { checksumAddress, getAddress, zeroAddress } from "viem";
 import { parseQuoteRequest } from "@/src/app/api/tools/cowswap/util/parse";
+import { loadTokenMap } from "@bitteprotocol/agent-sdk";
 
 const SEPOLIA_DAI = getAddress("0xb4f1737af37711e9a5890d9510c9bb60e170cb0d");
 const SEPOLIA_COW = getAddress("0x0625afb445c3b6b7b929342a04a22599fd5dbb59");
@@ -149,7 +150,8 @@ describe("CowSwap Plugin", () => {
       },
       body: JSON.stringify(quoteRequest),
     });
-    expect(await parseQuoteRequest(request)).toStrictEqual({
+    const tokenMap = await loadTokenMap(process.env.TOKEN_MAP_URL);
+    expect(await parseQuoteRequest(request, tokenMap)).toStrictEqual({
       chainId: 11155111,
       quoteRequest: {
         buyToken: SEPOLIA_COW,

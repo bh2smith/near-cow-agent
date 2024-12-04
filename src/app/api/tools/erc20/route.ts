@@ -8,9 +8,10 @@ import {
   addressOrSymbolField,
   type FieldParser,
   signRequestFor,
+  getTokenDetails,
 } from "@bitteprotocol/agent-sdk";
 import { NextRequest, NextResponse } from "next/server";
-import { tokenDetails } from "../util";
+import { getTokenMap } from "../util";
 
 interface Input {
   chainId: number;
@@ -36,7 +37,11 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       search,
       parsers,
     );
-    const { decimals, address, symbol } = await tokenDetails(chainId, token);
+    const { decimals, address, symbol } = await getTokenDetails(
+      chainId,
+      token,
+      await getTokenMap(),
+    );
     console.log("erc20/ tokenDetails", chainId, symbol, decimals, address);
     return NextResponse.json(
       {

@@ -1,7 +1,12 @@
 import { parseQuoteRequest } from "@/src/app/api/tools/cowswap/util/parse";
 import { type NextRequest, NextResponse } from "next/server";
 import { orderRequestFlow } from "./orderFlow";
-import { validateNextRequest, getSafeSaltNonce, getZerionKey } from "../util";
+import {
+  validateNextRequest,
+  getSafeSaltNonce,
+  getZerionKey,
+  getTokenMap,
+} from "../util";
 
 // Refer to https://api.cow.fi/docs/#/ for Specifics on Quoting and Order posting.
 
@@ -13,7 +18,11 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     return headerError;
   }
   try {
-    const parsedRequest = await parseQuoteRequest(req, getZerionKey());
+    const parsedRequest = await parseQuoteRequest(
+      req,
+      await getTokenMap(),
+      getZerionKey(),
+    );
     console.log("POST Request for quote:", parsedRequest);
     const orderData = await orderRequestFlow(parsedRequest);
     console.log("Responding with", orderData);

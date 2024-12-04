@@ -7,11 +7,12 @@ import {
 import { getAddress, isAddress, parseUnits } from "viem";
 import { NATIVE_ASSET } from "./protocol";
 import {
+  BlockchainMapping,
   getSafeBalances,
+  getTokenDetails,
   TokenBalance,
   TokenInfo,
 } from "@bitteprotocol/agent-sdk";
-import { tokenDetails } from "../../util";
 
 export interface ParsedQuoteRequest {
   quoteRequest: OrderQuoteRequest;
@@ -20,6 +21,7 @@ export interface ParsedQuoteRequest {
 
 export async function parseQuoteRequest(
   req: NextRequest,
+  tokenMap: BlockchainMapping,
   zerionKey?: string,
 ): Promise<ParsedQuoteRequest> {
   // TODO - Add Type Guard on Request (to determine better if it needs processing below.)
@@ -39,7 +41,7 @@ export async function parseQuoteRequest(
 
   const [balances, buyTokenData] = await Promise.all([
     getSafeBalances(chainId, sender, zerionKey),
-    tokenDetails(chainId, buyToken),
+    getTokenDetails(chainId, buyToken, tokenMap),
   ]);
   const sellTokenData = sellTokenAvailable(balances, sellToken);
 
