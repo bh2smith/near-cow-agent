@@ -36,7 +36,8 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       search,
       parsers,
     );
-    const { decimals, address } = await tokenDetails(chainId, token);
+    const { decimals, address, symbol } = await tokenDetails(chainId, token);
+    console.log("erc20/ tokenDetails", chainId, symbol, decimals, address);
     return NextResponse.json(
       {
         transaction: signRequestFor({
@@ -57,6 +58,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       error instanceof Error
         ? error.message
         : `Unknown error occurred ${String(error)}`;
+    console.error("erc20/ error", message);
     return NextResponse.json({ ok: false, message }, { status: 400 });
   }
 }

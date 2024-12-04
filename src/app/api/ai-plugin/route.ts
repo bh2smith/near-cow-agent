@@ -312,7 +312,8 @@ export async function GET() {
         tokenOrSymbol: {
           name: "tokenOrSymbol",
           in: "query",
-          description: "The ERC-20 token symbol or address to be sold, if provided with the symbol do not try to infer the address.",
+          description:
+            "The ERC-20 token symbol or address to be sold, if provided with the symbol do not try to infer the address.",
           schema: {
             type: "string",
           },

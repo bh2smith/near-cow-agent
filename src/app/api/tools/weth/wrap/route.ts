@@ -32,6 +32,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       error instanceof Error
         ? error.message
         : `Unknown error occurred ${String(error)}`;
+    console.error("wrap/ error", message);
     return NextResponse.json({ ok: false, message }, { status: 400 });
   }
 }
