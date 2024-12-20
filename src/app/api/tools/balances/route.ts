@@ -20,7 +20,7 @@ const parsers: FieldParser<Input> = {
 };
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
-  const headerError = await validateNextRequest(req, getSafeSaltNonce());
+  const headerError = await validateNextRequest(req);
   if (headerError) return headerError;
 
   const search = req.nextUrl.searchParams;
