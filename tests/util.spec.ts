@@ -1,8 +1,5 @@
 import { NextRequest } from "next/server";
-import {
-  getSafeSaltNonce,
-  validateNextRequest,
-} from "@/src/app/api/tools/util";
+import { validateNextRequest } from "@/src/app/api/tools/util";
 import { zeroAddress } from "viem";
 
 describe("validateRequest", () => {
@@ -21,8 +18,8 @@ describe("validateRequest", () => {
     );
 
     // Act
-    const result = await validateNextRequest(request, getSafeSaltNonce());
+    const result = await validateNextRequest(request);
     // Assert
-    expect(result).not.toBeNull();
+    expect(result).toBeNull();
   });
 });

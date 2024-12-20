@@ -8,11 +8,9 @@ import {
 
 export async function validateNextRequest(
   req: NextRequest,
-  safeSaltNonce?: string,
 ): Promise<NextResponse | null> {
   return validateRequest<NextRequest, NextResponse>(
     req,
-    safeSaltNonce || "0",
     (data: unknown, init?: { status?: number }) =>
       NextResponse.json(data, init),
   );

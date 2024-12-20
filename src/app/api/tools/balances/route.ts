@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Address } from "viem";
-import { validateNextRequest, getSafeSaltNonce, getZerionKey } from "../util";
+import { validateNextRequest, getZerionKey } from "../util";
 import {
   addressField,
   FieldParser,
@@ -20,7 +20,7 @@ const parsers: FieldParser<Input> = {
 };
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
-  const headerError = await validateNextRequest(req, getSafeSaltNonce());
+  const headerError = await validateNextRequest(req);
   if (headerError) return headerError;
 
   const search = req.nextUrl.searchParams;
