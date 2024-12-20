@@ -20,6 +20,6 @@ describe("validateRequest", () => {
     // Act
     const result = await validateNextRequest(request);
     // Assert
-    expect(result).toBeNull(); 
+    expect(result).toBeNull();
   });
 });
