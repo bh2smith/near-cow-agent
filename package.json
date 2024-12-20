@@ -12,7 +12,7 @@
     "test": "jest --config jest.config.ts"
   },
   "dependencies": {
-    "@bitteprotocol/agent-sdk": "^0.0.10",
+    "@bitteprotocol/agent-sdk": "^0.0.11",
     "@cowprotocol/cow-sdk": "5.8.0",
     "csv-parser": "^3.0.0",
     "near-safe": "^0.8.8",
