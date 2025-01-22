@@ -23,13 +23,15 @@ const partnerAddress =
   process.env.PARTNER_ADDRESS || "0x54F08c27e75BeA0cdDdb8aA9D69FD61551B19BbA";
 const partnerBps = parseInt(process.env.PARTNER_BPS || "10");
 
+export interface OrderResponse {
+  transaction: SignRequestData;
+  meta: { orderUrl: string };
+}
+
 export async function orderRequestFlow({
   chainId,
   quoteRequest,
-}: ParsedQuoteRequest): Promise<{
-  transaction: SignRequestData;
-  meta: { orderUrl: string };
-}> {
+}: ParsedQuoteRequest): Promise<OrderResponse> {
   if (
     !(quoteRequest.kind === "sell" && "sellAmountBeforeFee" in quoteRequest)
   ) {

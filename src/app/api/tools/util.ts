@@ -5,6 +5,7 @@ import {
   validateRequest,
   BlockchainMapping,
 } from "@bitte-ai/agent-sdk";
+import { SignRequestData } from "near-safe";
 
 export async function validateNextRequest(
   req: NextRequest,
@@ -46,4 +47,23 @@ export async function getTokenMap(): Promise<BlockchainMapping> {
   );
 
   return getCachedTokenMap();
+}
+
+export async function handleRequest<T>(
+  logic: () => Promise<T>,
+): Promise<NextResponse> {
+  try {
+    const result = await logic();
+    console.log("Responding with", result);
+    return NextResponse.json(result, { status: 200 });
+  } catch (e: unknown) {
+    const message = (e as Error).message;
+    console.error(message);
+    return NextResponse.json({ message }, { status: 400 });
+  }
+}
+
+export interface TxData {
+  transaction: SignRequestData;
+  meta?: unknown;
 }

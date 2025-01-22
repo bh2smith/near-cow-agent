@@ -5,34 +5,27 @@ import {
   unwrapMetaTransaction,
   validateWethInput,
 } from "@bitte-ai/agent-sdk";
+import { handleRequest, TxData } from "../../util";
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
+  return handleRequest(() => logic(req));
+}
+
+async function logic(req: NextRequest): Promise<TxData> {
   const search = req.nextUrl.searchParams;
   console.log("unwrap/", search);
-  try {
-    const {
+  const {
+    chainId,
+    amount,
+    nativeAsset: { symbol, scanUrl, decimals },
+  } = validateWethInput(search);
+  return {
+    transaction: signRequestFor({
       chainId,
-      amount,
-      nativeAsset: { symbol, scanUrl, decimals },
-    } = validateWethInput(search);
-    return NextResponse.json(
-      {
-        transaction: signRequestFor({
-          chainId,
-          metaTransactions: [unwrapMetaTransaction(chainId, amount)],
-        }),
-        meta: {
-          description: `Withdraws ${formatUnits(amount, decimals)} ${symbol} from contract ${scanUrl}.`,
-        },
-      },
-      { status: 200 },
-    );
-  } catch (error: unknown) {
-    const message =
-      error instanceof Error
-        ? error.message
-        : `Unknown error occurred ${String(error)}`;
-    console.error("unwrap/ error", message);
-    return NextResponse.json({ ok: false, message }, { status: 400 });
-  }
+      metaTransactions: [unwrapMetaTransaction(chainId, amount)],
+    }),
+    meta: {
+      description: `Withdraws ${formatUnits(amount, decimals)} ${symbol} from contract ${scanUrl}.`,
+    },
+  };
 }
