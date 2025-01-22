@@ -1,5 +1,6 @@
 import { orderRequestFlow } from "@/src/app/api/tools/cowswap/orderFlow";
 import {
+  appDataExists,
   applySlippage,
   createOrder,
   generateAppData,
@@ -224,16 +225,6 @@ describe("CowSwap Plugin", () => {
       "0x5a8bb9f6dd0c7f1b4730d9c5a811c2dfe559e67ce9b5ed6965b05e59b8c86b80",
     );
 
-    const exists = await orderbook
-      .getAppData(appData.hash)
-      .then(() => {
-        // If successful, `data` will be the resolved value from `getAppData`.
-        return true;
-      })
-      .catch((error) => {
-        console.error("Error fetching app data:", error.message);
-        return false; // Or any default value to indicate the data does not exist
-      });
-    expect(exists).toBe(false);
+    expect(await appDataExists(orderbook, appData)).toBe(false);
   });
 });

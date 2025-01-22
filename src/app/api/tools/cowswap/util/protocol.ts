@@ -4,7 +4,9 @@ import {
   getAddress,
   Hex,
   isHex,
+  keccak256,
   parseAbi,
+  toBytes,
 } from "viem";
 import {
   OrderBookApi,
@@ -15,8 +17,7 @@ import {
   OrderKind,
 } from "@cowprotocol/cow-sdk";
 import { getClient, MetaTransaction } from "near-safe";
-// @ts-expect-error: something is wrong with the app-data package
-import { MetadataApi } from "@cowprotocol/app-data";
+import stringify from "json-stringify-deterministic";
 
 const MAX_APPROVAL = BigInt(
   "115792089237316195423570985008687907853269984665640564039457584007913129639935",
@@ -143,8 +144,11 @@ async function checkAllowance(
   });
 }
 
-// This function stays out here for now because of a bug with app-data package
-// https://github.com/cowprotocol/app-data/issues/68
+interface AppData {
+  hash: Hex;
+  data: string;
+}
+
 export async function generateAppData(
   appCode: string,
   referrerAddress: string,
@@ -152,22 +156,17 @@ export async function generateAppData(
     bps: number;
     recipient: string;
   },
-): Promise<{ hash: Hex; data: string; cid: string }> {
-  const metadataApi = new MetadataApi();
-  const appDataDoc = await metadataApi.generateAppDataDoc({
+): Promise<AppData> {
+  const appDataDoc = stringify({
     appCode,
     metadata: { referrer: { address: referrerAddress }, partnerFee },
+    version: "1.3.0",
   });
-  const appData = await metadataApi.appDataToCid(appDataDoc);
-
-  // Viem Equivalent
-  // const appHash = keccak256(toBytes(JSON.stringify(appDataDoc)));
-  console.log(`Constructed AppData with Hash ${appData.appDataHex}`);
-
+  const appDataHash = keccak256(toBytes(appDataDoc));
+  console.log(`Constructed AppData with Hash ${appDataHash}`);
   return {
-    cid: appData.cid,
-    hash: appData.appDataHex,
-    data: appData.appDataContent,
+    data: appDataDoc,
+    hash: appDataHash,
   };
 }
 
@@ -181,19 +180,25 @@ export async function buildAndPostAppData(
   },
 ): Promise<Hex> {
   const appData = await generateAppData(appCode, referrerAddress, partnerFee);
+  const exists = await appDataExists(orderbook, appData);
+  if (!exists) {
+    await orderbook.uploadAppData(appData.hash, appData.data);
+  }
+  return appData.hash;
+}
 
+export async function appDataExists(
+  orderbook: OrderBookApi,
+  appData: AppData,
+): Promise<boolean> {
   const exists = await orderbook
     .getAppData(appData.hash)
     .then(() => {
       // If successful, `data` will be the resolved value from `getAppData`.
       return true;
     })
-    .catch((error) => {
-      console.error("Error fetching app data:", error.message);
+    .catch(() => {
       return false; // Or any default value to indicate the data does not exist
     });
-  if (!exists) {
-    await orderbook.uploadAppData(appData.hash, appData.data);
-  }
-  return appData.hash;
+  return exists;
 }
