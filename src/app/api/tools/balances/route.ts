@@ -7,7 +7,7 @@ import {
   getSafeBalances,
   numberField,
   validateInput,
-} from "@bitteprotocol/agent-sdk";
+} from "@bitte-ai/agent-sdk";
 
 interface Input {
   chainId: number;

@@ -4,7 +4,7 @@ import {
   signRequestFor,
   unwrapMetaTransaction,
   validateWethInput,
-} from "@bitteprotocol/agent-sdk";
+} from "@bitte-ai/agent-sdk";
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
   const search = req.nextUrl.searchParams;

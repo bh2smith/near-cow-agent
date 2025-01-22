@@ -9,7 +9,7 @@ import {
   type FieldParser,
   signRequestFor,
   getTokenDetails,
-} from "@bitteprotocol/agent-sdk";
+} from "@bitte-ai/agent-sdk";
 import { NextRequest, NextResponse } from "next/server";
 import { getTokenMap } from "../util";
 

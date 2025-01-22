@@ -14,7 +14,7 @@ import {
   getNativeAsset,
   wrapMetaTransaction,
   signRequestFor,
-} from "@bitteprotocol/agent-sdk";
+} from "@bitte-ai/agent-sdk";
 
 const slippageBps = parseInt(process.env.SLIPPAGE_BPS || "100");
 const referralAddress =

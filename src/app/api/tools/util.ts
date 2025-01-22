@@ -4,7 +4,7 @@ import {
   loadTokenMap,
   validateRequest,
   BlockchainMapping,
-} from "@bitteprotocol/agent-sdk";
+} from "@bitte-ai/agent-sdk";
 
 export async function validateNextRequest(
   req: NextRequest,

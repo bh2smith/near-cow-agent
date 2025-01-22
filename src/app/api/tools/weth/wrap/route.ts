@@ -2,7 +2,7 @@ import {
   signRequestFor,
   validateWethInput,
   wrapMetaTransaction,
-} from "@bitteprotocol/agent-sdk";
+} from "@bitte-ai/agent-sdk";
 import { NextRequest, NextResponse } from "next/server";
 import { formatUnits } from "viem";
 

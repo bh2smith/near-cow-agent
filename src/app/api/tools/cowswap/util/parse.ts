@@ -12,7 +12,7 @@ import {
   getTokenDetails,
   TokenBalance,
   TokenInfo,
-} from "@bitteprotocol/agent-sdk";
+} from "@bitte-ai/agent-sdk";
 
 export interface ParsedQuoteRequest {
   quoteRequest: OrderQuoteRequest;
