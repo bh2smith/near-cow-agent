@@ -44,7 +44,9 @@ export async function parseQuoteRequest(
     getTokenDetails(chainId, buyToken, tokenMap),
   ]);
   const sellTokenData = sellTokenAvailable(balances, sellToken);
-
+  if (!buyTokenData) {
+    throw new Error(`Buy token not found on chain ${chainId}: ${buyToken}`);
+  }
   return {
     chainId,
     quoteRequest: {

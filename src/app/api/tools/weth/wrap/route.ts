@@ -1,14 +1,15 @@
 import {
+  handleRequest,
   signRequestFor,
+  TxData,
   validateWethInput,
   wrapMetaTransaction,
 } from "@bitte-ai/agent-sdk";
 import { NextRequest, NextResponse } from "next/server";
 import { formatUnits } from "viem";
-import { handleRequest, TxData } from "../../util";
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
-  return handleRequest(() => logic(req));
+  return handleRequest(req, logic, (result) => NextResponse.json(result));
 }
 
 async function logic(req: NextRequest): Promise<TxData> {

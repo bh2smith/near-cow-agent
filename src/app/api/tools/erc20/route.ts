@@ -9,10 +9,11 @@ import {
   type FieldParser,
   signRequestFor,
   getTokenDetails,
+  handleRequest,
+  TxData,
 } from "@bitte-ai/agent-sdk";
 import { NextRequest, NextResponse } from "next/server";
-import { getTokenMap, handleRequest } from "../util";
-import { SignRequestData } from "near-safe";
+import { getTokenMap } from "../util";
 
 interface Input {
   chainId: number;
@@ -30,11 +31,7 @@ const parsers: FieldParser<Input> = {
 };
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
-  return handleRequest(() => logic(req));
-}
-
-interface TxData {
-  transaction: SignRequestData;
+  return handleRequest(req, logic, (result) => NextResponse.json(result));
 }
 
 async function logic(req: NextRequest): Promise<TxData> {
@@ -47,11 +44,15 @@ async function logic(req: NextRequest): Promise<TxData> {
     tokenOrSymbol: token,
     recipient,
   } = validateInput<Input>(search, parsers);
-  const { decimals, address, symbol } = await getTokenDetails(
+  const tokenDetails = await getTokenDetails(
     chainId,
     token,
     await getTokenMap(),
   );
+  if (!tokenDetails) {
+    throw new Error(`Token not found on chain ${chainId}: ${token}`);
+  }
+  const { symbol, decimals, address } = tokenDetails;
   console.log("erc20/ tokenDetails", chainId, symbol, decimals, address);
   return {
     transaction: signRequestFor({

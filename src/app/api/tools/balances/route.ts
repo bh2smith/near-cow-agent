@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Address } from "viem";
-import { getZerionKey, handleRequest } from "../util";
+import { getZerionKey, validateNextRequest } from "../util";
 import {
   addressField,
   FieldParser,
   getSafeBalances,
+  handleRequest,
   numberField,
   TokenBalance,
   validateInput,
@@ -20,18 +21,18 @@ const parsers: FieldParser<Input> = {
   safeAddress: addressField,
 };
 
-export async function GET(req: NextRequest): Promise<NextResponse> {
-  console.log(req);
-  return handleRequest(() => logic(req));
-}
-
 async function logic(req: NextRequest): Promise<TokenBalance[]> {
-  // const headerError = await validateNextRequest(req);
-  // if (headerError) throw headerError;
+  // Prevent unauthorized spam for balance API.
+  const headerError = await validateNextRequest(req);
+  if (headerError) throw headerError;
   const search = req.nextUrl.searchParams;
   console.log("Request: balances/", search);
   const { chainId, safeAddress } = validateInput<Input>(search, parsers);
   const balances = await getSafeBalances(chainId, safeAddress, getZerionKey());
   console.log(`Retrieved ${balances.length} balances for ${safeAddress}`);
   return balances;
+}
+
+export async function GET(req: NextRequest): Promise<NextResponse> {
+  return handleRequest(req, logic, (result) => NextResponse.json(result));
 }
