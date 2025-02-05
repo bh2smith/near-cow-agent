@@ -17,7 +17,7 @@
     "json-stringify-deterministic": "^1.0.12",
     "near-safe": "^0.9.10",
     "next": "^15.1.6",
-    "swagger-ui-react": "^5.18.3",
+    "redoc": "^2.3.0",
     "vercel-url": "^0.2.6",
     "viem": "^2.22.21",
     "zerion-sdk": "^0.1.0"
@@ -26,7 +26,6 @@
     "@types/bun": "^1.2.2",
     "@types/jest": "^29.5.14",
     "@types/node": "^22.13.1",
-    "@types/swagger-ui-react": "^4.19.0",
     "concurrently": "^9.1.2",
     "dotenv": "^16.4.7",
     "eslint-config-next": "^15.1.6",
