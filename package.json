@@ -26,6 +26,7 @@
     "@types/bun": "^1.2.2",
     "@types/jest": "^29.5.14",
     "@types/node": "^22.13.1",
+    "@types/react": "^19.0.8",
     "concurrently": "^9.1.2",
     "dotenv": "^16.4.7",
     "eslint-config-next": "^15.1.6",
