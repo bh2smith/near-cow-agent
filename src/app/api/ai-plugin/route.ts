@@ -219,38 +219,6 @@ export async function GET() {
           },
         },
       },
-      "/api/tools/weth/wrap": {
-        get: {
-          tags: ["wrap"],
-          summary: "Encode WETH deposit",
-          description: "Encodes WETH deposit Transaction as MetaTransaction",
-          operationId: "wrap",
-          parameters: [
-            { $ref: "#/components/parameters/amount" },
-            { $ref: "#/components/parameters/chainId" },
-          ],
-          responses: {
-            "200": { $ref: "#/components/responses/SignRequest200" },
-            "400": { $ref: "#/components/responses/BadRequest400" },
-          },
-        },
-      },
-      "/api/tools/weth/unwrap": {
-        get: {
-          tags: ["unwrap"],
-          summary: "Encode WETH withdraw",
-          description: "Encodes WETH withdraw Transaction as MetaTransaction",
-          operationId: "unwrap",
-          parameters: [
-            { $ref: "#/components/parameters/amount" },
-            { $ref: "#/components/parameters/chainId" },
-          ],
-          responses: {
-            "200": { $ref: "#/components/responses/SignRequest200" },
-            "400": { $ref: "#/components/responses/BadRequest400" },
-          },
-        },
-      },
     },
     components: {
       parameters: {
