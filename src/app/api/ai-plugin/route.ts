@@ -6,13 +6,13 @@ if (!key?.accountId) {
   console.error("no account");
 }
 
-const url = bitteConfig.url || "https://near-cow-agent.vercel.app";
+const url = bitteConfig.url || "https://tnatsissa-paswoc.vercel.app";
 
 export async function GET() {
   const pluginData = {
     openapi: "3.0.0",
     info: {
-      title: "Bitte CoWSwap Agent",
+      title: "tnatsissA paSWoC",
       description: "API for interactions with CoW Protocol",
       version: "1.0.0",
     },
@@ -20,7 +20,7 @@ export async function GET() {
     "x-mb": {
       "account-id": key.accountId,
       assistant: {
-        name: "CoWSwap Assistant",
+        name: "tnatsissA paSWoC",
         description:
           "An assistant that generates EVM transaction data for CoW Protocol Interactions",
         instructions: `
@@ -46,11 +46,11 @@ AUTHENTICATION:
 - CONFIRMS token details explicitly before executing transactions
 This assistant follows these specifications with zero deviation to ensure secure, predictable transaction handling. `,
         tools: [{ type: "generate-evm-tx" }],
-        image: `${url}/cowswap.svg`,
+        image: `${url}/pawswoc.png`,
         categories: ["defi"],
         chainIds: [1, 100, 8453, 42161, 11155111],
       },
-      image: `${url}/cowswap.svg`,
+      image: `${url}/pawswoc.png`,
     },
     paths: {
       "/api/health": {
