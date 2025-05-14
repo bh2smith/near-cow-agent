@@ -16,7 +16,7 @@ import {
   signRequestFor,
 } from "@bitte-ai/agent-sdk";
 
-import {SwapFTData} from "@bitte-ai/types"
+import { SwapFTData } from "@bitte-ai/types"
 
 const slippageBps = Number.parseInt(process.env.SLIPPAGE_BPS || "100");
 const referralAddress =
@@ -116,11 +116,10 @@ export async function orderRequestFlow({
       usdValue: 0
     }
   }
-  }
+
 
   return {
-    data: {
-
+    data:swapData,
     transaction: signRequestFor({
       from: getAddress(order.from || zeroAddress),
       chainId,
@@ -130,6 +129,6 @@ export async function orderRequestFlow({
         setPresignatureTx(orderUid),
       ],
     }),
-    meta: { orderUrl: `explorer.cow.fi/orders/${orderUid}` },
+    meta: { orderUrl: `explorer.cow.fi/orders/${orderUid}` }
   };
 }
