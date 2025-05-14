@@ -16,15 +16,18 @@ import {
   signRequestFor,
 } from "@bitte-ai/agent-sdk";
 
-const slippageBps = parseInt(process.env.SLIPPAGE_BPS || "100");
+import {SwapFTData} from "@bitte-ai/types"
+
+const slippageBps = Number.parseInt(process.env.SLIPPAGE_BPS || "100");
 const referralAddress =
   process.env.REFERRAL_ADDRESS || "0x8d99F8b2710e6A3B94d9bf465A98E5273069aCBd";
 const partnerAddress =
   process.env.PARTNER_ADDRESS || "0x54F08c27e75BeA0cdDdb8aA9D69FD61551B19BbA";
-const partnerBps = parseInt(process.env.PARTNER_BPS || "10");
+const partnerBps = Number.parseInt(process.env.PARTNER_BPS || "10");
 
 export interface OrderResponse {
   transaction: SignRequestData;
+  data: SwapFTData;
   meta: { orderUrl: string };
 }
 
@@ -93,7 +96,31 @@ export async function orderRequestFlow({
   const orderUid = await orderbook.sendOrder(order);
   console.log("Order Posted", orderbook.getOrderLink(orderUid));
 
+  const swapData: SwapFTData = {
+    network: {
+      name: chainId.toString(),
+      icon: ""
+    },
+    txnData: order,
+    type: 'swap',
+    tokenIn: {
+      name: quoteRequest.sellToken,
+      icon: "",
+      amount: quoteResponse.quote.sellAmount,
+      usdValue: 0
+    },
+    tokenOut: {
+      name: quoteRequest.buyToken,
+      icon: "",
+      amount: quoteResponse.quote.buyAmount,
+      usdValue: 0
+    }
+  }
+  }
+
   return {
+    data: {
+
     transaction: signRequestFor({
       from: getAddress(order.from || zeroAddress),
       chainId,
