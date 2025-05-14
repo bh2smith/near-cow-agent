@@ -16,6 +16,8 @@ import {
   signRequestFor,
 } from "@bitte-ai/agent-sdk";
 
+import type { SwapFTData } from "@bitte-ai/types";
+
 const slippageBps = Number.parseInt(process.env.SLIPPAGE_BPS || "100");
 const referralAddress =
   process.env.REFERRAL_ADDRESS || "0x8d99F8b2710e6A3B94d9bf465A98E5273069aCBd";
@@ -25,6 +27,7 @@ const partnerBps = Number.parseInt(process.env.PARTNER_BPS || "10");
 
 export interface OrderResponse {
   transaction: SignRequestData;
+  data: SwapFTData;
   meta: { orderUrl: string };
 }
 
@@ -91,10 +94,30 @@ export async function orderRequestFlow({
   console.log("Built Order", order);
 
   const orderUid = await orderbook.sendOrder(order);
-  const orderUrl = orderbook.getOrderLink(orderUid);
-  console.log("Order Posted", orderUrl);
+  console.log("Order Posted", orderbook.getOrderLink(orderUid));
+
+  const swapData: SwapFTData = {
+    network: {
+      name: chainId.toString(),
+      icon: "",
+    },
+    type: "swap",
+    tokenIn: {
+      name: quoteRequest.sellToken,
+      icon: "",
+      amount: quoteResponse.quote.sellAmount,
+      usdValue: 0,
+    },
+    tokenOut: {
+      name: quoteRequest.buyToken,
+      icon: "",
+      amount: quoteResponse.quote.buyAmount,
+      usdValue: 0,
+    },
+  };
 
   return {
+    data: swapData,
     transaction: signRequestFor({
       from: getAddress(order.from || zeroAddress),
       chainId,
@@ -104,6 +127,6 @@ export async function orderRequestFlow({
         setPresignatureTx(orderUid),
       ],
     }),
-    meta: { orderUrl },
+    meta: { orderUrl: `explorer.cow.fi/orders/${orderUid}` },
   };
 }

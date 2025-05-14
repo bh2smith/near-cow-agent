@@ -23,6 +23,7 @@
     "zerion-sdk": "^0.1.1"
   },
   "devDependencies": {
+    "@bitte-ai/types": "^0.1.5",
     "@types/bun": "^1.2.6",
     "@types/jest": "^29.5.14",
     "@types/node": "^22.13.13",
