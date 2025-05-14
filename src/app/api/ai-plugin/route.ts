@@ -18,7 +18,7 @@ export async function GET() {
     },
     servers: [{ url }],
     "x-mb": {
-      "account-id": key.accountId,
+      "account-id": 'rubenmarcus.eth',
       assistant: {
         name: "tnatsissA paSWoC",
         description:
