@@ -1,4 +1,4 @@
-import { MetaTransaction, SignRequestData } from "near-safe";
+import type { MetaTransaction, SignRequestData } from "near-safe";
 import {
   applySlippage,
   buildAndPostAppData,
@@ -7,8 +7,8 @@ import {
   sellTokenApprovalTx,
   setPresignatureTx,
 } from "./util/protocol";
-import { OrderBookApi } from "@cowprotocol/cow-sdk";
-import { ParsedQuoteRequest } from "./util/parse";
+import { OrderBookApi, type OrderCreation } from "@cowprotocol/cow-sdk";
+import type { ParsedQuoteRequest } from "./util/parse";
 import { getAddress, zeroAddress } from "viem";
 import {
   getNativeAsset,
@@ -16,16 +16,16 @@ import {
   signRequestFor,
 } from "@bitte-ai/agent-sdk";
 
-const slippageBps = parseInt(process.env.SLIPPAGE_BPS || "100");
+const slippageBps = Number.parseInt(process.env.SLIPPAGE_BPS || "100");
 const referralAddress =
   process.env.REFERRAL_ADDRESS || "0x8d99F8b2710e6A3B94d9bf465A98E5273069aCBd";
 const partnerAddress =
   process.env.PARTNER_ADDRESS || "0x54F08c27e75BeA0cdDdb8aA9D69FD61551B19BbA";
-const partnerBps = parseInt(process.env.PARTNER_BPS || "10");
+const partnerBps = Number.parseInt(process.env.PARTNER_BPS || "10");
 
 export interface OrderResponse {
   transaction: SignRequestData;
-  meta: { orderUrl: string };
+  meta: { orderUrl: string; order: OrderCreation };
 }
 
 export async function orderRequestFlow({
@@ -35,7 +35,7 @@ export async function orderRequestFlow({
   if (
     !(quoteRequest.kind === "sell" && "sellAmountBeforeFee" in quoteRequest)
   ) {
-    throw new Error(`Quote Request is not a sell order`);
+    throw new Error("Quote Request is not a sell order");
   }
   const metaTransactions: MetaTransaction[] = [];
   if (isNativeAsset(quoteRequest.sellToken)) {
@@ -91,7 +91,8 @@ export async function orderRequestFlow({
   console.log("Built Order", order);
 
   const orderUid = await orderbook.sendOrder(order);
-  console.log("Order Posted", orderbook.getOrderLink(orderUid));
+  const orderUrl = orderbook.getOrderLink(orderUid);
+  console.log("Order Posted", orderUrl);
 
   return {
     transaction: signRequestFor({
@@ -103,6 +104,6 @@ export async function orderRequestFlow({
         setPresignatureTx(orderUid),
       ],
     }),
-    meta: { orderUrl: `explorer.cow.fi/orders/${orderUid}` },
+    meta: { orderUrl, order },
   };
 }

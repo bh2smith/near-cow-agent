@@ -1,6 +1,6 @@
 import { parseQuoteRequest } from "@/src/app/api/tools/cowswap/util/parse";
 import { type NextRequest, NextResponse } from "next/server";
-import { orderRequestFlow, OrderResponse } from "./orderFlow";
+import { orderRequestFlow, type OrderResponse } from "./orderFlow";
 import { validateNextRequest, getZerionKey, getTokenMap } from "../util";
 import { handleRequest } from "@bitte-ai/agent-sdk";
 

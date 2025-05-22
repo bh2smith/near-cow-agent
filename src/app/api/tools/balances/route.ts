@@ -1,15 +1,14 @@
-import { NextRequest, NextResponse } from "next/server";
-import { Address } from "viem";
+import { type NextRequest, NextResponse } from "next/server";
+import type { Address } from "viem";
 import { getZerionKey, validateNextRequest } from "../util";
 import {
   addressField,
-  FieldParser,
   getSafeBalances,
   handleRequest,
   numberField,
-  TokenBalance,
   validateInput,
 } from "@bitte-ai/agent-sdk";
+import type { TokenBalance, FieldParser } from "@bitte-ai/agent-sdk";
 
 interface Input {
   chainId: number;
