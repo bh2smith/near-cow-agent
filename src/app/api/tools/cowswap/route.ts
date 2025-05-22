@@ -23,5 +23,8 @@ async function logic(req: NextRequest): Promise<OrderResponse> {
     getZerionKey(),
   );
   console.log("POST Request for quote:", parsedRequest);
-  return orderRequestFlow(parsedRequest);
+
+  const result = await orderRequestFlow(parsedRequest);
+
+  return result;
 }

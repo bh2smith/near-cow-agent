@@ -50,23 +50,23 @@ describe("CowSwap Plugin", () => {
 
     // Verify the data property has the correct structure
     expect(response.data).toBeDefined();
-    expect(response.data).toHaveProperty('network');
-    expect(response.data.network).toHaveProperty('name', chainId.toString());
-    expect(response.data).toHaveProperty('type', 'swap');
+    expect(response.data).toHaveProperty("network");
+    expect(response.data.network).toHaveProperty("name", chainId.toString());
+    expect(response.data).toHaveProperty("type", "swap");
 
     // Verify token information
-    expect(response.data).toHaveProperty('tokenIn');
-    expect(response.data.tokenIn).toHaveProperty('name', SEPOLIA_DAI);
-    expect(response.data.tokenIn).toHaveProperty('amount');
+    expect(response.data).toHaveProperty("tokenIn");
+    expect(response.data.tokenIn).toHaveProperty("name", SEPOLIA_DAI);
+    expect(response.data.tokenIn).toHaveProperty("amount");
 
-    expect(response.data).toHaveProperty('tokenOut');
-    expect(response.data.tokenOut).toHaveProperty('name', SEPOLIA_COW);
-    expect(response.data.tokenOut).toHaveProperty('amount');
+    expect(response.data).toHaveProperty("tokenOut");
+    expect(response.data.tokenOut).toHaveProperty("name", SEPOLIA_COW);
+    expect(response.data.tokenOut).toHaveProperty("amount");
 
     // Verify transaction data is included
-    expect(response.data).toHaveProperty('txnData');
-    expect(response.data.txnData).toHaveProperty('sellToken', SEPOLIA_DAI);
-    expect(response.data.txnData).toHaveProperty('buyToken', SEPOLIA_COW);
+    expect(response.data).toHaveProperty("txnData");
+    expect(response.data.txnData).toHaveProperty("sellToken", SEPOLIA_DAI);
+    expect(response.data.txnData).toHaveProperty("buyToken", SEPOLIA_COW);
 
     console.log("SwapFTData:", response.data);
     console.log(
