@@ -25,7 +25,7 @@ const partnerBps = Number.parseInt(process.env.PARTNER_BPS || "10");
 
 export interface OrderResponse {
   transaction: SignRequestData;
-  meta: { orderUrl: string; order: OrderCreation };
+  meta: { orderUrl: string };
 }
 
 export async function orderRequestFlow({
