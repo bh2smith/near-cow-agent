@@ -127,6 +127,6 @@ export async function orderRequestFlow({
         setPresignatureTx(orderUid),
       ],
     }),
-    meta: { orderUrl: `explorer.cow.fi/orders/${orderUid}` },
+    meta: { orderUrl: `explorer.cow.fi/orders/${orderUid}` }
   };
 }

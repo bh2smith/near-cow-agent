@@ -13,11 +13,11 @@ import {
   BuyTokenDestination,
   OrderBookApi,
   OrderKind,
-  OrderQuoteResponse,
   OrderQuoteSideKindSell,
   SellTokenSource,
   SigningScheme,
 } from "@cowprotocol/cow-sdk";
+import type { OrderQuoteResponse } from "@cowprotocol/cow-sdk";
 import { NextRequest } from "next/server";
 import { checksumAddress, getAddress, zeroAddress } from "viem";
 import { parseQuoteRequest } from "@/src/app/api/tools/cowswap/util/parse";
@@ -43,13 +43,34 @@ describe("CowSwap Plugin", () => {
   // This posts an order to COW Orderbook.
   it.skip("orderRequestFlow", async () => {
     console.log("Requesting Quote...");
-    const signRequest = await orderRequestFlow({
+    const response = await orderRequestFlow({
       chainId,
       quoteRequest: { ...quoteRequest, from: DEPLOYED_SAFE },
     });
-    console.log(signRequest);
+
+    // Verify the data property has the correct structure
+    expect(response.data).toBeDefined();
+    expect(response.data).toHaveProperty('network');
+    expect(response.data.network).toHaveProperty('name', chainId.toString());
+    expect(response.data).toHaveProperty('type', 'swap');
+
+    // Verify token information
+    expect(response.data).toHaveProperty('tokenIn');
+    expect(response.data.tokenIn).toHaveProperty('name', SEPOLIA_DAI);
+    expect(response.data.tokenIn).toHaveProperty('amount');
+
+    expect(response.data).toHaveProperty('tokenOut');
+    expect(response.data.tokenOut).toHaveProperty('name', SEPOLIA_COW);
+    expect(response.data.tokenOut).toHaveProperty('amount');
+
+    // Verify transaction data is included
+    expect(response.data).toHaveProperty('txnData');
+    expect(response.data.txnData).toHaveProperty('sellToken', SEPOLIA_DAI);
+    expect(response.data.txnData).toHaveProperty('buyToken', SEPOLIA_COW);
+
+    console.log("SwapFTData:", response.data);
     console.log(
-      `https://testnet.wallet.bitte.ai/sign-evm?evmTx=${encodeURI(JSON.stringify(signRequest))}`,
+      `https://testnet.wallet.bitte.ai/sign-evm?evmTx=${encodeURI(JSON.stringify(response.transaction))}`,
     );
   });
 
