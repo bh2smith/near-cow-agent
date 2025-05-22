@@ -9,7 +9,9 @@
     "start": "next start",
     "lint": "next lint && prettier --check '{src/app,tests}/**/*.{js,jsx,ts,tsx}'",
     "fmt": "next lint --fix && prettier --write '{src/app,tests}/**/*.{js,jsx,ts,tsx}'",
-    "test": "jest --config jest.config.ts"
+    "test": "jest --config jest.config.ts",
+    "build:deploy": "next build && make-agent deploy -u https://tnatsissa-paswoc.vercel.app"
+
   },
   "dependencies": {
     "@bitte-ai/agent-sdk": "^0.1.9",
@@ -23,7 +25,7 @@
     "zerion-sdk": "^0.1.1"
   },
   "devDependencies": {
-    "@bitte-ai/types": "^0.1.5",
+    "@bitte-ai/types": "^0.2.3",
     "@types/bun": "^1.2.6",
     "@types/jest": "^29.5.14",
     "@types/node": "^22.13.13",

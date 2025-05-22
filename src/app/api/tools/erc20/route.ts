@@ -10,10 +10,23 @@ import {
   signRequestFor,
   getTokenDetails,
   handleRequest,
+<<<<<<< HEAD
   type TxData,
 } from "@bitte-ai/agent-sdk";
 import { type NextRequest, NextResponse } from "next/server";
+=======
+  type TxData as OriginalTxData,
+} from "@bitte-ai/agent-sdk";
+import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
+>>>>>>> 166b812 (adjust payloads)
 import { getTokenMap } from "../util";
+import type { TransferFTData } from "@bitte-ai/types";
+
+// Extend TxData to include data property
+interface TxData extends OriginalTxData {
+  data?: TransferFTData;
+}
 
 interface Input {
   chainId: number;
@@ -54,7 +67,25 @@ async function logic(req: NextRequest): Promise<TxData> {
   }
   const { symbol, decimals, address } = tokenDetails;
   console.log("erc20/ tokenDetails", chainId, symbol, decimals, address);
+
+  const transferData: TransferFTData = {
+    network: {
+      name: chainId.toString(),
+      icon: "",
+    },
+    type: "transfer-ft",
+    sender:address,
+    receiver: recipient,
+    token: {
+      name: symbol,
+      icon: "",
+      amount: amount.toString(),
+      usdValue: 0,
+    },
+  };
+
   return {
+    data: transferData,
     transaction: signRequestFor({
       chainId,
       metaTransactions: [

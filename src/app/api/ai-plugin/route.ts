@@ -12,7 +12,7 @@ export async function GET() {
   const pluginData = {
     openapi: "3.0.0",
     info: {
-      title: "tnatsissA paSWoC",
+      title: "https://bitte.ai/agents?isPlayground=true",
       description: "API for interactions with CoW Protocol",
       version: "1.0.0",
     },
