@@ -104,6 +104,6 @@ export async function orderRequestFlow({
         setPresignatureTx(orderUid),
       ],
     }),
-    meta: { orderUrl, order },
+    meta: { orderUrl },
   };
 }
