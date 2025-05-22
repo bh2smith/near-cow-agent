@@ -9,7 +9,7 @@ import {
 } from "./util/protocol";
 import { OrderBookApi } from "@cowprotocol/cow-sdk";
 import type { ParsedQuoteRequest } from "./util/parse";
-import { getAddress, zeroAddress } from "viem";
+import { getAddress, zeroAddress, formatUnits } from "viem";
 import {
   getNativeAsset,
   wrapMetaTransaction,
@@ -97,6 +97,22 @@ export async function orderRequestFlow({
   const orderUid = await orderbook.sendOrder(order);
   console.log("Order Posted", orderbook.getOrderLink(orderUid));
 
+  // Get token decimals - typically 18 for most ERC20 tokens, but can vary
+  // For a production app, you would fetch this from a token registry or contract
+  const sellTokenDecimals = isNativeAsset(quoteRequest.sellToken) ? 18 : 18; // Default to 18, replace with actual fetch
+  const buyTokenDecimals = 18; // Default to 18, replace with actual fetch
+
+  // Format amounts with appropriate decimals
+  const formattedSellAmount = formatUnits(
+    BigInt(quoteResponse.quote.sellAmount),
+    sellTokenDecimals
+  );
+
+  const formattedBuyAmount = formatUnits(
+    BigInt(quoteResponse.quote.buyAmount),
+    buyTokenDecimals
+  );
+
   const swapData: SwapFTData = {
     network: {
       name: chainId.toString(),
@@ -106,13 +122,13 @@ export async function orderRequestFlow({
     tokenIn: {
       name: quoteRequest.sellToken,
       icon: "",
-      amount: quoteResponse.quote.sellAmount,
+      amount: formattedSellAmount,
       usdValue: 0,
     },
     tokenOut: {
       name: quoteRequest.buyToken,
       icon: "",
-      amount: quoteResponse.quote.buyAmount,
+      amount: formattedBuyAmount,
       usdValue: 0,
     },
   };
