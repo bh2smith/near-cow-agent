@@ -40,8 +40,8 @@ const quoteRequest = {
 };
 
 describe("CowSwap Plugin", () => {
-  // This posts an order to COW Orderbook.
-  it.skip("orderRequestFlow", async () => {
+  // This posts an order to COW Orderbook and validates the response format
+  it("orderRequestFlow returns valid swap data", async () => {
     console.log("Requesting Quote...");
     const response = await orderRequestFlow({
       chainId,
@@ -65,42 +65,6 @@ describe("CowSwap Plugin", () => {
     expect(response.data.tokenOut).toHaveProperty("name", "COW");
     expect(response.data.tokenOut).toHaveProperty("amount");
 
-    // Verify the final response has a transaction property
-    expect(response).toHaveProperty("transaction");
-
-    console.log("SwapFTData:", response.data);
-    console.log(
-      `https://testnet.wallet.bitte.ai/sign-evm?evmTx=${encodeURI(JSON.stringify(response.transaction))}`,
-    );
-  });
-
-  // Test with real data to validate swap data
-  it("orderRequestFlow returns valid swap data with real API call", async () => {
-    console.log("Requesting Quote for swap data validation...");
-
-    // Make a real call to orderRequestFlow
-    const response = await orderRequestFlow({
-      chainId,
-      quoteRequest: { ...quoteRequest, from: DEPLOYED_SAFE },
-      buyTokenData: { address: SEPOLIA_COW, decimals: 18, symbol: "COW" },
-      sellTokenData: { address: SEPOLIA_DAI, decimals: 18, symbol: "DAI" },
-    });
-
-    // Validate swap data structure
-    expect(response.data).toBeDefined();
-    expect(response.data).toHaveProperty("network");
-    expect(response.data.network).toHaveProperty("name", chainId.toString());
-    expect(response.data).toHaveProperty("type", "swap");
-
-    // Validate token information
-    expect(response.data).toHaveProperty("tokenIn");
-    expect(response.data.tokenIn).toHaveProperty("name", "DAI");
-    expect(response.data.tokenIn).toHaveProperty("amount");
-
-    expect(response.data).toHaveProperty("tokenOut");
-    expect(response.data.tokenOut).toHaveProperty("name", "COW");
-    expect(response.data.tokenOut).toHaveProperty("amount");
-
     // Validate amount formats and values
     expect(typeof response.data.tokenIn.amount).toBe("string");
     expect(typeof response.data.tokenOut.amount).toBe("string");
@@ -111,9 +75,6 @@ describe("CowSwap Plugin", () => {
 
     // We now know the API returns a formatted amount like "2" instead of "2000000000000000000"
     // So we can't directly compare with the input
-    // expect(response.data.tokenIn.amount).toBe(quoteRequest.sellAmountBeforeFee);
-
-    // Instead, check that the output is consistent with ETH units (2 = 2 ETH = 2000000000000000000 wei)
     const inAmount = Number.parseFloat(response.data.tokenIn.amount);
     expect(inAmount).toBe(2); // 2 ETH
 
@@ -129,11 +90,10 @@ describe("CowSwap Plugin", () => {
       expect(/^\d+$/.test(fee.amount)).toBe(true);
     }
 
-    // Validate transaction object
+    // Verify the final response has a transaction property
     expect(response).toHaveProperty("transaction");
 
-    // The transaction appears to be structured differently
-    // It has chainId, method and params properties
+    // Validate transaction object structure
     const tx = response.transaction as unknown as {
       chainId: number;
       method: string;
@@ -157,6 +117,11 @@ describe("CowSwap Plugin", () => {
       expect(tx.params[0]).toHaveProperty("from");
       expect(tx.params[0]).toHaveProperty("value");
     }
+
+    console.log("SwapFTData:", response.data);
+    console.log(
+      `https://testnet.wallet.bitte.ai/sign-evm?evmTx=${encodeURI(JSON.stringify(response.transaction))}`,
+    );
   });
 
   it("applySlippage", async () => {
