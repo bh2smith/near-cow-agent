@@ -18,7 +18,6 @@ import {
 
 import type { SwapFTData } from "@bitte-ai/types";
 
-
 const slippageBps = Number.parseInt(process.env.SLIPPAGE_BPS || "100");
 const referralAddress =
   process.env.REFERRAL_ADDRESS || "0x8d99F8b2710e6A3B94d9bf465A98E5273069aCBd";
@@ -97,24 +96,22 @@ export async function orderRequestFlow({
   const orderUid = await orderbook.sendOrder(order);
   console.log("Order Posted", orderbook.getOrderLink(orderUid));
 
-
   const sellTokenDecimals = isNativeAsset(quoteRequest.sellToken) ? 18 : 18; // Default to 18, replace with actual fetch
   const buyTokenDecimals = 18; // Default to 18, replace with actual fetch
 
   // Format amounts with appropriate decimals
   const formattedSellAmount = formatUnits(
     BigInt(quoteResponse.quote.sellAmount),
-    sellTokenDecimals
+    sellTokenDecimals,
   );
 
   const formattedBuyAmount = formatUnits(
     BigInt(quoteResponse.quote.buyAmount),
-    buyTokenDecimals
+    buyTokenDecimals,
   );
 
-
   return {
-    data:  {
+    data: {
       network: {
         name: chainId.toString(),
         icon: "",

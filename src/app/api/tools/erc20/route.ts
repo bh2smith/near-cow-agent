@@ -69,7 +69,7 @@ async function logic(req: NextRequest): Promise<TxData> {
         icon: "",
       },
       type: "transfer-ft",
-      sender:address,
+      sender: address,
       receiver: recipient,
       token: {
         name: symbol,
