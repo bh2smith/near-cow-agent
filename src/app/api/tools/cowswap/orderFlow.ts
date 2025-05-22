@@ -97,8 +97,7 @@ export async function orderRequestFlow({
   const orderUid = await orderbook.sendOrder(order);
   console.log("Order Posted", orderbook.getOrderLink(orderUid));
 
-  // Get token decimals - typically 18 for most ERC20 tokens, but can vary
-  // For a production app, you would fetch this from a token registry or contract
+
   const sellTokenDecimals = isNativeAsset(quoteRequest.sellToken) ? 18 : 18; // Default to 18, replace with actual fetch
   const buyTokenDecimals = 18; // Default to 18, replace with actual fetch
 
@@ -113,28 +112,27 @@ export async function orderRequestFlow({
     buyTokenDecimals
   );
 
-  const swapData: SwapFTData = {
-    network: {
-      name: chainId.toString(),
-      icon: "",
-    },
-    type: "swap",
-    tokenIn: {
-      name: quoteRequest.sellToken,
-      icon: "",
-      amount: formattedSellAmount,
-      usdValue: 0,
-    },
-    tokenOut: {
-      name: quoteRequest.buyToken,
-      icon: "",
-      amount: formattedBuyAmount,
-      usdValue: 0,
-    },
-  };
 
   return {
-    data: swapData,
+    data:  {
+      network: {
+        name: chainId.toString(),
+        icon: "",
+      },
+      type: "swap",
+      tokenIn: {
+        name: quoteRequest.sellToken,
+        icon: "",
+        amount: formattedSellAmount,
+        usdValue: 0,
+      },
+      tokenOut: {
+        name: quoteRequest.buyToken,
+        icon: "",
+        amount: formattedBuyAmount,
+        usdValue: 0,
+      },
+    },
     transaction: signRequestFor({
       from: getAddress(order.from || zeroAddress),
       chainId,
