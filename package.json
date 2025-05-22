@@ -9,9 +9,7 @@
     "start": "next start",
     "lint": "next lint && prettier --check '{src/app,tests}/**/*.{js,jsx,ts,tsx}'",
     "fmt": "next lint --fix && prettier --write '{src/app,tests}/**/*.{js,jsx,ts,tsx}'",
-    "test": "jest --config jest.config.ts",
-    "build:deploy": "next build && make-agent deploy -u https://tnatsissa-paswoc.vercel.app"
-
+    "test": "jest --config jest.config.ts"
   },
   "dependencies": {
     "@bitte-ai/agent-sdk": "^0.1.9",
