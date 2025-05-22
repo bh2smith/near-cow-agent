@@ -10,7 +10,7 @@ import {
   signRequestFor,
   getTokenDetails,
   handleRequest,
-  type TxData as OriginalTxData,
+  type TxData as BaseTxData,
 } from "@bitte-ai/agent-sdk";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
@@ -18,7 +18,7 @@ import { getTokenMap } from "../util";
 import type { TransferFTData } from "@bitte-ai/types";
 
 // Extend TxData to include data property
-interface TxData extends OriginalTxData {
+interface TxData extends BaseTxData {
   data?: TransferFTData;
 }
 

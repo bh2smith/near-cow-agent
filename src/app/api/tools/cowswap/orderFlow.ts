@@ -98,20 +98,7 @@ export async function orderRequestFlow({
   const orderUid = await orderbook.sendOrder(order);
   console.log("Order Posted", orderbook.getOrderLink(orderUid));
 
-  // Use the actual token decimals from the token data
-  const sellTokenDecimals = sellTokenData.decimals;
-  const buyTokenDecimals = buyTokenData.decimals;
-
-  // Format amounts with appropriate decimals
-  const formattedSellAmount = formatUnits(
-    BigInt(quoteResponse.quote.sellAmount),
-    sellTokenDecimals,
-  );
-
-  const formattedBuyAmount = formatUnits(
-    BigInt(quoteResponse.quote.buyAmount),
-    buyTokenDecimals,
-  );
+  const orderUrl = orderbook.getOrderLink(orderUid);
 
   return {
     data: {
@@ -123,13 +110,19 @@ export async function orderRequestFlow({
       tokenIn: {
         name: sellTokenData.symbol,
         icon: "",
-        amount: formattedSellAmount,
+        amount: formatUnits(
+          BigInt(quoteResponse.quote.sellAmount),
+          sellTokenData.decimals,
+        ),
         usdValue: 0,
       },
       tokenOut: {
         name: buyTokenData.symbol,
         icon: "",
-        amount: formattedBuyAmount,
+        amount: formatUnits(
+          BigInt(quoteResponse.quote.buyAmount),
+          buyTokenData.decimals,
+        ),
         usdValue: 0,
       },
     },
@@ -142,6 +135,6 @@ export async function orderRequestFlow({
         setPresignatureTx(orderUid),
       ],
     }),
-    meta: { orderUrl: `explorer.cow.fi/orders/${orderUid}` },
+    meta: { orderUrl },
   };
 }

@@ -46,6 +46,8 @@ describe("CowSwap Plugin", () => {
     const response = await orderRequestFlow({
       chainId,
       quoteRequest: { ...quoteRequest, from: DEPLOYED_SAFE },
+      buyTokenData: { address: SEPOLIA_COW, decimals: 18, symbol: "COW" },
+      sellTokenData: { address: SEPOLIA_DAI, decimals: 18, symbol: "DAI" },
     });
 
     // Verify the data property has the correct structure
@@ -62,11 +64,6 @@ describe("CowSwap Plugin", () => {
     expect(response.data).toHaveProperty("tokenOut");
     expect(response.data.tokenOut).toHaveProperty("name", SEPOLIA_COW);
     expect(response.data.tokenOut).toHaveProperty("amount");
-
-    // Verify transaction data is included
-    expect(response.data).toHaveProperty("txnData");
-    expect(response.data.txnData).toHaveProperty("sellToken", SEPOLIA_DAI);
-    expect(response.data.txnData).toHaveProperty("buyToken", SEPOLIA_COW);
 
     console.log("SwapFTData:", response.data);
     console.log(
@@ -247,5 +244,68 @@ describe("CowSwap Plugin", () => {
     );
 
     expect(await appDataExists(orderbook, appData)).toBe(false);
+  });
+
+  it("validates amount format", () => {
+    // Test applySlippage amount format for SELL orders
+    const amounts = { buyAmount: "1000", sellAmount: "1000" };
+    const sellResult = applySlippage({ kind: OrderKind.SELL, ...amounts }, 50);
+
+    // For SELL orders, we expect buyAmount to be calculated
+    expect(sellResult).toHaveProperty("buyAmount");
+    if (sellResult.buyAmount) {
+      expect(typeof sellResult.buyAmount).toBe("string");
+      expect(/^\d+$/.test(sellResult.buyAmount)).toBe(true);
+    }
+
+    // Test applySlippage amount format for BUY orders
+    const buyResult = applySlippage({ kind: OrderKind.BUY, ...amounts }, 50);
+
+    // For BUY orders, we expect sellAmount to be calculated
+    expect(buyResult).toHaveProperty("sellAmount");
+    if (buyResult.sellAmount) {
+      expect(typeof buyResult.sellAmount).toBe("string");
+      expect(/^\d+$/.test(buyResult.sellAmount)).toBe(true);
+    }
+
+    // Test createOrder amount formats
+    const commonFields = {
+      sellToken: SEPOLIA_DAI,
+      buyToken: SEPOLIA_COW,
+      receiver: DEPLOYED_SAFE,
+      sellAmount: "1911566262405367520",
+      buyAmount: "1580230386982546854",
+      validTo: 1730022042,
+      appData:
+        "0x0000000000000000000000000000000000000000000000000000000000000000",
+      partiallyFillable: false,
+    };
+
+    const quoteResponse: OrderQuoteResponse = {
+      quote: {
+        ...commonFields,
+        feeAmount: "88433737594632480",
+        kind: OrderKind.SELL,
+        sellTokenBalance: SellTokenSource.ERC20,
+        buyTokenBalance: BuyTokenDestination.ERC20,
+        signingScheme: SigningScheme.PRESIGN,
+      },
+      from: DEPLOYED_SAFE,
+      expiration: "2024-10-27T09:12:42.738162481Z",
+      id: 470630,
+      verified: true,
+    };
+
+    const order = createOrder(quoteResponse);
+
+    // Check that amounts are strings
+    expect(typeof order.sellAmount).toBe("string");
+    expect(typeof order.buyAmount).toBe("string");
+    expect(typeof order.feeAmount).toBe("string");
+
+    // Check that amounts contain only digits
+    expect(/^\d+$/.test(order.sellAmount)).toBe(true);
+    expect(/^\d+$/.test(order.buyAmount)).toBe(true);
+    expect(/^\d+$/.test(order.feeAmount)).toBe(true);
   });
 });

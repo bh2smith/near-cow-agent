@@ -24,7 +24,5 @@ async function logic(req: NextRequest): Promise<OrderResponse> {
   );
   console.log("POST Request for quote:", parsedRequest);
 
-  const result = await orderRequestFlow(parsedRequest);
-
-  return result;
+  return orderRequestFlow(parsedRequest);
 }
