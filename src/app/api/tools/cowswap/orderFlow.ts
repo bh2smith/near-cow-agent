@@ -96,8 +96,6 @@ export async function orderRequestFlow({
   console.log("Built Order", order);
 
   const orderUid = await orderbook.sendOrder(order);
-  console.log("Order Posted", orderbook.getOrderLink(orderUid));
-
   const orderUrl = orderbook.getOrderLink(orderUid);
 
   return {
