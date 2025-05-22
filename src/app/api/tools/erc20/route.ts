@@ -10,16 +10,10 @@ import {
   signRequestFor,
   getTokenDetails,
   handleRequest,
-<<<<<<< HEAD
-  type TxData,
-} from "@bitte-ai/agent-sdk";
-import { type NextRequest, NextResponse } from "next/server";
-=======
   type TxData as OriginalTxData,
 } from "@bitte-ai/agent-sdk";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
->>>>>>> 166b812 (adjust payloads)
 import { getTokenMap } from "../util";
 import type { TransferFTData } from "@bitte-ai/types";
 
