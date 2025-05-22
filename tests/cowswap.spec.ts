@@ -65,10 +65,6 @@ describe("CowSwap Plugin", () => {
     expect(response.data.tokenOut).toHaveProperty("name", "COW");
     expect(response.data.tokenOut).toHaveProperty("amount");
 
-    // Verify the token amounts are formatted as expected
-    expect(typeof response.data.tokenIn.amount).toBe("string");
-    expect(typeof response.data.tokenOut.amount).toBe("string");
-
     // Verify the final response has a transaction property
     expect(response).toHaveProperty("transaction");
 
@@ -109,10 +105,6 @@ describe("CowSwap Plugin", () => {
     expect(typeof response.data.tokenIn.amount).toBe("string");
     expect(typeof response.data.tokenOut.amount).toBe("string");
 
-    // Actual value from API could be formatted differently, log to check
-    console.log("TokenIn amount:", response.data.tokenIn.amount);
-    console.log("TokenOut amount:", response.data.tokenOut.amount);
-
     // Check if the amount exists but possibly in a different format
     expect(response.data.tokenIn.amount).toBeTruthy();
     expect(response.data.tokenOut.amount).toBeTruthy();
@@ -139,7 +131,6 @@ describe("CowSwap Plugin", () => {
 
     // Validate transaction object
     expect(response).toHaveProperty("transaction");
-    console.log("Transaction structure:", JSON.stringify(response.transaction));
 
     // The transaction appears to be structured differently
     // It has chainId, method and params properties
@@ -166,16 +157,6 @@ describe("CowSwap Plugin", () => {
       expect(tx.params[0]).toHaveProperty("from");
       expect(tx.params[0]).toHaveProperty("value");
     }
-
-    // Log the actual response for inspection
-    console.log("SwapFTData response:", {
-      tokenIn: response.data.tokenIn,
-      tokenOut: response.data.tokenOut,
-      fee: "fee" in response.data ? response.data.fee : null,
-    });
-
-    // Log transaction details
-    console.log("Transaction details available in response");
   });
 
   it("applySlippage", async () => {
