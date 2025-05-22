@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { unstable_cache } from "next/cache";
 import {
   loadTokenMap,
   validateRequest,
-  BlockchainMapping,
+  type BlockchainMapping,
 } from "@bitte-ai/agent-sdk";
 
 export async function validateNextRequest(

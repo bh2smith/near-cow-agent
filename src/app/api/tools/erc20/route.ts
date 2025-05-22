@@ -10,9 +10,9 @@ import {
   signRequestFor,
   getTokenDetails,
   handleRequest,
-  TxData,
+  type TxData,
 } from "@bitte-ai/agent-sdk";
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { getTokenMap } from "../util";
 
 interface Input {

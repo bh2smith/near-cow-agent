@@ -1,15 +1,14 @@
-import { NextRequest } from "next/server";
+import type { NextRequest } from "next/server";
 import {
-  OrderQuoteRequest,
+  type OrderQuoteRequest,
   OrderQuoteSideKindSell,
   SigningScheme,
 } from "@cowprotocol/cow-sdk";
 import { getAddress, isAddress, parseUnits } from "viem";
 import { NATIVE_ASSET } from "./protocol";
-import {
+import { getSafeBalances, getTokenDetails } from "@bitte-ai/agent-sdk";
+import type {
   BlockchainMapping,
-  getSafeBalances,
-  getTokenDetails,
   TokenBalance,
   TokenInfo,
 } from "@bitte-ai/agent-sdk";

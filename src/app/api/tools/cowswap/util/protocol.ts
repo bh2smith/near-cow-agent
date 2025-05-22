@@ -1,22 +1,22 @@
 import {
-  Address,
+  type Address,
   encodeFunctionData,
   getAddress,
-  Hex,
+  type Hex,
   isHex,
   keccak256,
   parseAbi,
   toBytes,
 } from "viem";
 import {
-  OrderBookApi,
-  OrderCreation,
-  OrderQuoteResponse,
+  type OrderBookApi,
+  type OrderCreation,
+  type OrderQuoteResponse,
   SigningScheme,
-  OrderParameters,
+  type OrderParameters,
   OrderKind,
 } from "@cowprotocol/cow-sdk";
-import { getClient, MetaTransaction } from "near-safe";
+import { getClient, type MetaTransaction } from "near-safe";
 import stringify from "json-stringify-deterministic";
 
 const MAX_APPROVAL = BigInt(
