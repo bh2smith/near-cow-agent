@@ -34,6 +34,8 @@ export interface OrderResponse {
 export async function orderRequestFlow({
   chainId,
   quoteRequest,
+  buyTokenData,
+  sellTokenData,
 }: ParsedQuoteRequest): Promise<OrderResponse> {
   if (
     !(quoteRequest.kind === "sell" && "sellAmountBeforeFee" in quoteRequest)
@@ -96,8 +98,9 @@ export async function orderRequestFlow({
   const orderUid = await orderbook.sendOrder(order);
   console.log("Order Posted", orderbook.getOrderLink(orderUid));
 
-  const sellTokenDecimals = isNativeAsset(quoteRequest.sellToken) ? 18 : 18; // Default to 18, replace with actual fetch
-  const buyTokenDecimals = 18; // Default to 18, replace with actual fetch
+  // Use the actual token decimals from the token data
+  const sellTokenDecimals = sellTokenData.decimals;
+  const buyTokenDecimals = buyTokenData.decimals;
 
   // Format amounts with appropriate decimals
   const formattedSellAmount = formatUnits(
@@ -118,13 +121,13 @@ export async function orderRequestFlow({
       },
       type: "swap",
       tokenIn: {
-        name: quoteRequest.sellToken,
+        name: sellTokenData.symbol,
         icon: "",
         amount: formattedSellAmount,
         usdValue: 0,
       },
       tokenOut: {
-        name: quoteRequest.buyToken,
+        name: buyTokenData.symbol,
         icon: "",
         amount: formattedBuyAmount,
         usdValue: 0,
