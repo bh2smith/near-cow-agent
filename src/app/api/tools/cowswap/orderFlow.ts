@@ -7,7 +7,7 @@ import {
   sellTokenApprovalTx,
   setPresignatureTx,
 } from "./util/protocol";
-import { OrderBookApi, type OrderCreation } from "@cowprotocol/cow-sdk";
+import { OrderBookApi } from "@cowprotocol/cow-sdk";
 import type { ParsedQuoteRequest } from "./util/parse";
 import { getAddress, zeroAddress } from "viem";
 import {
