@@ -13,6 +13,7 @@ import {
   BuyTokenDestination,
   OrderBookApi,
   OrderKind,
+  OrderParameters,
   OrderQuoteResponse,
   OrderQuoteSideKindSell,
   SellTokenSource,
@@ -22,6 +23,7 @@ import { NextRequest } from "next/server";
 import { checksumAddress, getAddress, zeroAddress } from "viem";
 import { parseQuoteRequest } from "@/src/app/api/tools/cowswap/util/parse";
 import { loadTokenMap } from "@bitte-ai/agent-sdk";
+import { parseSwapData } from "@/src/app/api/tools/cowswap/util/ui";
 
 const SEPOLIA_DAI = getAddress("0xb4f1737af37711e9a5890d9510c9bb60e170cb0d");
 const SEPOLIA_COW = getAddress("0x0625afb445c3b6b7b929342a04a22599fd5dbb59");
@@ -238,5 +240,54 @@ describe("CowSwap Plugin", () => {
     );
 
     expect(await appDataExists(orderbook, appData)).toBe(false);
+  });
+
+  it("parseSwapData", async () => {
+    const quote: OrderParameters = {
+      sellToken: SEPOLIA_DAI,
+      buyToken: SEPOLIA_COW,
+      sellAmount: "123456789101112131415161718192345",
+      buyAmount: "9876543234567",
+      validTo: 0,
+      appData: "",
+      feeAmount: "",
+      kind: OrderKind.BUY,
+      partiallyFillable: false,
+    };
+    const swapData = parseSwapData({
+      chainId: 100,
+      tokenData: {
+        sell: {
+          address: SEPOLIA_DAI,
+          decimals: 18,
+          symbol: "DAI",
+        },
+        buy: {
+          address: SEPOLIA_COW,
+          decimals: 6,
+          symbol: "COW",
+        },
+      },
+      quote,
+    });
+    expect(swapData).toStrictEqual({
+      network: {
+        name: "100",
+        icon: "",
+      },
+      type: "swap",
+      tokenIn: {
+        name: "DAI",
+        icon: "",
+        amount: "123456789101112.131415161718192345",
+        usdValue: 0,
+      },
+      tokenOut: {
+        name: "COW",
+        icon: "",
+        amount: "9876543.234567",
+        usdValue: 0,
+      },
+    });
   });
 });
