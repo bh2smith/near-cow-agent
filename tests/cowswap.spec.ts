@@ -161,21 +161,21 @@ describe("CowSwap Plugin", () => {
       data: expect.objectContaining({
         network: expect.objectContaining({
           name: "11155111",
-          icon: ""
+          icon: "",
         }),
         type: "swap",
         tokenIn: expect.objectContaining({
           name: "DAI",
           amount: "2",
           icon: "",
-          usdValue: 0
+          usdValue: 0,
         }),
         tokenOut: expect.objectContaining({
           name: "COW",
           amount: "1.564428083112721385",
           icon: "",
-          usdValue: 0
-        })
+          usdValue: 0,
+        }),
       }),
       meta: {
         orderUrl: mockOrderLink,
@@ -286,7 +286,7 @@ describe("CowSwap Plugin", () => {
         sellToken: zeroAddress, // Not a token
         sellAmount: "100",
         chainId,
-      })
+      }),
     ).rejects.toThrow("Not a valid token");
   });
 
@@ -321,13 +321,17 @@ describe("CowSwap Plugin", () => {
     const result = await parseQuoteRequest(request, tokenMap);
 
     // Test most values directly without the sellAmountBeforeFee field that we'll check separately
-    expect(result.chainId).toBe(11155111);
-    expect(result.quoteRequest.buyToken).toBe(SEPOLIA_COW);
-    expect(result.quoteRequest.from).toBe(DEPLOYED_SAFE);
-    expect(result.quoteRequest.kind).toBe("sell");
-    expect(result.quoteRequest.receiver).toBe(DEPLOYED_SAFE);
-    expect(result.quoteRequest.sellToken).toBe(SEPOLIA_DAI);
-    expect(result.quoteRequest.signingScheme).toBe("presign");
+    expect(result).toMatchObject({
+      chainId: 11155111,
+      quoteRequest: {
+        buyToken: SEPOLIA_COW,
+        from: DEPLOYED_SAFE,
+        kind: "sell",
+        receiver: DEPLOYED_SAFE,
+        sellToken: SEPOLIA_DAI,
+        signingScheme: "presign",
+      },
+    });
 
     // Check that sellAmountBeforeFee has 36 digits (18 original + 18 from parseUnits)
     const parsedQuoteRequest = result.quoteRequest as CowswapQuoteRequest;
