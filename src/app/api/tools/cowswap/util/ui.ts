@@ -9,7 +9,7 @@ interface SwapDetails {
   quote: OrderParameters;
 }
 
-export function parseSwapData({
+export function parseWidgetData({
   chainId,
   tokenData,
   quote,
