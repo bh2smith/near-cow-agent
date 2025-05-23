@@ -27,13 +27,15 @@ async function logic(
     getZerionKey(),
   );
   console.log("POST Request for quote:", parsedRequest);
-  const result = await orderRequestFlow(parsedRequest);
-  return {
-    ...result,
+  const orderResponse = await orderRequestFlow(parsedRequest);
+  const result = {
+    ...orderResponse,
     data: parseWidgetData({
       chainId: parsedRequest.chainId,
       tokenData: parsedRequest.tokenData,
-      quote: result.meta.quote,
+      quote: orderResponse.meta.quote,
     }),
   };
+  console.log("POST Response for quote:", result);
+  return result;
 }
