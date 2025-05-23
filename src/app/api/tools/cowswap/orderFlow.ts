@@ -93,10 +93,13 @@ export async function orderRequestFlow({
   // Post Unsigned Order to Orderbook (this might be spam if the user doesn't sign)
   console.log("Creating Order with", quoteResponse);
   const order = createOrder(quoteResponse);
+
   console.log("Built Order", order);
 
   const orderUid = await orderbook.sendOrder(order);
   const orderUrl = orderbook.getOrderLink(orderUid);
+  console.log("Order Posted", orderUrl);
+
 
   return {
     data: {
