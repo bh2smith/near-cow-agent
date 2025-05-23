@@ -16,6 +16,8 @@ import type {
 export interface ParsedQuoteRequest {
   quoteRequest: OrderQuoteRequest;
   chainId: number;
+  buyTokenData: TokenInfo;
+  sellTokenData: TokenInfo;
 }
 
 export async function parseQuoteRequest(
@@ -63,6 +65,8 @@ export async function parseQuoteRequest(
       // manually add PRESIGN (since this is a safe);
       signingScheme: SigningScheme.PRESIGN,
     },
+    buyTokenData,
+    sellTokenData,
   };
 }
 

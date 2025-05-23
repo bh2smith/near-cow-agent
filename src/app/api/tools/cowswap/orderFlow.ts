@@ -9,12 +9,14 @@ import {
 } from "./util/protocol";
 import { OrderBookApi } from "@cowprotocol/cow-sdk";
 import type { ParsedQuoteRequest } from "./util/parse";
-import { getAddress, zeroAddress } from "viem";
+import { getAddress, zeroAddress, formatUnits } from "viem";
 import {
   getNativeAsset,
   wrapMetaTransaction,
   signRequestFor,
 } from "@bitte-ai/agent-sdk";
+
+import type { SwapFTData } from "@bitte-ai/types";
 
 const slippageBps = Number.parseInt(process.env.SLIPPAGE_BPS || "100");
 const referralAddress =
@@ -25,12 +27,15 @@ const partnerBps = Number.parseInt(process.env.PARTNER_BPS || "10");
 
 export interface OrderResponse {
   transaction: SignRequestData;
+  data: SwapFTData;
   meta: { orderUrl: string };
 }
 
 export async function orderRequestFlow({
   chainId,
   quoteRequest,
+  buyTokenData,
+  sellTokenData,
 }: ParsedQuoteRequest): Promise<OrderResponse> {
   if (
     !(quoteRequest.kind === "sell" && "sellAmountBeforeFee" in quoteRequest)
@@ -88,6 +93,7 @@ export async function orderRequestFlow({
   // Post Unsigned Order to Orderbook (this might be spam if the user doesn't sign)
   console.log("Creating Order with", quoteResponse);
   const order = createOrder(quoteResponse);
+
   console.log("Built Order", order);
 
   const orderUid = await orderbook.sendOrder(order);
@@ -95,6 +101,31 @@ export async function orderRequestFlow({
   console.log("Order Posted", orderUrl);
 
   return {
+    data: {
+      network: {
+        name: chainId.toString(),
+        icon: "",
+      },
+      type: "swap",
+      tokenIn: {
+        name: sellTokenData.symbol,
+        icon: "",
+        amount: formatUnits(
+          BigInt(quoteResponse.quote.sellAmount),
+          sellTokenData.decimals,
+        ),
+        usdValue: 0,
+      },
+      tokenOut: {
+        name: buyTokenData.symbol,
+        icon: "",
+        amount: formatUnits(
+          BigInt(quoteResponse.quote.buyAmount),
+          buyTokenData.decimals,
+        ),
+        usdValue: 0,
+      },
+    },
     transaction: signRequestFor({
       from: getAddress(order.from || zeroAddress),
       chainId,
