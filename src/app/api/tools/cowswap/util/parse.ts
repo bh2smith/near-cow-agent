@@ -16,15 +16,15 @@ import type {
 export interface ParsedQuoteRequest {
   quoteRequest: OrderQuoteRequest;
   chainId: number;
-  buyTokenData: TokenInfo;
-  sellTokenData: TokenInfo;
 }
 
 export async function parseQuoteRequest(
   req: NextRequest,
   tokenMap: BlockchainMapping,
   zerionKey?: string,
-): Promise<ParsedQuoteRequest> {
+): Promise<
+  ParsedQuoteRequest & { tokenData: { buy: TokenInfo; sell: TokenInfo } }
+> {
   // TODO - Add Type Guard on Request (to determine better if it needs processing below.)
   const requestBody = await req.json();
   console.log("Raw Request Body:", requestBody);
@@ -65,8 +65,10 @@ export async function parseQuoteRequest(
       // manually add PRESIGN (since this is a safe);
       signingScheme: SigningScheme.PRESIGN,
     },
-    buyTokenData,
-    sellTokenData,
+    tokenData: {
+      buy: buyTokenData,
+      sell: sellTokenData,
+    },
   };
 }
 

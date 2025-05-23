@@ -163,15 +163,17 @@ describe("CowSwap Plugin", () => {
         sellToken: SEPOLIA_DAI,
         signingScheme: "presign",
       },
-      sellTokenData: {
-        address: SEPOLIA_DAI,
-        decimals: 18,
-        symbol: "DAI",
-      },
-      buyTokenData: {
-        address: SEPOLIA_COW,
-        decimals: 18,
-        symbol: "COW",
+      tokenData: {
+        sell: {
+          address: SEPOLIA_DAI,
+          decimals: 18,
+          symbol: "DAI",
+        },
+        buy: {
+          address: SEPOLIA_COW,
+          decimals: 18,
+          symbol: "COW",
+        },
       },
     });
   });
