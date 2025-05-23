@@ -100,7 +100,6 @@ export async function orderRequestFlow({
   const orderUrl = orderbook.getOrderLink(orderUid);
   console.log("Order Posted", orderUrl);
 
-
   return {
     data: {
       network: {
