@@ -3,8 +3,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import { orderRequestFlow, type OrderResponse } from "./orderFlow";
 import { validateNextRequest, getZerionKey, getTokenMap } from "../util";
 import { handleRequest } from "@bitte-ai/agent-sdk";
-import type { SwapFTData } from "@bitte-ai/types";
-import { parseWidgetData } from "./util/ui";
+import { parseWidgetData, type SwapFTData } from "./util/ui";
 
 // Refer to https://api.cow.fi/docs/#/ for Specifics on Quoting and Order posting.
 

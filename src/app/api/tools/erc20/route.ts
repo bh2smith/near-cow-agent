@@ -1,4 +1,4 @@
-import { parseUnits, type Address } from "viem";
+import { parseUnits, zeroAddress, type Address } from "viem";
 import {
   erc20Transfer,
   addressField,
@@ -15,7 +15,23 @@ import {
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { getTokenMap } from "../util";
-import type { TransferFTData } from "@bitte-ai/types";
+
+export interface TransferFTData {
+  network: {
+    name: string;
+    icon: string;
+  };
+  type: "transfer-ft";
+  sender: string;
+  receiver: string;
+  token: {
+    address: string;
+    name: string;
+    icon: string;
+    amount: string;
+    usdValue: number;
+  };
+}
 
 // Extend TxData to include data property
 interface TxData extends BaseTxData {
@@ -45,6 +61,9 @@ async function logic(req: NextRequest): Promise<TxData> {
   const url = new URL(req.url);
   const search = url.searchParams;
   console.log("erc20/", search);
+  // The sender is the wallet from the request. Chat should know that already.
+  const sender =
+    JSON.parse(req.headers.get("mb-metadata") || "")?.evmAddress || zeroAddress;
   const {
     chainId,
     amount,
@@ -69,9 +88,10 @@ async function logic(req: NextRequest): Promise<TxData> {
         icon: "",
       },
       type: "transfer-ft",
-      sender: address,
+      sender,
       receiver: recipient,
       token: {
+        address,
         name: symbol,
         icon: "",
         amount: amount.toString(),
