@@ -278,11 +278,11 @@ describe("CowSwap Plugin", () => {
       type: "swap",
       fee: "123",
       tokenIn: {
-        address: SEPOLIA_DAI,
+        contractAddress: SEPOLIA_DAI,
         amount: "123456789101112.131415161718192345",
       },
       tokenOut: {
-        address: SEPOLIA_COW,
+        contractAddress: SEPOLIA_COW,
         amount: "9876543.234567",
       },
     });
