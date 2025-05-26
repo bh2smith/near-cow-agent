@@ -15,23 +15,7 @@ import {
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { getTokenMap } from "../util";
-
-export interface TransferFTData {
-  network: {
-    name: string;
-    icon: string;
-  };
-  type: "transfer-ft";
-  sender: string;
-  receiver: string;
-  token: {
-    address: string;
-    name: string;
-    icon: string;
-    amount: string;
-    usdValue: number;
-  };
-}
+import type { TransferFTData } from "@bitte-ai/types";
 
 // Extend TxData to include data property
 interface TxData extends BaseTxData {
@@ -91,11 +75,13 @@ async function logic(req: NextRequest): Promise<TxData> {
       sender,
       receiver: recipient,
       token: {
-        address,
+        contractAddress: address,
         name: symbol,
         icon: "",
         amount: amount.toString(),
         usdValue: 0,
+        symbol: "",
+        decimals,
       },
     },
     transaction: signRequestFor({

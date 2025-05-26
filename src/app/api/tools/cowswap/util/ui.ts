@@ -1,6 +1,7 @@
 import type { TokenInfo } from "@bitte-ai/agent-sdk";
 import type { OrderParameters } from "@cowprotocol/cow-sdk";
 import { formatUnits } from "viem";
+import type { BaseSwapFTData } from "@bitte-ai/types";
 
 interface SwapDetails {
   chainId: number;
@@ -8,34 +9,18 @@ interface SwapDetails {
   quote: OrderParameters;
 }
 
-export interface SwapFTData {
-  network: {
-    name: string;
-    icon: string;
-  };
-  type: "swap";
-  fee: string;
-  tokenIn: {
-    address: string;
-    amount: string;
-  };
-  tokenOut: {
-    address: string;
-    amount: string;
-  };
-}
-
 export function parseWidgetData({
   chainId,
   tokenData,
   quote,
-}: SwapDetails): SwapFTData {
+}: SwapDetails): BaseSwapFTData {
   return {
     network: {
       name: chainId.toString(),
       icon: "",
     },
     type: "swap",
+    // @ts-expect-error: this field is missing.
     fee: quote.feeAmount,
     tokenIn: {
       address: quote.sellToken,
