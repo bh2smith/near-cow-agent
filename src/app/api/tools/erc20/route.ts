@@ -1,4 +1,4 @@
-import { parseUnits, type Address } from "viem";
+import { parseUnits, zeroAddress, type Address } from "viem";
 import {
   erc20Transfer,
   addressField,
@@ -45,6 +45,9 @@ async function logic(req: NextRequest): Promise<TxData> {
   const url = new URL(req.url);
   const search = url.searchParams;
   console.log("erc20/", search);
+  // The sender is the wallet from the request. Chat should know that already.
+  const sender =
+    JSON.parse(req.headers.get("mb-metadata") || "")?.evmAddress || zeroAddress;
   const {
     chainId,
     amount,
@@ -69,13 +72,16 @@ async function logic(req: NextRequest): Promise<TxData> {
         icon: "",
       },
       type: "transfer-ft",
-      sender: address,
+      sender,
       receiver: recipient,
       token: {
+        contractAddress: address,
         name: symbol,
         icon: "",
         amount: amount.toString(),
         usdValue: 0,
+        symbol: "",
+        decimals,
       },
     },
     transaction: signRequestFor({

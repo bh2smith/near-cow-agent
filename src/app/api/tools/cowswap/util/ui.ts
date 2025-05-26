@@ -1,7 +1,7 @@
 import type { TokenInfo } from "@bitte-ai/agent-sdk";
-import type { SwapFTData } from "@bitte-ai/types";
 import type { OrderParameters } from "@cowprotocol/cow-sdk";
 import { formatUnits } from "viem";
+import type { BaseSwapFTData } from "@bitte-ai/types";
 
 interface SwapDetails {
   chainId: number;
@@ -13,24 +13,21 @@ export function parseWidgetData({
   chainId,
   tokenData,
   quote,
-}: SwapDetails): SwapFTData {
+}: SwapDetails): BaseSwapFTData {
   return {
     network: {
       name: chainId.toString(),
       icon: "",
     },
     type: "swap",
+    fee: quote.feeAmount,
     tokenIn: {
-      name: tokenData.sell.symbol,
-      icon: "",
+      contractAddress: quote.sellToken,
       amount: formatUnits(BigInt(quote.sellAmount), tokenData.sell.decimals),
-      usdValue: 0,
     },
     tokenOut: {
-      name: tokenData.buy.symbol,
-      icon: "",
+      contractAddress: quote.buyToken,
       amount: formatUnits(BigInt(quote.buyAmount), tokenData.buy.decimals),
-      usdValue: 0,
     },
   };
 }
