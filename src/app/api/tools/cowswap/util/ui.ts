@@ -20,14 +20,13 @@ export function parseWidgetData({
       icon: "",
     },
     type: "swap",
-    // @ts-expect-error: this field is missing.
     fee: quote.feeAmount,
     tokenIn: {
-      address: quote.sellToken,
+      contractAddress: quote.sellToken,
       amount: formatUnits(BigInt(quote.sellAmount), tokenData.sell.decimals),
     },
     tokenOut: {
-      address: quote.buyToken,
+      contractAddress: quote.buyToken,
       amount: formatUnits(BigInt(quote.buyAmount), tokenData.buy.decimals),
     },
   };
