@@ -21,15 +21,15 @@ export function parseWidgetData({
     },
     type: "swap",
     fee: quote.feeAmount,
-    tokenOut: {
-      // @ts-expect-error: Return type is not well-defined in the SDK
-      address: quote.buyToken,
-      amount: formatUnits(BigInt(quote.buyAmount), tokenData.buy.decimals),
-    },
     tokenIn: {
       // @ts-expect-error: Return type is not well-defined in the SDK
       address: quote.sellToken,
       amount: formatUnits(BigInt(quote.sellAmount), tokenData.sell.decimals),
+    },
+    tokenOut: {
+      // @ts-expect-error: Return type is not well-defined in the SDK
+      address: quote.buyToken,
+      amount: formatUnits(BigInt(quote.buyAmount), tokenData.buy.decimals),
     },
   };
 }
