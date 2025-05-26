@@ -250,7 +250,7 @@ describe("CowSwap Plugin", () => {
       buyAmount: "9876543234567",
       validTo: 0,
       appData: "",
-      feeAmount: "",
+      feeAmount: "123",
       kind: OrderKind.BUY,
       partiallyFillable: false,
     };
@@ -276,17 +276,14 @@ describe("CowSwap Plugin", () => {
         icon: "",
       },
       type: "swap",
+      fee: "123",
       tokenIn: {
-        name: "DAI",
-        icon: "",
+        address: SEPOLIA_DAI,
         amount: "123456789101112.131415161718192345",
-        usdValue: 0,
       },
       tokenOut: {
-        name: "COW",
-        icon: "",
+        address: SEPOLIA_COW,
         amount: "9876543.234567",
-        usdValue: 0,
       },
     });
   });

@@ -20,17 +20,14 @@ export function parseWidgetData({
       icon: "",
     },
     type: "swap",
-    tokenIn: {
-      name: tokenData.sell.symbol,
-      icon: "",
-      amount: formatUnits(BigInt(quote.sellAmount), tokenData.sell.decimals),
-      usdValue: 0,
-    },
+    fee: quote.feeAmount,
     tokenOut: {
-      name: tokenData.buy.symbol,
-      icon: "",
+      address: quote.buyToken,
       amount: formatUnits(BigInt(quote.buyAmount), tokenData.buy.decimals),
-      usdValue: 0,
+    },
+    tokenIn: {
+      address: quote.sellToken,
+      amount: formatUnits(BigInt(quote.sellAmount), tokenData.sell.decimals),
     },
   };
 }
