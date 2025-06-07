@@ -2,7 +2,6 @@ import type { Order } from "@cowprotocol/contracts";
 import { OrderBalance, OrderKind } from "@cowprotocol/contracts";
 import { createOrder } from "../app/lib/bridge/common";
 import { getAddress, type Address, type WalletClient } from "viem";
-import { formatBytes32String } from "../app/lib/bridge/cow-shed";
 import { gnosisBridgeCommands } from "../app/lib/weiroll/gnosisNativeBridge";
 import { CowShedSdk, type CowShedCall } from "@cowprotocol/cow-sdk";
 
@@ -35,7 +34,7 @@ export async function swapAndBridgeExample(
   const cowShedCall = await shed.signCalls({
     chainId,
     calls: gnosisBridgeCommands(orderInfo.buyToken, shedAccount),
-    nonce: formatBytes32String(Date.now().toString()),
+    // nonce: formatBytes32String(Date.now().toString()), // Optional.
   });
 
   await postSwapAndBridgeOrder(wallet, orderInfo, cowShedCall);

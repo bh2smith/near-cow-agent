@@ -20,7 +20,7 @@ import {
   WEIROLL_ADDRESS,
   encodeWeirollExecuteCall,
 } from "./weiroll";
-import type { ICall } from "../bridge/cow-shed";
+import type { ICoWShedCall } from "@cowprotocol/cow-sdk";
 
 // bridge contract address on ethereum mainnet
 // TODO: Get Address for ChainId 100.
@@ -32,7 +32,7 @@ export const fnSelector = (sig: string) =>
 export function gnosisBridgeCommands(
   token: Address,
   proxyAddress: Address,
-): ICall[] {
+): ICoWShedCall[] {
   // TODO: I think this weiroll shouldn't be necessary if we used buy orders!
   // at tx time. need to fetch it at execution time.
   const commands = [
