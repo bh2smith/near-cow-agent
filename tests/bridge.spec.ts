@@ -1,12 +1,6 @@
-import {
-  createPublicClient,
-  createWalletClient,
-  getAddress,
-  http,
-  parseEther,
-} from "viem";
+import { getAddress, Hex, parseEther } from "viem";
 import { BridgeInput, bridgeQuote, toCowHook } from "@/src/app/lib/lifi-bridge";
-import { ChainId } from "@lifi/sdk";
+import { ChainId, ChainType, getChains } from "@lifi/sdk";
 import {
   OrderKind,
   QuoteBridgeRequest,
@@ -29,16 +23,10 @@ const OP_WETH_ADDRESS = getAddress(
 
 const zeroExBoob = getAddress("0xB00b4C1e371DEe4F6F32072641430656D3F7c064");
 
-import { privateKeyToAccount } from "viem/accounts";
-import { ViemSigner } from "@/src/app/lib/signer";
-import { arbitrum } from "viem/chains";
-
-const account = privateKeyToAccount("0x...");
-const rpcUrl = arbitrum.rpcUrls.default.http[0];
-const signer = new ViemSigner({ rpcUrl, account });
+const bridgeSignerPk = process.env.PRIVATE_KEY! as Hex;
 
 describe("Bridge Library", () => {
-  it.skip("Li.Fi: gnosis to op DAI", async () => {
+  it.only("Li.Fi: gnosis to op DAI", async () => {
     const req: BridgeInput = {
       account: zeroExBoob,
       amount: parseEther("10"),
@@ -46,8 +34,12 @@ describe("Bridge Library", () => {
       dest: OP_DAI,
     };
     const quote = await bridgeQuote(req);
-
-    console.log(quote);
+    const chains = await getChains({ chainTypes: [ChainType.EVM] });
+    console.log(
+      "CHAIN",
+      chains.map((x) => x.id),
+    );
+    // console.log(quote);
   });
 
   it("Li.Fi: WETH - Base to OP ", async () => {
@@ -68,16 +60,16 @@ describe("Bridge Library", () => {
     // console.log("CoW Hook", hook);
   });
 
-  it.only("CoW SDK: Docs Example", async () => {
+  it.skip("CoW SDK: Docs Example", async () => {
     const sampleSellToken = {
-      sellTokenChainId: SupportedChainId.ARBITRUM_ONE,
-      sellTokenAddress: "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
-      sellTokenDecimals: 18,
-    };
-    const sampleBuyToken = {
       buyTokenChainId: SupportedChainId.BASE,
       buyTokenAddress: "0x4200000000000000000000000000000000000006",
       buyTokenDecimals: 18,
+    };
+    const sampleBuyToken = {
+      sellTokenChainId: SupportedChainId.ARBITRUM_ONE,
+      sellTokenAddress: "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+      sellTokenDecimals: 6,
     };
     const parameters: QuoteBridgeRequest = {
       account: zeroExBoob,
@@ -86,21 +78,20 @@ describe("Bridge Library", () => {
       ...sampleBuyToken,
       amount: BigInt(120000000000000000),
       appCode: "Bitte.AI",
-      signer, // ExternalProvider
+      signer: bridgeSignerPk,
     };
-
-    const quote = await getQuote(parameters);
+    const quote = await getQuote(parameters, bridgeSignerPk);
     const { swap, bridge, postSwapOrderFromQuote } = quote;
 
     console.log("Swap info", swap);
     console.log("Bridge info", bridge);
 
-    const { buyAmount } = bridge.amountsAndCosts.afterSlippage;
+    // const { buyAmount } = bridge.amountsAndCosts.afterSlippage;
 
-    if (confirm(`You will get at least: ${buyAmount}, ok?`)) {
-      const orderId = await postSwapOrderFromQuote();
+    // if (confirm(`You will get at least: ${buyAmount}, ok?`)) {
+    //   const orderId = await postSwapOrderFromQuote();
 
-      console.log("Order created, id: ", orderId);
-    }
+    //   console.log("Order created, id: ", orderId);
+    // }
   });
 });
