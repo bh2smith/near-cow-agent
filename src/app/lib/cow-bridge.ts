@@ -17,9 +17,8 @@ export async function getQuote(
   const sdk = new BridgingSdk({ providers: [acrossProvider] });
   // Get a quote (and the post callback) for a cross-chain swap
   try {
-    const quoteResult = await sdk.getQuote(parameters, {
-      quoteSigner: brigeSignerPk,
-    });
+    const quote = await acrossProvider.getQuote(parameters);
+    acrossProvider.getUnsignedBridgeCall(parameters, quote);
     assertIsBridgeQuoteAndPost(quoteResult);
     return quoteResult;
   } catch (error: unknown) {

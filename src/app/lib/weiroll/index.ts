@@ -6,7 +6,7 @@ export {
   Contract as WeirollContract,
   Planner as WeirollPlanner,
 } from "@weiroll/weiroll.js";
-import type { Contract as EthersContract } from "ethers";
+import {Contract as EthersContract} from "@ethersproject/contracts";
 import type { Address, Hash, Hex } from "viem";
 import { encodeFunctionData } from "viem";
 

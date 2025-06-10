@@ -1,9 +1,26 @@
 import type { Order } from "@cowprotocol/contracts";
 import { OrderBalance, OrderKind } from "@cowprotocol/contracts";
-import { createOrder } from "../app/lib/bridge/common";
-import { getAddress, type Address, type WalletClient } from "viem";
+import { createOrder } from "../app/lib/weiroll/common";
+import type { Hash, Hex, PrivateKeyAccount } from "viem";
+import {
+  getAddress,
+  hashTypedData,
+  pad,
+  publicActions,
+  toBytes,
+  toHex,
+  type Address,
+  type WalletClient,
+} from "viem";
 import { gnosisBridgeCommands } from "../app/lib/weiroll/gnosisNativeBridge";
-import { CowShedSdk, type CowShedCall } from "@cowprotocol/cow-sdk";
+import type { ICoWShedCall, QuoteBridgeRequest } from "@cowprotocol/cow-sdk";
+import {
+  AcrossBridgeProvider,
+  CowShedHooks,
+  CowShedSdk,
+  type CowShedCall,
+} from "@cowprotocol/cow-sdk";
+import type { TypedDataDomain } from "ethers";
 
 const ZERO = BigInt(0);
 interface OrderInfo {
@@ -16,7 +33,7 @@ interface OrderInfo {
 
 export async function swapAndBridgeExample(
   wallet: WalletClient,
-  orderInfo: OrderInfo,
+  swapBrigeRequest: QuoteBridgeRequest,
 ): Promise<void> {
   if (!wallet.account) {
     throw new Error("Missing wallet account");
@@ -30,13 +47,62 @@ export async function swapAndBridgeExample(
   const shed = new CowShedSdk();
   const shedAccount = getAddress(shed.getCowShedAccount(chainId, userAddr));
 
-  // TODO: We need ot split this.
-  const cowShedCall = await shed.signCalls({
-    chainId,
-    calls: gnosisBridgeCommands(orderInfo.buyToken, shedAccount),
-    // nonce: formatBytes32String(Date.now().toString()), // Optional.
-  });
+  const acrossProvider = new AcrossBridgeProvider();
+  const quote = await acrossProvider.getQuote(swapBrigeRequest);
+  const depositCall = await acrossProvider.getUnsignedBridgeCall(
+    swapBrigeRequest,
+    quote,
+  );
+  const intermediateTokens =
+    await acrossProvider.getIntermediateTokens(swapBrigeRequest);
+  const orderInfo: OrderInfo = {
+    // Use the intermediate token for the cowswap order.
+    buyToken: getAddress(intermediateTokens[0].address),
+    sellToken: getAddress(swapBrigeRequest.sellTokenAddress),
+    buyAmount: BigInt(0), // TODO: This should not be zero!
+    sellAmount: swapBrigeRequest.amount,
+  };
 
+  // const calls = gnosisBridgeCommands(orderInfo.buyToken, shedAccount);
+  const nonce = formatBytes32String(Date.now().toString());
+  const deadline = BigInt(
+    orderInfo.validity ?? Math.floor(new Date().getTime() / 1000) + 7200,
+  );
+  const calls = [
+    {
+      allowFailure: false,
+      isDelegateCall: true,
+      target: depositCall.to,
+      callData: depositCall.data,
+      value: depositCall.value,
+    },
+  ];
+  const hooksSdk = new CowShedHooks(chainId);
+  const { infoToSign, hashToSign } = getSigningData(
+    hooksSdk,
+    calls,
+    nonce,
+    deadline,
+    shedAccount,
+  );
+  console.log(infoToSign);
+  // Here is where the agent must request signature!
+  const signature = await (wallet.account as PrivateKeyAccount).sign({ hash: hashToSign });
+
+  const callData = hooksSdk.encodeExecuteHooksForFactory(calls, nonce, deadline, wallet.account.address, signature);
+
+  const factoryCall = {
+    to: getAddress(hooksSdk.getFactoryAddress()),
+    data: toHex(callData),
+    value: BigInt(0)
+  }
+  const gasLimit = await wallet.extend(publicActions).estimateGas(factoryCall)
+
+  const cowShedCall: CowShedCall = {
+    cowShedAccount: factoryCall.to,
+    signedMulticall: factoryCall,
+    gasLimit
+  };
   await postSwapAndBridgeOrder(wallet, orderInfo, cowShedCall);
 }
 
@@ -71,4 +137,64 @@ export async function postSwapAndBridgeOrder(
   // create order
   const orderTx = await createOrder(wallet, order, hooks);
   console.log("Create order tx", orderTx.transactionHash);
+}
+
+export function formatBytes32String(text: string): Hash {
+  const bytes = toBytes(text);
+
+  if (bytes.length > 31) {
+    throw new Error("bytes32 string must be less than 32 bytes");
+  }
+
+  return toHex(pad(bytes, { size: 32 })); // pads with zeros to 32 bytes
+}
+
+function getSigningData(
+  hooksSdk: CowShedHooks,
+  calls: ICoWShedCall[],
+  nonce: Hex,
+  deadline: bigint,
+  shedAccount: Address,
+): { infoToSign: CoWTypedData; hashToSign: Hash } {
+  const ethersInfoToSign = hooksSdk.infoToSign(
+    calls,
+    nonce,
+    deadline,
+    shedAccount,
+  );
+  const { name, version, verifyingContract, chainId } = ethersInfoToSign.domain;
+  const hashToSign = hashTypedData({
+    domain: {
+      name,
+      chainId: chainId? BigInt(chainId.toString()): undefined,
+      version,
+      verifyingContract: verifyingContract
+        ? toHex(verifyingContract)
+        : undefined,
+    },
+    types: ethersInfoToSign.types,
+    primaryType: "ExecuteHooks",
+    message: ethersInfoToSign.message,
+  });
+
+  return { infoToSign: ethersInfoToSign, hashToSign };
+}
+
+interface CoWTypedData {
+  domain: TypedDataDomain;
+  types: {
+    ExecuteHooks: {
+      type: string;
+      name: string;
+    }[];
+    Call: {
+      type: string;
+      name: string;
+    }[];
+  };
+  message: {
+    calls: ICoWShedCall[];
+    nonce: string;
+    deadline: bigint;
+  };
 }

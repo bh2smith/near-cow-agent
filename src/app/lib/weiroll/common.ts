@@ -7,8 +7,7 @@ import { parseAbi, publicActions } from "viem";
 
 const SETTLEMENT_CONTRACT = "0x9008D19f58AAbD9eD0D60971565AA8510560ab41";
 
-// sets presignature for given order for given user. it uses the appdata package
-// to compute the appdata hash using the hooks data
+// TODO: This should be replaced with COW SDK create/post order.
 export const createOrder = async (
   wallet: WalletClient,
   order: Order,
