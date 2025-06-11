@@ -5,6 +5,9 @@ import {
   validateRequest,
   type BlockchainMapping,
 } from "@bitte-ai/agent-sdk";
+import type { Address } from "viem";
+import { isHex } from "viem";
+import { getClient } from "near-safe";
 
 export async function validateNextRequest(
   req: NextRequest,
@@ -46,4 +49,12 @@ export async function getTokenMap(): Promise<BlockchainMapping> {
   );
 
   return getCachedTokenMap();
+}
+
+export async function isEOA(
+  chainId: number,
+  address: Address,
+): Promise<boolean> {
+  const codeAt = await getClient(chainId).getCode({ address });
+  return !isHex(codeAt);
 }
