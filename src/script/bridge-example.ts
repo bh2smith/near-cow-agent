@@ -12,7 +12,6 @@ import {
   type Address,
   type WalletClient,
 } from "viem";
-import { gnosisBridgeCommands } from "../app/lib/weiroll/gnosisNativeBridge";
 import type { ICoWShedCall, QuoteBridgeRequest } from "@cowprotocol/cow-sdk";
 import {
   AcrossBridgeProvider,
@@ -87,21 +86,29 @@ export async function swapAndBridgeExample(
   );
   console.log(infoToSign);
   // Here is where the agent must request signature!
-  const signature = await (wallet.account as PrivateKeyAccount).sign({ hash: hashToSign });
+  const signature = await (wallet.account as PrivateKeyAccount).sign({
+    hash: hashToSign,
+  });
 
-  const callData = hooksSdk.encodeExecuteHooksForFactory(calls, nonce, deadline, wallet.account.address, signature);
+  const callData = hooksSdk.encodeExecuteHooksForFactory(
+    calls,
+    nonce,
+    deadline,
+    wallet.account.address,
+    signature,
+  );
 
   const factoryCall = {
     to: getAddress(hooksSdk.getFactoryAddress()),
     data: toHex(callData),
-    value: BigInt(0)
-  }
-  const gasLimit = await wallet.extend(publicActions).estimateGas(factoryCall)
+    value: BigInt(0),
+  };
+  const gasLimit = await wallet.extend(publicActions).estimateGas(factoryCall);
 
   const cowShedCall: CowShedCall = {
     cowShedAccount: factoryCall.to,
     signedMulticall: factoryCall,
-    gasLimit
+    gasLimit,
   };
   await postSwapAndBridgeOrder(wallet, orderInfo, cowShedCall);
 }
@@ -166,7 +173,7 @@ function getSigningData(
   const hashToSign = hashTypedData({
     domain: {
       name,
-      chainId: chainId? BigInt(chainId.toString()): undefined,
+      chainId: chainId ? BigInt(chainId.toString()) : undefined,
       version,
       verifyingContract: verifyingContract
         ? toHex(verifyingContract)

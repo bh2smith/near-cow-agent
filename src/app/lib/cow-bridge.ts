@@ -3,22 +3,22 @@ import type {
   QuoteBridgeRequest,
 } from "@cowprotocol/cow-sdk";
 import {
-  BridgingSdk,
   assertIsBridgeQuoteAndPost,
   AcrossBridgeProvider,
 } from "@cowprotocol/cow-sdk";
-import type { Hex } from "viem";
 
 export async function getQuote(
   parameters: QuoteBridgeRequest,
-  brigeSignerPk: Hex,
+  // brigeSignerPk: Hex,
 ): Promise<BridgeQuoteAndPost> {
   const acrossProvider = new AcrossBridgeProvider();
-  const sdk = new BridgingSdk({ providers: [acrossProvider] });
+  // TODO: Eventually we can use this again.
+  // const sdk = new BridgingSdk({ providers: [acrossProvider] });
   // Get a quote (and the post callback) for a cross-chain swap
   try {
     const quote = await acrossProvider.getQuote(parameters);
     acrossProvider.getUnsignedBridgeCall(parameters, quote);
+    // TODO: Need to build BridgeQuoteAndPost from this!
     assertIsBridgeQuoteAndPost(quoteResult);
     return quoteResult;
   } catch (error: unknown) {
