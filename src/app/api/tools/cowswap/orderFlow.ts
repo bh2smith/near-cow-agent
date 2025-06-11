@@ -1,7 +1,7 @@
 import type { MetaTransaction, SignRequestData } from "near-safe";
 import {
   applySlippage,
-  buildAndPostAppData,
+  // buildAndPostAppData,
   createOrder,
   isNativeAsset,
   sellTokenApprovalTx,
@@ -15,6 +15,7 @@ import {
   wrapMetaTransaction,
   signRequestFor,
 } from "@bitte-ai/agent-sdk";
+import { buildAndPostAppData } from "./util/appData";
 
 const slippageBps = Number.parseInt(process.env.SLIPPAGE_BPS || "100");
 const referralAddress =
@@ -84,6 +85,7 @@ export async function orderRequestFlow({
       recipient: partnerAddress,
       bps: partnerBps,
     },
+    {}, // TODO: Add hooks - maybe?
   );
   // Post Unsigned Order to Orderbook (this might be spam if the user doesn't sign)
   console.log("Creating Order with", quoteResponse);

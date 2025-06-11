@@ -2,14 +2,10 @@ import {
   type Address,
   encodeFunctionData,
   getAddress,
-  type Hex,
   isHex,
-  keccak256,
   parseAbi,
-  toBytes,
 } from "viem";
 import {
-  type OrderBookApi,
   type OrderCreation,
   type OrderQuoteResponse,
   SigningScheme,
@@ -17,7 +13,6 @@ import {
   OrderKind,
 } from "@cowprotocol/cow-sdk";
 import { getClient, type MetaTransaction } from "near-safe";
-import stringify from "json-stringify-deterministic";
 
 const MAX_APPROVAL = BigInt(
   "115792089237316195423570985008687907853269984665640564039457584007913129639935",
@@ -142,63 +137,4 @@ async function checkAllowance(
     functionName: "allowance",
     args: [owner, spender],
   });
-}
-
-interface AppData {
-  hash: Hex;
-  data: string;
-}
-
-export async function generateAppData(
-  appCode: string,
-  referrerAddress: string,
-  partnerFee: {
-    bps: number;
-    recipient: string;
-  },
-): Promise<AppData> {
-  const appDataDoc = stringify({
-    appCode,
-    metadata: { referrer: { address: referrerAddress }, partnerFee },
-    version: "1.3.0",
-  });
-  const appDataHash = keccak256(toBytes(appDataDoc));
-  console.log(`Constructed AppData with Hash ${appDataHash}`);
-  return {
-    data: appDataDoc,
-    hash: appDataHash,
-  };
-}
-
-export async function buildAndPostAppData(
-  orderbook: OrderBookApi,
-  appCode: string,
-  referrerAddress: string,
-  partnerFee: {
-    bps: number;
-    recipient: string;
-  },
-): Promise<Hex> {
-  const appData = await generateAppData(appCode, referrerAddress, partnerFee);
-  const exists = await appDataExists(orderbook, appData);
-  if (!exists) {
-    await orderbook.uploadAppData(appData.hash, appData.data);
-  }
-  return appData.hash;
-}
-
-export async function appDataExists(
-  orderbook: OrderBookApi,
-  appData: AppData,
-): Promise<boolean> {
-  const exists = await orderbook
-    .getAppData(appData.hash)
-    .then(() => {
-      // If successful, `data` will be the resolved value from `getAppData`.
-      return true;
-    })
-    .catch(() => {
-      return false; // Or any default value to indicate the data does not exist
-    });
-  return exists;
 }
