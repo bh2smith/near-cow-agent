@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "concurrently \"next dev --turbopack\" \"make-agent dev -p 3000\"",
+    "dev": "concurrently \"next dev\" \"make-agent dev\"",
     "dev-testnet": "concurrently \"next dev --turbopack\" \"make-agent dev -p 3000 -t\"",
     "build": "next build",
     "start": "next start",

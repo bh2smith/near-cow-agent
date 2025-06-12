@@ -100,7 +100,7 @@ function sellTokenAvailable(
   throw new Error("Sell token not found in balances");
 }
 
-export async function basicParse(
+export async function basicParseQuote(
   req: NextRequest,
   // TODO: Replace with Data Provider.
   tokenMap: BlockchainMapping,
@@ -115,7 +115,7 @@ export async function basicParse(
     receiver,
     orderKind,
   } = requestBody;
-
+  console.log("Quote Request Body", requestBody);
   if (sellAmountBeforeFee === "0") {
     throw new Error("Sell amount cannot be 0");
   }
