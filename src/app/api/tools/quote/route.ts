@@ -3,21 +3,29 @@ import type { OrderQuoteResponse } from "@cowprotocol/cow-sdk";
 import { OrderBookApi } from "@cowprotocol/cow-sdk";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import { basicParse } from "../cowswap/util/parse";
+import { basicParseQuote } from "../cowswap/util/parse";
 import { getTokenMap } from "../util";
+import type { SignRequestData } from "@bitte-ai/types";
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
   console.log("quote/", req.url);
-  console.log("quote/", req.body);
   return handleRequest(req, logic, (result) => NextResponse.json(result));
 }
 
-async function logic(req: NextRequest): Promise<OrderQuoteResponse> {
-  const parsedRequest = await basicParse(req, await getTokenMap());
-  console.log("POST Request for quote:", parsedRequest.chainId);
+async function logic(
+  req: NextRequest,
+): Promise<{ quote: OrderQuoteResponse; signRequest: SignRequestData }> {
+  const parsedRequest = await basicParseQuote(req, await getTokenMap());
+  console.log("Parsed Quote Request", parsedRequest);
   const orderBookApi = new OrderBookApi({ chainId: parsedRequest.chainId });
 
   const response = await orderBookApi.getQuote(parsedRequest.quoteRequest);
   console.log("POST Response for quote:", response);
-  return response;
+  return {
+    quote: response,
+    signRequest: {
+      chainId: 0,
+      metaTransactions: [],
+    },
+  };
 }
