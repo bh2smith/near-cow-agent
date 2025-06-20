@@ -18,6 +18,7 @@ import {
 } from "@cowprotocol/cow-sdk";
 import { getClient, type MetaTransaction } from "near-safe";
 import stringify from "json-stringify-deterministic";
+import type { EthTransactionParams } from "@/src/app/types";
 
 const MAX_APPROVAL = BigInt(
   "115792089237316195423570985008687907853269984665640564039457584007913129639935",
@@ -25,10 +26,13 @@ const MAX_APPROVAL = BigInt(
 
 // CoW (and many other Dex Protocols use this to represent native asset).
 export const NATIVE_ASSET = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
-const GPV2SettlementContract = "0x9008D19f58AAbD9eD0D60971565AA8510560ab41";
+const GPV2SettlementContract =
+  "0x9008D19f58AAbD9eD0D60971565AA8510560ab41" as Address;
 const GPv2VaultRelayer = "0xC92E8bdf79f0507f65a392b0ab4667716BFE0110";
 
-export function setPresignatureTx(orderUid: string): MetaTransaction {
+export function setPresignatureTx(
+  orderUid: string,
+): Omit<EthTransactionParams, "from"> {
   if (!isHex(orderUid)) {
     throw new Error(`Invalid OrderUid (not hex): ${orderUid}`);
   }
