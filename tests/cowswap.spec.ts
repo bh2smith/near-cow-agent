@@ -278,12 +278,22 @@ describe("CowSwap Plugin", () => {
       type: "swap",
       fee: "123",
       tokenIn: {
+        address: SEPOLIA_DAI,
         contractAddress: SEPOLIA_DAI,
         amount: "123456789101112.131415161718192345",
+        name: "DAI",
+        symbol: "DAI",
+        decimals: 18,
+        usdValue: 0,
       },
       tokenOut: {
+        address: SEPOLIA_COW,
         contractAddress: SEPOLIA_COW,
         amount: "9876543.234567",
+        name: "COW",
+        symbol: "COW",
+        decimals: 6,
+        usdValue: 0,
       },
     });
   });
