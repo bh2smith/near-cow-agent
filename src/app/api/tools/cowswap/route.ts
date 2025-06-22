@@ -4,7 +4,7 @@ import { orderRequestFlow, type OrderResponse } from "./orderFlow";
 import { validateNextRequest, getZerionKey, getTokenMap } from "../util";
 import { handleRequest } from "@bitte-ai/agent-sdk";
 import { parseWidgetData } from "./util/ui";
-import type { BaseSwapFTData } from "@bitte-ai/types";
+import type { SwapFTData } from "@bitte-ai/types";
 
 // Refer to https://api.cow.fi/docs/#/ for Specifics on Quoting and Order posting.
 
@@ -20,7 +20,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
 async function logic(
   req: NextRequest,
-): Promise<OrderResponse & { data: BaseSwapFTData }> {
+): Promise<OrderResponse & { data: SwapFTData }> {
   const parsedRequest = await parseQuoteRequest(
     req,
     await getTokenMap(),
