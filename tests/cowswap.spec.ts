@@ -33,7 +33,7 @@ const DEPLOYED_SAFE = getAddress("0x5E1E315D96BD81c8f65c576CFD6E793aa091b480");
 const chainId = 11155111;
 const quoteRequest = {
   chainId,
-  safeAddress: DEPLOYED_SAFE,
+  evmAddress: DEPLOYED_SAFE,
   sellToken: SEPOLIA_DAI,
   buyToken: SEPOLIA_COW,
   receiver: DEPLOYED_SAFE,

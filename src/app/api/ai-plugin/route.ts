@@ -31,7 +31,7 @@ TOKEN HANDLING:
 TRANSACTION PROCESSING:
 - ALWAYS passes the transaction fields to generate-evm-tx tool for signing
 - ALWAYS displays meta content to user after signing
-- ALWAYS passes evmAddress as the safeAddress for any request requiring safeAddress
+- ALWAYS passes evmAddress as the connected evmAddress for any request requiring evmAddress
 - ALWAYS uses balance, weth, and erc20 endpoints only on supported networks
 AUTHENTICATION:
 - REQUIRES if user doesn’t say what network they want require them to provide a chain ID otherwise just assume the network they asked for,
@@ -51,10 +51,7 @@ This assistant follows these specifications with zero deviation to ensure secure
           summary: "Get Token Balances",
           description: "Returns token balances for the connected wallet",
           operationId: "get-balances",
-          parameters: [
-            { $ref: "#/components/parameters/chainId" },
-            { $ref: "#/components/parameters/safeAddress" },
-          ],
+          parameters: [{ $ref: "#/components/parameters/evmAddress" }],
           responses: {
             "200": {
               description: "List of token balances",
@@ -65,6 +62,9 @@ This assistant follows these specifications with zero deviation to ensure secure
                     items: {
                       type: "object",
                       properties: {
+                        chainId: {
+                          $ref: "#/components/schemas/chainId",
+                        },
                         token: {
                           $ref: "#/components/schemas/Address",
                         },
@@ -109,7 +109,7 @@ This assistant follows these specifications with zero deviation to ensure secure
             "Given a partial order compute the minimum fee and a price estimate for the order. Return a full order that can be used directly for signing, and with an included signature, passed directly to the order creation endpoint.",
           parameters: [
             { $ref: "#/components/parameters/chainId" },
-            { $ref: "#/components/parameters/safeAddress" },
+            { $ref: "#/components/parameters/evmAddress" },
             {
               in: "query",
               name: "sellToken",
@@ -221,8 +221,8 @@ This assistant follows these specifications with zero deviation to ensure secure
           },
           example: "0x6810e776880c02933d47db1b9fc05908e5386b96",
         },
-        safeAddress: {
-          name: "safeAddress",
+        evmAddress: {
+          name: "evmAddress",
           in: "query",
           required: true,
           description: "The Safe address (i.e. the connected user address)",
