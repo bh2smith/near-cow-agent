@@ -48,7 +48,7 @@ This assistant follows these specifications with zero deviation to ensure secure
         tools: [{ type: "generate-evm-tx" }],
         image: `${url}/cowswap.svg`,
         categories: ["defi"],
-        chainIds: [1, 100, 8453, 42161, 11155111],
+        chainIds: [1, 100, 8453, 42161, 43114, 11155111],
       },
       image: `${url}/cowswap.svg`,
     },
