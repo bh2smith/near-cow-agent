@@ -45,33 +45,6 @@ This assistant follows these specifications with zero deviation to ensure secure
       },
     },
     paths: {
-      "/api/health": {
-        get: {
-          tags: ["health"],
-          summary: "Confirms server running",
-          description: "Test Endpoint to confirm system is running",
-          operationId: "check-health",
-          parameters: [],
-          responses: {
-            "200": {
-              description: "Ok Message",
-              content: {
-                "application/json": {
-                  schema: {
-                    type: "object",
-                    properties: {
-                      message: {
-                        type: "string",
-                        description: "Ok Message",
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
       "/api/tools/balances": {
         get: {
           tags: ["balances"],
@@ -210,24 +183,6 @@ This assistant follows these specifications with zero deviation to ensure secure
             "500": {
               description: "Unexpected error quoting an order.",
             },
-          },
-        },
-      },
-      "/api/tools/erc20": {
-        get: {
-          tags: ["erc20"],
-          summary: "Encodes ERC20 (Fungible) Token Transfer",
-          description: "Encodes ERC20 transfer transaction as MetaTransaction",
-          operationId: "erc20-transfer",
-          parameters: [
-            { $ref: "#/components/parameters/chainId" },
-            { $ref: "#/components/parameters/amount" },
-            { $ref: "#/components/parameters/recipient" },
-            { $ref: "#/components/parameters/tokenOrSymbol" },
-          ],
-          responses: {
-            "200": { $ref: "#/components/responses/SignRequest200" },
-            "400": { $ref: "#/components/responses/BadRequest400" },
           },
         },
       },
