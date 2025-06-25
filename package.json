@@ -6,6 +6,7 @@
     "dev": "concurrently \"next dev --turbopack\" \"make-agent dev -p 3000\"",
     "dev-testnet": "concurrently \"next dev --turbopack\" \"make-agent dev -p 3000 -t\"",
     "build": "next build",
+    "build:deploy": "next build && make-agent deploy -u https://near-cow-agent.vercel.app/",
     "start": "next start",
     "lint": "next lint && prettier --check '{src/app,tests}/**/*.{js,jsx,ts,tsx}'",
     "fmt": "next lint --fix && prettier --write '{src/app,tests}/**/*.{js,jsx,ts,tsx}'",
@@ -13,7 +14,7 @@
   },
   "dependencies": {
     "@bitte-ai/agent-sdk": "^0.2.0",
-    "@cowprotocol/cow-sdk": "^5.10.3",
+    "@cowprotocol/cow-sdk": "^6.0.0-RC.66",
     "json-stringify-deterministic": "^1.0.12",
     "near-safe": "^0.10.0",
     "next": "^15.3.4",
