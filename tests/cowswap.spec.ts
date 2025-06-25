@@ -155,7 +155,9 @@ describe("CowSwap Plugin", () => {
       body: JSON.stringify(quoteRequest),
     });
     const tokenMap = await loadTokenMap(process.env.TOKEN_MAP_URL);
-    expect(await parseQuoteRequest(request, tokenMap, getZerionKey())).toStrictEqual({
+    expect(
+      await parseQuoteRequest(request, tokenMap, getZerionKey()),
+    ).toStrictEqual({
       chainId: 11155111,
       quoteRequest: {
         buyToken: SEPOLIA_COW,
