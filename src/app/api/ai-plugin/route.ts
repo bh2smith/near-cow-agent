@@ -1,12 +1,5 @@
 import { NextResponse } from "next/server";
-
-const key = JSON.parse(process.env.BITTE_KEY || "{}");
-const bitteConfig = JSON.parse(process.env.BITTE_CONFIG || "{}");
-if (!key?.accountId) {
-  console.error("no account");
-}
-
-const url = bitteConfig.url || "https://near-cow-agent.vercel.app";
+import { ACCOUNT_ID, PLUGIN_URL } from "../../config";
 
 export async function GET() {
   const pluginData = {
@@ -16,9 +9,9 @@ export async function GET() {
       description: "API for interactions with CoW Protocol",
       version: "1.0.0",
     },
-    servers: [{ url }],
+    servers: [{ url: PLUGIN_URL }],
     "x-mb": {
-      "account-id": key.accountId,
+      "account-id": ACCOUNT_ID,
       assistant: {
         name: "CoWSwap Assistant",
         description:
@@ -46,11 +39,10 @@ AUTHENTICATION:
 - CONFIRMS token details explicitly before executing transactions
 This assistant follows these specifications with zero deviation to ensure secure, predictable transaction handling. `,
         tools: [{ type: "generate-evm-tx" }],
-        image: `${url}/cowswap.svg`,
+        image: `${PLUGIN_URL}/cowswap.svg`,
         categories: ["defi"],
         chainIds: [1, 100, 8453, 42161, 43114, 11155111],
       },
-      image: `${url}/cowswap.svg`,
     },
     paths: {
       "/api/health": {
