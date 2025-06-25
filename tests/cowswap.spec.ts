@@ -1,9 +1,7 @@
 import { orderRequestFlow } from "@/src/app/api/tools/cowswap/orderFlow";
 import {
-  appDataExists,
   applySlippage,
   createOrder,
-  generateAppData,
   isNativeAsset,
   NATIVE_ASSET,
   sellTokenApprovalTx,
@@ -24,6 +22,10 @@ import { checksumAddress, getAddress, zeroAddress } from "viem";
 import { parseQuoteRequest } from "@/src/app/api/tools/cowswap/util/parse";
 import { loadTokenMap } from "@bitte-ai/agent-sdk";
 import { parseWidgetData } from "@/src/app/api/tools/cowswap/util/ui";
+import {
+  appDataExists,
+  generateAppData,
+} from "@/src/app/api/tools/cowswap/util/appData";
 import { getZerionKey } from "@/src/app/api/tools/util";
 
 const SEPOLIA_DAI = getAddress("0xb4f1737af37711e9a5890d9510c9bb60e170cb0d");
@@ -237,9 +239,10 @@ describe("CowSwap Plugin", () => {
       "bitte.ai/CowAgent",
       "0x8d99F8b2710e6A3B94d9bf465A98E5273069aCBd",
       { bps: 25, recipient: "0x54F08c27e75BeA0cdDdb8aA9D69FD61551B19BbA" },
+      {},
     );
     expect(appData.hash).toBe(
-      "0x5a8bb9f6dd0c7f1b4730d9c5a811c2dfe559e67ce9b5ed6965b05e59b8c86b80",
+      "0x112029f601366ac63895a68b8c0f3fe363773485d6611e91c1d7e26c9a2b2ce7",
     );
 
     expect(await appDataExists(orderbook, appData)).toBe(false);

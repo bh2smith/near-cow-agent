@@ -8,13 +8,14 @@
     "build": "next build",
     "deploy": "make-agent deploy -u https://near-cow-agent.vercel.app/",
     "start": "next start",
-    "lint": "next lint && prettier --check '{src/app,tests}/**/*.{js,jsx,ts,tsx}'",
-    "fmt": "next lint --fix && prettier --write '{src/app,tests}/**/*.{js,jsx,ts,tsx}'",
+    "lint": "next lint && prettier --check '{src,tests}/**/*.{js,jsx,ts,tsx}'",
+    "fmt": "next lint --fix && prettier --write '{src,tests}/**/*.{js,jsx,ts,tsx}'",
     "test": "jest --config jest.config.ts"
   },
   "dependencies": {
     "@bitte-ai/agent-sdk": "^0.2.0",
     "@cowprotocol/cow-sdk": "^6.0.0-RC.66",
+    "@lifi/sdk": "^3.7.9",
     "json-stringify-deterministic": "^1.0.12",
     "near-safe": "^0.10.0",
     "next": "^15.3.4",
