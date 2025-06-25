@@ -6,12 +6,10 @@ import {
 } from "@cowprotocol/cow-sdk";
 import { getAddress, isAddress, parseUnits } from "viem";
 import { NATIVE_ASSET } from "./protocol";
-import { getSafeBalances, getTokenDetails } from "@bitte-ai/agent-sdk";
-import type {
-  BlockchainMapping,
-  TokenBalance,
-  TokenInfo,
-} from "@bitte-ai/agent-sdk";
+import { getTokenDetails } from "@bitte-ai/agent-sdk";
+import type { BlockchainMapping, TokenInfo } from "@bitte-ai/agent-sdk";
+import type { TokenBalance } from "zerion-sdk";
+import { getBalances } from "../../balance";
 
 export interface ParsedQuoteRequest {
   quoteRequest: OrderQuoteRequest;
@@ -21,7 +19,7 @@ export interface ParsedQuoteRequest {
 export async function parseQuoteRequest(
   req: NextRequest,
   tokenMap: BlockchainMapping,
-  zerionKey?: string,
+  zerionKey: string,
 ): Promise<
   ParsedQuoteRequest & { tokenData: { buy: TokenInfo; sell: TokenInfo } }
 > {
@@ -41,10 +39,10 @@ export async function parseQuoteRequest(
   }
 
   const [balances, buyTokenData] = await Promise.all([
-    getSafeBalances(chainId, sender, zerionKey),
+    getBalances(sender, zerionKey),
     getTokenDetails(chainId, buyToken, tokenMap),
   ]);
-  const sellTokenData = sellTokenAvailable(balances, sellToken);
+  const sellTokenData = sellTokenAvailable(chainId, balances, sellToken);
   if (!buyTokenData) {
     throw new Error(`Buy token not found on chain ${chainId}: ${buyToken}`);
   }
@@ -73,18 +71,20 @@ export async function parseQuoteRequest(
 }
 
 function sellTokenAvailable(
-  balances: TokenBalance[],
+  chainId: number,
+  allBalances: TokenBalance[],
   sellTokenSymbolOrAddress: string,
 ): TokenInfo {
   let balance: TokenBalance | undefined;
+  const filteredBalances = allBalances.filter((b) => b.chainId === chainId);
   if (isAddress(sellTokenSymbolOrAddress, { strict: false })) {
-    balance = balances.find(
+    balance = filteredBalances.find(
       (b) =>
         getAddress(b.tokenAddress || NATIVE_ASSET) ===
         getAddress(sellTokenSymbolOrAddress),
     );
   } else {
-    balance = balances.find(
+    balance = filteredBalances.find(
       (b) =>
         b.token?.symbol.toLowerCase() ===
         sellTokenSymbolOrAddress.toLowerCase(),

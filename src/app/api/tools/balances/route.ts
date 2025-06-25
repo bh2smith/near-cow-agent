@@ -7,7 +7,7 @@ import {
   validateInput,
 } from "@bitte-ai/agent-sdk";
 import type { TokenBalance, FieldParser } from "@bitte-ai/agent-sdk";
-import { ZerionAPI, zerionToTokenBalances } from "zerion-sdk";
+import { getBalances } from "../balance";
 
 interface Input {
   evmAddress: Address;
@@ -31,20 +31,4 @@ async function logic(req: NextRequest): Promise<TokenBalance[]> {
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
   return handleRequest(req, logic, (result) => NextResponse.json(result));
-}
-
-async function getBalances(
-  address: Address,
-  zerionKey: string,
-): Promise<TokenBalance[]> {
-  try {
-    const zerion = new ZerionAPI(zerionKey);
-    const balances = await zerion.ui.getUserBalances(address, {
-      options: { hideDust: 0.05 },
-    });
-    return zerionToTokenBalances(balances.tokens);
-  } catch (error) {
-    console.error("Error fetching Zerion balances:", error);
-    return [];
-  }
 }
