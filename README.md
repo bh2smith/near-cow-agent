@@ -6,7 +6,6 @@ This is a [Next.js](https://nextjs.org) project that implements an AI-powered ag
 
 - Generate transaction data for CoW Protocol interactions
 - Support for selling native assets (ETH, xDAI, POL, BNB, AVAX)
-- ERC20 token transfers
 - Price quotes and fee estimation for trades
 - Support for multiple EVM networks
 
