@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "concurrently \"next dev --turbopack\" \"make-agent dev -p 3000\"",
-    "dev-testnet": "concurrently \"next dev --turbopack\" \"make-agent dev -p 3000 -t\"",
+    "dev": "concurrently \"next dev\" \"make-agent dev\"",
+    "dev-testnet": "concurrently \"next dev\" \"make-agent dev -t\"",
     "build": "next build",
     "build:deploy": "next build && make-agent deploy -u https://near-cow-agent.vercel.app/",
     "start": "next start",
