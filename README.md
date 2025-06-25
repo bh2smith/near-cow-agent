@@ -5,9 +5,7 @@ This is a [Next.js](https://nextjs.org) project that implements an AI-powered ag
 ## Features
 
 - Generate transaction data for CoW Protocol interactions
-- Support for selling native assets (ETH, xDAI, POL, BNB)
-- ERC20 token transfers
-- WETH wrapping and unwrapping
+- Support for selling native assets (ETH, xDAI, POL, BNB, AVAX)
 - Price quotes and fee estimation for trades
 - Support for multiple EVM networks
 
@@ -16,9 +14,7 @@ This is a [Next.js](https://nextjs.org) project that implements an AI-powered ag
 The agent exposes several endpoints:
 
 - `/api/tools/cowswap`: Quote prices and generate swap transactions
-- `/api/tools/erc20`: Generate ERC20 transfer transactions
-- `/api/tools/weth/wrap`: Generate WETH wrapping transactions
-- `/api/tools/weth/unwrap`: Generate WETH unwrapping transactions
+- `/api/tools/balances`: Retrive User Balances
 
 ## Local Development
 

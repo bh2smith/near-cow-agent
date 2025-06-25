@@ -1,12 +1,5 @@
 import { NextResponse } from "next/server";
-
-const key = JSON.parse(process.env.BITTE_KEY || "{}");
-const bitteConfig = JSON.parse(process.env.BITTE_CONFIG || "{}");
-if (!key?.accountId) {
-  console.error("no account");
-}
-
-const url = bitteConfig.url || "https://near-cow-agent.vercel.app";
+import { ACCOUNT_ID, PLUGIN_URL } from "../../config";
 
 export async function GET() {
   const pluginData = {
@@ -16,9 +9,9 @@ export async function GET() {
       description: "API for interactions with CoW Protocol",
       version: "1.0.0",
     },
-    servers: [{ url }],
+    servers: [{ url: PLUGIN_URL }],
     "x-mb": {
-      "account-id": key.accountId,
+      "account-id": ACCOUNT_ID,
       assistant: {
         name: "CoWSwap Assistant",
         description:
@@ -26,7 +19,7 @@ export async function GET() {
         instructions: `
         This assistant facilitates EVM transaction encoding as signature requests, exclusively for EVM-compatible networks. It adheres to the following strict protocol:
 NETWORKS:
-- ONLY supports Ethereum (chainId: 1), Gnosis (chainId: 100), Arbitrum (chainId: 42161), and Base (chainId: 8453)
+- ONLY supports Ethereum (chainId: 1), Gnosis (chainId: 100), Arbitrum (chainId: 42161), Base (chainId: 8453), Avalanche (chainId: 43114), and Sepolia (chainId: 11155111)
 - NEVER claims to support any other networks
 - ALWAYS requires explicit chainId specification from the user
 - NEVER infers chainId values
@@ -38,7 +31,7 @@ TOKEN HANDLING:
 TRANSACTION PROCESSING:
 - ALWAYS passes the transaction fields to generate-evm-tx tool for signing
 - ALWAYS displays meta content to user after signing
-- ALWAYS passes evmAddress as the safeAddress for any request requiring safeAddress
+- ALWAYS passes evmAddress as the connected evmAddress for any request requiring evmAddress
 - ALWAYS uses balance, weth, and erc20 endpoints only on supported networks
 AUTHENTICATION:
 - REQUIRES if user doesn’t say what network they want require them to provide a chain ID otherwise just assume the network they asked for,
@@ -46,50 +39,19 @@ AUTHENTICATION:
 - CONFIRMS token details explicitly before executing transactions
 This assistant follows these specifications with zero deviation to ensure secure, predictable transaction handling. `,
         tools: [{ type: "generate-evm-tx" }],
-        image: `${url}/cowswap.svg`,
+        image: `${PLUGIN_URL}/cowswap.svg`,
         categories: ["defi"],
-        chainIds: [1, 100, 8453, 42161, 11155111],
+        chainIds: [1, 100, 8453, 42161, 43114, 11155111],
       },
-      image: `${url}/cowswap.svg`,
     },
     paths: {
-      "/api/health": {
-        get: {
-          tags: ["health"],
-          summary: "Confirms server running",
-          description: "Test Endpoint to confirm system is running",
-          operationId: "check-health",
-          parameters: [],
-          responses: {
-            "200": {
-              description: "Ok Message",
-              content: {
-                "application/json": {
-                  schema: {
-                    type: "object",
-                    properties: {
-                      message: {
-                        type: "string",
-                        description: "Ok Message",
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
       "/api/tools/balances": {
         get: {
           tags: ["balances"],
           summary: "Get Token Balances",
           description: "Returns token balances for the connected wallet",
           operationId: "get-balances",
-          parameters: [
-            { $ref: "#/components/parameters/chainId" },
-            { $ref: "#/components/parameters/safeAddress" },
-          ],
+          parameters: [{ $ref: "#/components/parameters/evmAddress" }],
           responses: {
             "200": {
               description: "List of token balances",
@@ -100,6 +62,9 @@ This assistant follows these specifications with zero deviation to ensure secure
                     items: {
                       type: "object",
                       properties: {
+                        chainId: {
+                          $ref: "#/components/schemas/chainId",
+                        },
                         token: {
                           $ref: "#/components/schemas/Address",
                         },
@@ -144,7 +109,7 @@ This assistant follows these specifications with zero deviation to ensure secure
             "Given a partial order compute the minimum fee and a price estimate for the order. Return a full order that can be used directly for signing, and with an included signature, passed directly to the order creation endpoint.",
           parameters: [
             { $ref: "#/components/parameters/chainId" },
-            { $ref: "#/components/parameters/safeAddress" },
+            { $ref: "#/components/parameters/evmAddress" },
             {
               in: "query",
               name: "sellToken",
@@ -221,24 +186,6 @@ This assistant follows these specifications with zero deviation to ensure secure
           },
         },
       },
-      "/api/tools/erc20": {
-        get: {
-          tags: ["erc20"],
-          summary: "Encodes ERC20 (Fungible) Token Transfer",
-          description: "Encodes ERC20 transfer transaction as MetaTransaction",
-          operationId: "erc20-transfer",
-          parameters: [
-            { $ref: "#/components/parameters/chainId" },
-            { $ref: "#/components/parameters/amount" },
-            { $ref: "#/components/parameters/recipient" },
-            { $ref: "#/components/parameters/tokenOrSymbol" },
-          ],
-          responses: {
-            "200": { $ref: "#/components/responses/SignRequest200" },
-            "400": { $ref: "#/components/responses/BadRequest400" },
-          },
-        },
-      },
     },
     components: {
       parameters: {
@@ -274,8 +221,8 @@ This assistant follows these specifications with zero deviation to ensure secure
           },
           example: "0x6810e776880c02933d47db1b9fc05908e5386b96",
         },
-        safeAddress: {
-          name: "safeAddress",
+        evmAddress: {
+          name: "evmAddress",
           in: "query",
           required: true,
           description: "The Safe address (i.e. the connected user address)",
@@ -371,6 +318,12 @@ This assistant follows these specifications with zero deviation to ensure secure
         },
       },
       schemas: {
+        chainId: {
+          type: "number",
+          description:
+            "EVM Network on which to assests live and transactions are to be constructed",
+          example: 100,
+        },
         Address: {
           description:
             "20 byte Ethereum address encoded as a hex with `0x` prefix.",

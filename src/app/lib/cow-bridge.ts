@@ -19,8 +19,9 @@ export async function getQuote(
     const quote = await acrossProvider.getQuote(parameters);
     acrossProvider.getUnsignedBridgeCall(parameters, quote);
     // TODO: Need to build BridgeQuoteAndPost from this!
-    assertIsBridgeQuoteAndPost(quoteResult);
-    return quoteResult;
+    // @ts-expect-error - TODO: Fix this.
+    assertIsBridgeQuoteAndPost(quote);
+    return quote;
   } catch (error: unknown) {
     console.error(error);
     try {

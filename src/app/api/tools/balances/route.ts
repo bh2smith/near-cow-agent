@@ -3,21 +3,18 @@ import type { Address } from "viem";
 import { getZerionKey, validateNextRequest } from "../util";
 import {
   addressField,
-  getSafeBalances,
   handleRequest,
-  numberField,
   validateInput,
 } from "@bitte-ai/agent-sdk";
 import type { TokenBalance, FieldParser } from "@bitte-ai/agent-sdk";
+import { getBalances } from "../balance";
 
 interface Input {
-  chainId: number;
-  safeAddress: Address;
+  evmAddress: Address;
 }
 
 const parsers: FieldParser<Input> = {
-  chainId: numberField,
-  safeAddress: addressField,
+  evmAddress: addressField,
 };
 
 async function logic(req: NextRequest): Promise<TokenBalance[]> {
@@ -26,9 +23,9 @@ async function logic(req: NextRequest): Promise<TokenBalance[]> {
   if (headerError) throw headerError;
   const search = req.nextUrl.searchParams;
   console.log("Request: balances/", search);
-  const { chainId, safeAddress } = validateInput<Input>(search, parsers);
-  const balances = await getSafeBalances(chainId, safeAddress, getZerionKey());
-  console.log(`Retrieved ${balances.length} balances for ${safeAddress}`);
+  const { evmAddress } = validateInput<Input>(search, parsers);
+  const balances = await getBalances(evmAddress, getZerionKey());
+  console.log(`Retrieved ${balances.length} balances for ${evmAddress}`);
   return balances;
 }
 

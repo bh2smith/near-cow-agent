@@ -44,7 +44,10 @@ async function run() {
     appCode: "Bitte.AI",
     signer: bridgeSignerPk,
   };
-  const quote = await getQuote(parameters, bridgeSignerPk);
+  const quote = await getQuote(
+    parameters,
+    // bridgeSignerPk
+  );
   const { swap, bridge, postSwapOrderFromQuote } = quote;
 
   console.log("Swap info", swap);

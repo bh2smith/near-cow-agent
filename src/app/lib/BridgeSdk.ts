@@ -13,10 +13,11 @@ import type {
   SwapAdvancedSettings,
   TradeParameters,
   TradingSdk,
-  WithPartialTraderParams} from "@cowprotocol/cow-sdk";
+  WithPartialTraderParams,
+} from "@cowprotocol/cow-sdk";
 import {
   postSwapOrderFromQuote,
-    areHooksEqual,
+  areHooksEqual,
   BridgeProviderQuoteError,
   BridgingSdk,
   getHookMockForCostEstimation,
@@ -76,7 +77,7 @@ export class BridgeSdk extends BridgingSdk {
         advancedSettings,
         tradingSdk,
         provider: this.getProviders()[0],
-        mockSigner: this.mockSigner
+        mockSigner: this.mockSigner,
       });
     } else {
       // fallback to base class method
@@ -371,64 +372,64 @@ async function getBridgeResult(
   return { bridgeResult, bridgeHook, appDataInfo };
 }
 
-    // Get the bridge result
-    async function signHooksAndSetSwapResult(
-      mockedHook: latest.CoWHook,
-      intermediateTokenAmount: bigint,
-      provider: BridgeProvider<BridgeQuoteResult>,
-      bridgeRequestWithoutAmount: QuoteBridgeRequestWithoutAmount,
-      swapAndBridgeRequest: QuoteBridgeRequest,
-      swapResult: QuoteResults,
-      signer: Signer,
-      defaultGasLimit?: bigint,
-      advancedSettings?: SwapAdvancedSettings,
-    ): Promise<{ swapResult: QuoteResults; bridgeResult: BridgeQuoteResults }> {
-      const appDataOverride = advancedSettings?.appData;
-      const receiverOverride = advancedSettings?.quoteRequest?.receiver;
+// Get the bridge result
+async function signHooksAndSetSwapResult(
+  mockedHook: latest.CoWHook,
+  intermediateTokenAmount: bigint,
+  provider: BridgeProvider<BridgeQuoteResult>,
+  bridgeRequestWithoutAmount: QuoteBridgeRequestWithoutAmount,
+  swapAndBridgeRequest: QuoteBridgeRequest,
+  swapResult: QuoteResults,
+  signer: Signer,
+  defaultGasLimit?: bigint,
+  advancedSettings?: SwapAdvancedSettings,
+): Promise<{ swapResult: QuoteResults; bridgeResult: BridgeQuoteResults }> {
+  const appDataOverride = advancedSettings?.appData;
+  const receiverOverride = advancedSettings?.quoteRequest?.receiver;
 
-      const {
-        bridgeHook,
-        appDataInfo: { doc: appData, fullAppData, appDataKeccak256 },
-        bridgeResult,
-      } = await getBridgeResult({
-        swapAndBridgeRequest: { ...swapAndBridgeRequest, kind: OrderKind.SELL },
-        swapResult,
-        bridgeRequestWithoutAmount: {
-          ...bridgeRequestWithoutAmount,
-          receiver: receiverOverride || bridgeRequestWithoutAmount.receiver,
-        },
-        provider,
-        intermediateTokenAmount,
-        signer,
-        mockedHook,
-        appDataOverride,
-        defaultGasLimit,
-      });
-      log(`Bridge hook for swap: ${JSON.stringify(bridgeHook)}`);
+  const {
+    bridgeHook,
+    appDataInfo: { doc: appData, fullAppData, appDataKeccak256 },
+    bridgeResult,
+  } = await getBridgeResult({
+    swapAndBridgeRequest: { ...swapAndBridgeRequest, kind: OrderKind.SELL },
+    swapResult,
+    bridgeRequestWithoutAmount: {
+      ...bridgeRequestWithoutAmount,
+      receiver: receiverOverride || bridgeRequestWithoutAmount.receiver,
+    },
+    provider,
+    intermediateTokenAmount,
+    signer,
+    mockedHook,
+    appDataOverride,
+    defaultGasLimit,
+  });
+  log(`Bridge hook for swap: ${JSON.stringify(bridgeHook)}`);
 
-      // Update the receiver and appData (both were mocked before we had the bridge hook)
-      swapResult.tradeParameters.receiver = bridgeHook.recipient;
+  // Update the receiver and appData (both were mocked before we had the bridge hook)
+  swapResult.tradeParameters.receiver = bridgeHook.recipient;
 
-      log(
-        `App data for swap: appDataKeccak256=${appDataKeccak256}, fullAppData="${fullAppData}"`,
-      );
-      swapResult.appDataInfo = {
-        fullAppData,
-        appDataKeccak256,
-        doc: appData,
-      };
+  log(
+    `App data for swap: appDataKeccak256=${appDataKeccak256}, fullAppData="${fullAppData}"`,
+  );
+  swapResult.appDataInfo = {
+    fullAppData,
+    appDataKeccak256,
+    doc: appData,
+  };
 
-      return {
-        bridgeResult,
-        swapResult: {
-          ...swapResult,
-          tradeParameters: {
-            ...swapResult.tradeParameters,
-            receiver: bridgeHook.recipient,
-          },
-        },
-      };
-    }
+  return {
+    bridgeResult,
+    swapResult: {
+      ...swapResult,
+      tradeParameters: {
+        ...swapResult.tradeParameters,
+        receiver: bridgeHook.recipient,
+      },
+    },
+  };
+}
 
 async function getBaseBridgeQuoteRequest<T extends BridgeQuoteResult>(params: {
   swapAndBridgeRequest: QuoteBridgeRequest;
@@ -459,36 +460,37 @@ async function getBaseBridgeQuoteRequest<T extends BridgeQuoteResult>(params: {
 }
 
 export async function postSwapOrderFromQuoteCustom(
-      mockSigner: Signer,
-      swap: QuoteResults,
-      orderBookApi: OrderBookApi,
-      advancedSettings?: SwapAdvancedSettings) {
-      // Sign the hooks with the real signer
-      // const { swapResult } = await signHooksAndSetSwapResult(signer, defaultGasLimit, advancedSettings)
+  mockSigner: Signer,
+  swap: QuoteResults,
+  orderBookApi: OrderBookApi,
+  advancedSettings?: SwapAdvancedSettings,
+) {
+  // Sign the hooks with the real signer
+  // const { swapResult } = await signHooksAndSetSwapResult(signer, defaultGasLimit, advancedSettings)
 
-      const quoteResults: QuoteResultsWithSigner = {
-        result: {
-          ...swap, // TODO: compare swap with swapResult!
-          tradeParameters: getTradeParametersAfterQuote({
-            quoteParameters: swap.tradeParameters,
-            sellToken: swap.orderToSign.sellToken,
-          }),
-          signer: mockSigner,
-        },
-        orderBookApi,
-      }
+  const quoteResults: QuoteResultsWithSigner = {
+    result: {
+      ...swap, // TODO: compare swap with swapResult!
+      tradeParameters: getTradeParametersAfterQuote({
+        quoteParameters: swap.tradeParameters,
+        sellToken: swap.orderToSign.sellToken,
+      }),
+      signer: mockSigner,
+    },
+    orderBookApi,
+  };
 
-      return postSwapOrderFromQuote(quoteResults, {
-        ...advancedSettings,
-        appData: swap.appDataInfo.doc,
-        quoteRequest: {
-          ...advancedSettings?.quoteRequest,
-          // Changing receiver back to account proxy
-          receiver: swap.tradeParameters.receiver,
-        },
-      })
-    }
-    /**
+  return postSwapOrderFromQuote(quoteResults, {
+    ...advancedSettings,
+    appData: swap.appDataInfo.doc,
+    quoteRequest: {
+      ...advancedSettings?.quoteRequest,
+      // Changing receiver back to account proxy
+      receiver: swap.tradeParameters.receiver,
+    },
+  });
+}
+/**
  * Set sell token to the initial one
  * Because for ETH-flow orders we do quote requests with wrapped token
  */
@@ -496,13 +498,13 @@ export function getTradeParametersAfterQuote({
   quoteParameters,
   sellToken,
 }: {
-  quoteParameters: TradeParameters
-  sellToken: string
+  quoteParameters: TradeParameters;
+  sellToken: string;
 }): TradeParameters {
-  return { ...quoteParameters, sellToken }
+  return { ...quoteParameters, sellToken };
 }
 
 export type QuoteResultsWithSigner = {
-  result: QuoteResults & { signer: Signer }
-  orderBookApi: OrderBookApi
-}
+  result: QuoteResults & { signer: Signer };
+  orderBookApi: OrderBookApi;
+};
