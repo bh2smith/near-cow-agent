@@ -1,11 +1,5 @@
 import { NextResponse } from "next/server";
-
-const key = JSON.parse(process.env.BITTE_KEY || "{}");
-
-// const url = bitteConfig.url || "https://near-cow-agent.vercel.app";
-const url =
-  process.env.DEPLOYMENT_URL ||
-  `${process.env.NEXT_PUBLIC_HOST || "localhost"}:${process.env.PORT || 3000}`;
+import { ACCOUNT_ID, PLUGIN_URL } from "../../config";
 
 export async function GET() {
   const pluginData = {
@@ -15,9 +9,9 @@ export async function GET() {
       description: "API for interactions with CoW Protocol",
       version: "1.0.0",
     },
-    servers: [{ url }],
+    servers: [{ url: PLUGIN_URL }],
     "x-mb": {
-      "account-id": key.accountId,
+      "account-id": ACCOUNT_ID,
       assistant: {
         name: "CoWSwap Assistant",
         description:
@@ -25,7 +19,7 @@ export async function GET() {
         instructions: `
         This assistant facilitates EVM transaction encoding as signature requests, exclusively for EVM-compatible networks. It adheres to the following strict protocol:
 NETWORKS:
-- ONLY supports Ethereum (chainId: 1), Gnosis (chainId: 100), Arbitrum (chainId: 42161), and Base (chainId: 8453)
+- ONLY supports Ethereum (chainId: 1), Gnosis (chainId: 100), Arbitrum (chainId: 42161), Base (chainId: 8453), Avalanche (chainId: 43114), and Sepolia (chainId: 11155111)
 - NEVER claims to support any other networks
 - ALWAYS requires explicit chainId specification from the user
 - NEVER infers chainId values
@@ -37,7 +31,11 @@ TOKEN HANDLING:
 TRANSACTION PROCESSING:
 - ALWAYS passes the transaction fields to generate-evm-tx tool for signing
 - ALWAYS displays meta content to user after signing
+<<<<<<< HEAD
 - ALWAYS passes evmAddress as the evmAddress for any request requiring evmAddress
+=======
+- ALWAYS passes evmAddress as the connected evmAddress for any request requiring evmAddress
+>>>>>>> main
 - ALWAYS uses balance, weth, and erc20 endpoints only on supported networks
 AUTHENTICATION:
 - REQUIRES if user doesn’t say what network they want require them to provide a chain ID otherwise just assume the network they asked for,
@@ -45,50 +43,19 @@ AUTHENTICATION:
 - CONFIRMS token details explicitly before executing transactions
 This assistant follows these specifications with zero deviation to ensure secure, predictable transaction handling. `,
         tools: [{ type: "generate-evm-tx" }],
-        image: `${url}/cowswap.svg`,
+        image: `${PLUGIN_URL}/cowswap.svg`,
         categories: ["defi"],
-        chainIds: [1, 100, 8453, 42161, 11155111],
+        chainIds: [1, 100, 8453, 42161, 43114, 11155111],
       },
-      image: `${url}/cowswap.svg`,
     },
     paths: {
-      "/api/health": {
-        get: {
-          tags: ["health"],
-          summary: "Confirms server running",
-          description: "Test Endpoint to confirm system is running",
-          operationId: "check-health",
-          parameters: [],
-          responses: {
-            "200": {
-              description: "Ok Message",
-              content: {
-                "application/json": {
-                  schema: {
-                    type: "object",
-                    properties: {
-                      message: {
-                        type: "string",
-                        description: "Ok Message",
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
       "/api/tools/balances": {
         get: {
           tags: ["balances"],
           summary: "Get Token Balances",
           description: "Returns token balances for the connected wallet",
           operationId: "get-balances",
-          parameters: [
-            { $ref: "#/components/parameters/chainId" },
-            { $ref: "#/components/parameters/evmAddress" },
-          ],
+          parameters: [{ $ref: "#/components/parameters/evmAddress" }],
           responses: {
             "200": {
               description: "List of token balances",
@@ -99,6 +66,9 @@ This assistant follows these specifications with zero deviation to ensure secure
                     items: {
                       type: "object",
                       properties: {
+                        chainId: {
+                          $ref: "#/components/schemas/chainId",
+                        },
                         token: {
                           $ref: "#/components/schemas/Address",
                         },
@@ -209,24 +179,6 @@ This assistant follows these specifications with zero deviation to ensure secure
       //     },
       //   },
       // },
-      "/api/tools/erc20": {
-        get: {
-          tags: ["erc20"],
-          summary: "Encodes ERC20 (Fungible) Token Transfer",
-          description: "Encodes ERC20 transfer transaction as MetaTransaction",
-          operationId: "erc20-transfer",
-          parameters: [
-            { $ref: "#/components/parameters/chainId" },
-            { $ref: "#/components/parameters/amount" },
-            { $ref: "#/components/parameters/recipient" },
-            { $ref: "#/components/parameters/tokenOrSymbol" },
-          ],
-          responses: {
-            "200": { $ref: "#/components/responses/SignRequest200" },
-            "400": { $ref: "#/components/responses/BadRequest400" },
-          },
-        },
-      },
       "/api/tools/quote": {
         post: {
           tags: ["quote"],
@@ -240,6 +192,37 @@ This assistant follows these specifications with zero deviation to ensure secure
             { $ref: "#/components/parameters/sellToken" },
             { $ref: "#/components/parameters/buyToken" },
             { $ref: "#/components/parameters/receiver" },
+            { $ref: "#/components/parameters/evmAddress" },
+            {
+              in: "query",
+              name: "sellToken",
+              required: true,
+              schema: {
+                type: "string",
+              },
+              description:
+                "The ERC-20 token symbol or address to be sold, if provided with the symbol do not try to infer the address.",
+            },
+            {
+              in: "query",
+              name: "buyToken",
+              required: true,
+              schema: {
+                type: "string",
+              },
+              description:
+                "The ERC-20 token symbol or address to be bought, if provided with the symbol do not try to infer the address..",
+            },
+            {
+              in: "query",
+              name: "receiver",
+              required: false,
+              schema: {
+                type: "string",
+              },
+              description:
+                "The address to receive the proceeds of the trade, instead of the sender's address.",
+            },
             {
               in: "query",
               name: "sellAmountBeforeFee",
@@ -576,6 +559,12 @@ This assistant follows these specifications with zero deviation to ensure secure
         },
       },
       schemas: {
+        chainId: {
+          type: "number",
+          description:
+            "EVM Network on which to assests live and transactions are to be constructed",
+          example: 100,
+        },
         Address: {
           description:
             "20 byte Ethereum address encoded as a hex with `0x` prefix.",
