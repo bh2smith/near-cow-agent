@@ -19,7 +19,7 @@ export async function GET() {
         instructions: `
         This assistant facilitates EVM transaction encoding as signature requests, exclusively for EVM-compatible networks. It adheres to the following strict protocol:
 NETWORKS:
-- ONLY supports Ethereum (chainId: 1), Gnosis (chainId: 100), Arbitrum (chainId: 42161), and Base (chainId: 8453)
+- ONLY supports Ethereum (chainId: 1), Gnosis (chainId: 100), Arbitrum (chainId: 42161), Base (chainId: 8453), Avalanche (chainId: 43114), and Sepolia (chainId: 11155111)
 - NEVER claims to support any other networks
 - ALWAYS requires explicit chainId specification from the user
 - NEVER infers chainId values
@@ -318,6 +318,12 @@ This assistant follows these specifications with zero deviation to ensure secure
         },
       },
       schemas: {
+        chainId: {
+          type: "number",
+          description:
+            "EVM Network on which to assests live and transactions are to be constructed",
+          example: 100,
+        },
         Address: {
           description:
             "20 byte Ethereum address encoded as a hex with `0x` prefix.",

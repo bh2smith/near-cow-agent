@@ -13,5 +13,6 @@ if (!PLUGIN_URL) {
   );
   process.exit(1);
 }
+console.log("PLUGIN_URL", PLUGIN_URL);
 
 export { ACCOUNT_ID, PLUGIN_URL };
