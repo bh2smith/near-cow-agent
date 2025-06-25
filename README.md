@@ -15,7 +15,7 @@ This is a [Next.js](https://nextjs.org) project that implements an AI-powered ag
 The agent exposes several endpoints:
 
 - `/api/tools/cowswap`: Quote prices and generate swap transactions
-- `/api/tools/balances`: Generate ERC20 transfer transactions
+- `/api/tools/balances`: Retrive User Balances
 
 ## Local Development
 
