@@ -23,7 +23,7 @@
     "redoc": "^2.5.0",
     "vercel-url": "^0.2.8",
     "viem": "^2.31.4",
-    "zerion-sdk": "^0.1.1"
+    "zerion-sdk": "^0.1.4"
   },
   "devDependencies": {
     "@bitte-ai/types": "^0.5.1",

@@ -34,7 +34,7 @@ export async function parseQuoteRequest(
     buyToken,
     chainId,
     sellAmountBeforeFee,
-    safeAddress: sender,
+    evmAddress: sender,
   } = requestBody;
   if (sellAmountBeforeFee === "0") {
     throw new Error("Sell amount cannot be 0");
