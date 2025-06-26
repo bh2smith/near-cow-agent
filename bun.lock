@@ -287,7 +287,7 @@
 
     "@bcoe/v8-coverage": ["@bcoe/v8-coverage@0.2.3", "", {}, "sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw=="],
 
-    "@bitte-ai/agent-sdk": ["@bitte-ai/agent-sdk@0.2.0", "", { "dependencies": { "near-safe": "^0.10.0", "viem": "^2.29.3", "zerion-sdk": "^0.1.1" } }, "sha512-3Iz0Uk84ViiXPc8oq+BOpVJepBt8v8V/JEFUjh5vI0hTspxbuR9G0ZwYbUfFcgCS4ZvBMWZHzGkxhF6IfPSpbA=="],
+    "@bitte-ai/agent-sdk": ["@bitte-ai/agent-sdk@0.2.1", "", { "dependencies": { "near-safe": "^0.10.0", "viem": "^2.29.3", "zerion-sdk": "^0.1.1" } }, "sha512-uWBeIFZNDnHaB46w+k0R6WSrPos6uYeBvabWdYjhTXjuJh7Kp200IUrAFmpZXs4U2GYIO1V5cVcdzPghV1BKxw=="],
 
     "@bitte-ai/types": ["@bitte-ai/types@0.5.1", "", { "dependencies": { "@mysten/sui": "^1.26.0", "@near-wallet-selector/core": "^8.9.0", "@suiet/wallet-kit": "^0.3.4", "ai": "^4.1.51", "bn.js": "^5.2.1", "near-api-js": "^5.0.0", "near-safe": "^0.10.0", "openapi-types": "^12.0.0", "react": "^18.0.0", "viem": "2.29.1", "wagmi": "^2.15.6" } }, "sha512-H5qO4aIGomGY4pvC784A0qRRVvGx7FVLzIIve46YQ2OkCpf0FJqilXTmYSmX9+Abvh39m8yidPI4CBpTPQNSZw=="],
 
@@ -2644,8 +2644,6 @@
     "@babel/preset-env/semver": ["semver@6.3.1", "", { "bin": { "semver": "bin/semver.js" } }, "sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA=="],
 
     "@babel/traverse/globals": ["globals@11.12.0", "", {}, "sha512-WOBp/EEGUiIsJSp7wcv/y6MO+lV9UoncWqxuFfm8eBwzWNgyfBd6Gz+IeKQ9jCmyhoH99g15M3T+QaVHFjizVA=="],
-
-    "@bitte-ai/agent-sdk/zerion-sdk": ["zerion-sdk@0.1.1", "", {}, "sha512-6wcxYkvgBGY2loGi3RMCJmJSpZM3bSAnHcfWJ5c8oYg24zxXXTBVXZL/PNdF+rYLyKZsANZfwmGUvObp0gEgOA=="],
 
     "@bitte-ai/types/react": ["react@18.3.1", "", { "dependencies": { "loose-envify": "^1.1.0" } }, "sha512-wS+hAgJShR0KhEvPJArfuPVN1+Hz1t0Y6n5jLrGQbkb4urgPE/0Rve+1kMB1v/oWgHgm4WIcV+i7F2pTVj+2iQ=="],
 
