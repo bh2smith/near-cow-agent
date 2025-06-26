@@ -3,8 +3,6 @@ import { type NextRequest, NextResponse } from "next/server";
 import { orderRequestFlow, type OrderResponse } from "./orderFlow";
 import { validateNextRequest, getZerionKey, getTokenMap } from "../util";
 import { handleRequest } from "@bitte-ai/agent-sdk";
-import { parseWidgetData } from "./util/ui";
-import type { SwapFTData } from "@bitte-ai/types";
 
 // Refer to https://api.cow.fi/docs/#/ for Specifics on Quoting and Order posting.
 
@@ -18,24 +16,14 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   return handleRequest(req, logic, (result) => NextResponse.json(result));
 }
 
-async function logic(
-  req: NextRequest,
-): Promise<OrderResponse & { data: SwapFTData }> {
+async function logic(req: NextRequest): Promise<OrderResponse> {
   const parsedRequest = await parseQuoteRequest(
     req,
     await getTokenMap(),
     getZerionKey(),
   );
   console.log("POST Request for quote:", parsedRequest);
-  const orderResponse = await orderRequestFlow(parsedRequest);
-  const result = {
-    ...orderResponse,
-    data: parseWidgetData({
-      chainId: parsedRequest.chainId,
-      tokenData: parsedRequest.tokenData,
-      quote: orderResponse.meta.quote,
-    }),
-  };
+  const result = await orderRequestFlow(parsedRequest);
   console.log("POST Response for quote:", result);
   return result;
 }
