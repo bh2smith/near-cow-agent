@@ -54,60 +54,6 @@ This assistant follows these specifications with zero deviation to ensure secure
       },
     },
     paths: {
-      "/api/tools/balances": {
-        get: {
-          tags: ["balances"],
-          summary: "Get Token Balances",
-          description: "Returns token balances for the connected wallet",
-          operationId: "get-balances",
-          parameters: [{ $ref: "#/components/parameters/evmAddress" }],
-          responses: {
-            "200": {
-              description: "List of token balances",
-              content: {
-                "application/json": {
-                  schema: {
-                    type: "array",
-                    items: {
-                      type: "object",
-                      properties: {
-                        chainId: {
-                          $ref: "#/components/schemas/chainId",
-                        },
-                        token: {
-                          $ref: "#/components/schemas/Address",
-                        },
-                        balance: {
-                          type: "string",
-                          description: "Token balance in smallest units (wei)",
-                          example: "1000000000000000000",
-                        },
-                        symbol: {
-                          type: "string",
-                          description: "Token symbol",
-                          example: "USDC",
-                        },
-                        decimals: {
-                          type: "number",
-                          description: "Token decimals",
-                          example: 18,
-                        },
-                        logoUri: {
-                          type: "string",
-                          description: "Token logo URI",
-                          example: "https://example.com/token-logo.png",
-                        },
-                      },
-                      required: ["token", "balance", "symbol", "decimals"],
-                    },
-                  },
-                },
-              },
-            },
-            "400": { $ref: "#/components/responses/BadRequest400" },
-          },
-        },
-      },
       "/api/tools/cowswap": {
         post: {
           tags: ["cowswap"],
@@ -123,8 +69,12 @@ This assistant follows these specifications with zero deviation to ensure secure
             { $ref: "#/components/parameters/buyToken" },
             { $ref: "#/components/parameters/receiver" },
             {
-              ...amountParam,
               name: "sellAmountBeforeFee",
+              in: "query",
+              required: true,
+              schema: {
+                type: "string",
+              },
               description:
                 "The amount of tokens to sell before fees, represented as a decimal string in token units. Not Atoms.",
             },
@@ -244,12 +194,6 @@ This assistant follows these specifications with zero deviation to ensure secure
         },
       },
       schemas: {
-        chainId: {
-          type: "number",
-          description:
-            "EVM Network on which to assests live and transactions are to be constructed",
-          example: 100,
-        },
         Address: AddressSchema,
         SignRequest: SignRequestSchema,
         MetaTransaction: MetaTransactionSchema,
