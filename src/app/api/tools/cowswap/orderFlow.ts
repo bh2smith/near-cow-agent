@@ -94,7 +94,7 @@ export async function orderRequestFlow({
   console.log("Built Order", order);
 
   const orderUid = await orderbook.sendOrder(order);
-  const orderUrl = orderbook.getOrderLink(orderUid);
+  const orderUrl = `explorer.cow.fi/orders/${orderUid}`;
   console.log("Order Posted", orderUrl);
 
   return {
@@ -108,7 +108,7 @@ export async function orderRequestFlow({
       ],
     }),
     meta: {
-      orderUrl: `explorer.cow.fi/orders/${orderUid}`,
+      orderUrl,
       quote: quoteResponse.quote,
       ui: parseWidgetData({
         chainId,
