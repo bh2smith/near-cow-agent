@@ -14,15 +14,14 @@ import { getBalances } from "../../balance";
 export interface ParsedQuoteRequest {
   quoteRequest: OrderQuoteRequest;
   chainId: number;
+  tokenData: { buy: TokenInfo; sell: TokenInfo };
 }
 
 export async function parseQuoteRequest(
   req: NextRequest,
   tokenMap: BlockchainMapping,
   zerionKey: string,
-): Promise<
-  ParsedQuoteRequest & { tokenData: { buy: TokenInfo; sell: TokenInfo } }
-> {
+): Promise<ParsedQuoteRequest> {
   // TODO - Add Type Guard on Request (to determine better if it needs processing below.)
   const requestBody = await req.json();
   console.log("Raw Request Body:", requestBody);

@@ -25,6 +25,7 @@ export function parseWidgetData({
       contractAddress: quote.sellToken,
       amount: formatUnits(BigInt(quote.sellAmount), tokenData.sell.decimals),
       usdValue: 0,
+      // TODO(bh2smith): Fetch and return Token Name (https://github.com/BitteProtocol/core/issues/44)
       name: tokenData.sell.symbol,
       ...tokenData.sell,
     },
