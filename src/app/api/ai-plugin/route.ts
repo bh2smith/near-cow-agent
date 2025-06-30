@@ -20,7 +20,7 @@ export async function GET() {
     },
     servers: [{ url: PLUGIN_URL }],
     "x-mb": {
-      "account-id": ACCOUNT_ID,
+      "account-id": ACCOUNT_ID || "max-normal.near",
       assistant: {
         name: "CoWSwap Assistant",
         description:
