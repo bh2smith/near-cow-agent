@@ -16,7 +16,8 @@ import {
   type OrderParameters,
   OrderKind,
 } from "@cowprotocol/cow-sdk";
-import { getClient, type MetaTransaction } from "near-safe";
+import type { MetaTransaction } from "@bitte-ai/types";
+import { getClient } from "near-safe";
 import stringify from "json-stringify-deterministic";
 
 const MAX_APPROVAL = BigInt(
@@ -65,7 +66,7 @@ export async function sellTokenApprovalTx(args: {
   if (allowance < BigInt(sellAmount)) {
     // Insufficient allowance
     return {
-      to: sellToken,
+      to: getAddress(sellToken),
       value: "0x0",
       data: encodeFunctionData({
         abi: parseAbi([

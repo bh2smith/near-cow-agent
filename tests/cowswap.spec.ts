@@ -275,7 +275,7 @@ describe("CowSwap Plugin", () => {
     });
     expect(swapData).toStrictEqual({
       network: {
-        name: "100",
+        name: "Gnosis",
         icon: "",
       },
       type: "swap",
