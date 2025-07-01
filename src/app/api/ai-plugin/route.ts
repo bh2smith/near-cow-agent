@@ -1,5 +1,14 @@
 import { NextResponse } from "next/server";
 import { ACCOUNT_ID, PLUGIN_URL } from "../../config";
+import {
+  addressOrSymbolParam,
+  addressParam,
+  AddressSchema,
+  amountParam,
+  chainIdParam,
+  SignRequestSchema,
+  MetaTransactionSchema,
+} from "@bitte-ai/agent-sdk";
 
 export async function GET() {
   const pluginData = {
@@ -11,7 +20,7 @@ export async function GET() {
     },
     servers: [{ url: PLUGIN_URL }],
     "x-mb": {
-      "account-id": ACCOUNT_ID,
+      "account-id": ACCOUNT_ID || "max-normal.near",
       assistant: {
         name: "CoWSwap Assistant",
         description:
@@ -31,11 +40,7 @@ TOKEN HANDLING:
 TRANSACTION PROCESSING:
 - ALWAYS passes the transaction fields to generate-evm-tx tool for signing
 - ALWAYS displays meta content to user after signing
-<<<<<<< HEAD
-- ALWAYS passes evmAddress as the evmAddress for any request requiring evmAddress
-=======
 - ALWAYS passes evmAddress as the connected evmAddress for any request requiring evmAddress
->>>>>>> main
 - ALWAYS uses balance, weth, and erc20 endpoints only on supported networks
 AUTHENTICATION:
 - REQUIRES if user doesn’t say what network they want require them to provide a chain ID otherwise just assume the network they asked for,
@@ -192,40 +197,9 @@ This assistant follows these specifications with zero deviation to ensure secure
             { $ref: "#/components/parameters/sellToken" },
             { $ref: "#/components/parameters/buyToken" },
             { $ref: "#/components/parameters/receiver" },
-            { $ref: "#/components/parameters/evmAddress" },
             {
-              in: "query",
-              name: "sellToken",
-              required: true,
-              schema: {
-                type: "string",
-              },
-              description:
-                "The ERC-20 token symbol or address to be sold, if provided with the symbol do not try to infer the address.",
-            },
-            {
-              in: "query",
-              name: "buyToken",
-              required: true,
-              schema: {
-                type: "string",
-              },
-              description:
-                "The ERC-20 token symbol or address to be bought, if provided with the symbol do not try to infer the address..",
-            },
-            {
-              in: "query",
-              name: "receiver",
-              required: false,
-              schema: {
-                type: "string",
-              },
-              description:
-                "The address to receive the proceeds of the trade, instead of the sender's address.",
-            },
-            {
-              in: "query",
               name: "sellAmountBeforeFee",
+              in: "query",
               required: true,
               schema: {
                 type: "string",
@@ -392,99 +366,31 @@ This assistant follows these specifications with zero deviation to ensure secure
     },
     components: {
       parameters: {
-        chainId: {
-          name: "chainId",
-          in: "query",
-          description:
-            "EVM Network on which to assests live and transactions are to be constructed",
-          required: true,
-          schema: {
-            type: "number",
-          },
-          example: 100,
-        },
-        amount: {
-          name: "amount",
-          in: "query",
-          description: "amount in Units",
-          required: true,
-          schema: {
-            type: "number",
-          },
-          example: 0.123,
-        },
-        address: {
-          name: "address",
-          in: "query",
-          description:
-            "20 byte Ethereum address encoded as a hex with `0x` prefix.",
-          required: true,
-          schema: {
-            type: "string",
-          },
-          example: "0x6810e776880c02933d47db1b9fc05908e5386b96",
-        },
+        chainId: chainIdParam,
+        amount: amountParam,
+        address: addressParam,
         evmAddress: {
+          ...addressParam,
           name: "evmAddress",
-          in: "query",
-          required: true,
-          description:
-            "The address of the connected account (i.e. the connected user address)",
-          schema: {
-            $ref: "#/components/schemas/Address",
-          },
+          description: "The address of the connected account",
         },
         receiver: {
-          in: "query",
+          ...addressParam,
           name: "receiver",
           required: false,
-          schema: {
-            type: "string",
-          },
-          description:
-            "The address to receive the proceeds of the trade, instead of the sender's address.",
-        },
-        recipient: {
-          name: "recipient",
-          in: "query",
-          required: true,
           description: "Recipient address of the transferred token.",
-          schema: {
-            $ref: "#/components/schemas/Address",
-          },
-        },
-        token: {
-          name: "token",
-          in: "query",
-          description: "Token address to be transferred.",
-          schema: {
-            $ref: "#/components/schemas/Address",
-          },
-        },
-        sellToken: {
-          name: "sellToken",
-          in: "query",
-          description: "The ERC-20 token symbol or address to be sold.",
-          schema: {
-            type: "string",
-          },
         },
         buyToken: {
+          ...addressOrSymbolParam,
           name: "buyToken",
-          in: "query",
-          description: "The ERC-20 token symbol or address to be bought.",
-          schema: {
-            type: "string",
-          },
+          description:
+            "The ERC-20 token symbol or address to be bought, if provided with the symbol do not try to infer the address.",
         },
-        tokenOrSymbol: {
-          name: "tokenOrSymbol",
-          in: "query",
+        sellToken: {
+          ...addressOrSymbolParam,
+          name: "sellToken",
           description:
             "The ERC-20 token symbol or address to be sold, if provided with the symbol do not try to infer the address.",
-          schema: {
-            type: "string",
-          },
         },
       },
       responses: {
@@ -559,108 +465,9 @@ This assistant follows these specifications with zero deviation to ensure secure
         },
       },
       schemas: {
-        chainId: {
-          type: "number",
-          description:
-            "EVM Network on which to assests live and transactions are to be constructed",
-          example: 100,
-        },
-        Address: {
-          description:
-            "20 byte Ethereum address encoded as a hex with `0x` prefix.",
-          type: "string",
-          example: "0x6810e776880c02933d47db1b9fc05908e5386b96",
-        },
-        SignRequest: {
-          type: "object",
-          required: ["method", "chainId", "params"],
-          properties: {
-            method: {
-              type: "string",
-              enum: [
-                "eth_sign",
-                "personal_sign",
-                "eth_sendTransaction",
-                "eth_signTypedData",
-                "eth_signTypedData_v4",
-              ],
-              description: "The signing method to be used.",
-              example: "eth_sendTransaction",
-            },
-            chainId: {
-              type: "integer",
-              description:
-                "The ID of the Ethereum chain where the transaction or signing is taking place.",
-              example: 100,
-            },
-            params: {
-              oneOf: [
-                {
-                  type: "array",
-                  items: {
-                    $ref: "#/components/schemas/MetaTransaction",
-                  },
-                  description: "An array of Ethereum transaction parameters.",
-                },
-                {
-                  type: "array",
-                  items: {
-                    type: "string",
-                  },
-                  description: "Parameters for personal_sign request",
-                  example: [
-                    "0x4578616d706c65206d657373616765",
-                    "0x0000000000000000000000000000000000000001",
-                  ],
-                },
-                {
-                  type: "array",
-                  items: {
-                    type: "string",
-                  },
-                  description: "Parameters for eth_sign request",
-                  example: [
-                    "0x0000000000000000000000000000000000000001",
-                    "0x4578616d706c65206d657373616765",
-                  ],
-                },
-                {
-                  type: "array",
-                  items: {
-                    type: "string",
-                  },
-                  description:
-                    "Parameters for signing structured data (TypedDataParams)",
-                  example: [
-                    "0x0000000000000000000000000000000000000001",
-                    '{"data": {"types": {"EIP712Domain": [{"name": "name","type": "string"}]}}}',
-                  ],
-                },
-              ],
-            },
-          },
-        },
-        MetaTransaction: {
-          description: "Sufficient data representing an EVM transaction",
-          type: "object",
-          properties: {
-            to: {
-              $ref: "#/components/schemas/Address",
-              description: "Recipient address",
-            },
-            data: {
-              type: "string",
-              description: "Transaction calldata",
-              example: "0xd0e30db0",
-            },
-            value: {
-              type: "string",
-              description: "Transaction value",
-              example: "0x1b4fbd92b5f8000",
-            },
-          },
-          required: ["to", "data", "value"],
-        },
+        Address: AddressSchema,
+        SignRequest: SignRequestSchema,
+        MetaTransaction: MetaTransactionSchema,
         AppData: {
           description:
             "The string encoding of a JSON object representing some `appData`. The format of the JSON expected in the `appData` field is defined [here](https://github.com/cowprotocol/app-data).",

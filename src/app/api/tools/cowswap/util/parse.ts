@@ -46,15 +46,17 @@ export async function parseQuoteRequest(
   if (!buyTokenData) {
     throw new Error(`Buy token not found on chain ${chainId}: ${buyToken}`);
   }
+  console.log("WE IS HERE");
+  const sellAmt = parseUnits(
+    sellAmountBeforeFee,
+    sellTokenData.decimals,
+  ).toString();
   return {
     chainId,
     quoteRequest: {
       sellToken: sellTokenData.address,
       buyToken: buyTokenData.address,
-      sellAmountBeforeFee: parseUnits(
-        sellAmountBeforeFee,
-        sellTokenData.decimals,
-      ).toString(),
+      sellAmountBeforeFee: sellAmt,
       // TODO - change this when we want to enable buy orders.
       kind: OrderQuoteSideKindSell.SELL,
       // TODO - change this when we want to enable alternate recipients.

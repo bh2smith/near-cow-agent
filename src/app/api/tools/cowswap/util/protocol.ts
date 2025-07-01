@@ -16,9 +16,9 @@ import {
   type OrderParameters,
   OrderKind,
 } from "@cowprotocol/cow-sdk";
-import { getClient, type MetaTransaction } from "near-safe";
+import type { MetaTransaction } from "@bitte-ai/types";
+import { getClient } from "near-safe";
 import stringify from "json-stringify-deterministic";
-import type { EthTransactionParams } from "@/src/app/types";
 
 const MAX_APPROVAL = BigInt(
   "115792089237316195423570985008687907853269984665640564039457584007913129639935",
@@ -30,9 +30,7 @@ const GPV2SettlementContract =
   "0x9008D19f58AAbD9eD0D60971565AA8510560ab41" as Address;
 const GPv2VaultRelayer = "0xC92E8bdf79f0507f65a392b0ab4667716BFE0110";
 
-export function setPresignatureTx(
-  orderUid: string,
-): Omit<EthTransactionParams, "from"> {
+export function setPresignatureTx(orderUid: string): MetaTransaction {
   if (!isHex(orderUid)) {
     throw new Error(`Invalid OrderUid (not hex): ${orderUid}`);
   }
@@ -69,7 +67,7 @@ export async function sellTokenApprovalTx(args: {
   if (allowance < BigInt(sellAmount)) {
     // Insufficient allowance
     return {
-      to: sellToken,
+      to: getAddress(sellToken),
       value: "0x0",
       data: encodeFunctionData({
         abi: parseAbi([

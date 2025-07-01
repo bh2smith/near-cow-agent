@@ -1,4 +1,4 @@
-import type { MetaTransaction, SignRequestData } from "near-safe";
+import type { SignRequest, MetaTransaction } from "@bitte-ai/types";
 import {
   applySlippage,
   buildAndPostAppData,
@@ -15,6 +15,8 @@ import {
   wrapMetaTransaction,
   signRequestFor,
 } from "@bitte-ai/agent-sdk";
+import { parseWidgetData } from "./util/ui";
+import type { SwapFTData } from "@bitte-ai/types";
 
 const slippageBps = Number.parseInt(process.env.SLIPPAGE_BPS || "100");
 const referralAddress =
@@ -24,13 +26,14 @@ const partnerAddress =
 const partnerBps = Number.parseInt(process.env.PARTNER_BPS || "10");
 
 export interface OrderResponse {
-  transaction: SignRequestData;
-  meta: { orderUrl: string; quote: OrderParameters };
+  transaction: SignRequest;
+  meta: { orderUrl: string; quote: OrderParameters; ui: SwapFTData };
 }
 
 export async function orderRequestFlow({
   chainId,
   quoteRequest,
+  tokenData,
 }: ParsedQuoteRequest): Promise<OrderResponse> {
   if (
     !(quoteRequest.kind === "sell" && "sellAmountBeforeFee" in quoteRequest)
@@ -91,7 +94,7 @@ export async function orderRequestFlow({
   console.log("Built Order", order);
 
   const orderUid = await orderbook.sendOrder(order);
-  const orderUrl = orderbook.getOrderLink(orderUid);
+  const orderUrl = `explorer.cow.fi/orders/${orderUid}`;
   console.log("Order Posted", orderUrl);
 
   return {
@@ -104,6 +107,14 @@ export async function orderRequestFlow({
         setPresignatureTx(orderUid),
       ],
     }),
-    meta: { orderUrl, quote: quoteResponse.quote },
+    meta: {
+      orderUrl,
+      quote: quoteResponse.quote,
+      ui: parseWidgetData({
+        chainId,
+        tokenData: tokenData,
+        quote: quoteResponse.quote,
+      }),
+    },
   };
 }
