@@ -17,8 +17,8 @@ import {
   OrderKind,
 } from "@cowprotocol/cow-sdk";
 import type { MetaTransaction } from "@bitte-ai/types";
-import { getClient } from "near-safe";
 import stringify from "json-stringify-deterministic";
+import { getClient } from "../../util";
 
 const MAX_APPROVAL = BigInt(
   "115792089237316195423570985008687907853269984665640564039457584007913129639935",

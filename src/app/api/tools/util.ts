@@ -1,13 +1,13 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { unstable_cache } from "next/cache";
 import {
+  getChainById,
   loadTokenMap,
   validateRequest,
   type BlockchainMapping,
 } from "@bitte-ai/agent-sdk";
-import type { Address } from "viem";
-import { isHex } from "viem";
-import { getClient } from "near-safe";
+import type { Address, PublicClient } from "viem";
+import { createPublicClient, http, isHex } from "viem";
 
 export async function validateNextRequest(
   req: NextRequest,
@@ -52,4 +52,13 @@ export async function isEOA(
 ): Promise<boolean> {
   const codeAt = await getClient(chainId).getCode({ address });
   return !isHex(codeAt);
+}
+
+export function getClient(chainId: number): PublicClient {
+  const chain = getChainById(chainId);
+  const client = createPublicClient({
+    chain,
+    transport: http(chain.rpcUrls.default.http[0]),
+  });
+  return client;
 }
