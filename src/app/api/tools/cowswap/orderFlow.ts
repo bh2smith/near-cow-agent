@@ -1,4 +1,4 @@
-import type { MetaTransaction, SignRequestData } from "near-safe";
+import type { SignRequest, MetaTransaction } from "@bitte-ai/types";
 import {
   applySlippage,
   buildAndPostAppData,
@@ -26,7 +26,7 @@ const partnerAddress =
 const partnerBps = Number.parseInt(process.env.PARTNER_BPS || "10");
 
 export interface OrderResponse {
-  transaction: SignRequestData;
+  transaction: SignRequest;
   meta: { orderUrl: string; quote: OrderParameters; ui: SwapFTData };
 }
 
