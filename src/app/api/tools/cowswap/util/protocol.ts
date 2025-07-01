@@ -26,8 +26,9 @@ const MAX_APPROVAL = BigInt(
 
 // CoW (and many other Dex Protocols use this to represent native asset).
 export const NATIVE_ASSET = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
-const GPV2SettlementContract =
-  "0x9008D19f58AAbD9eD0D60971565AA8510560ab41" as Address;
+const SettlementContract = getAddress(
+  "0x9008D19f58AAbD9eD0D60971565AA8510560ab41",
+);
 const GPv2VaultRelayer = "0xC92E8bdf79f0507f65a392b0ab4667716BFE0110";
 
 export function setPresignatureTx(orderUid: string): MetaTransaction {
@@ -35,7 +36,7 @@ export function setPresignatureTx(orderUid: string): MetaTransaction {
     throw new Error(`Invalid OrderUid (not hex): ${orderUid}`);
   }
   return {
-    to: GPV2SettlementContract,
+    to: SettlementContract,
     value: "0x0",
     data: encodeFunctionData({
       abi: parseAbi([

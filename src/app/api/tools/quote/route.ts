@@ -5,10 +5,10 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { basicParseQuote } from "../cowswap/util/parse";
 import { getTokenMap } from "../util";
-import type { SignRequestData } from "@/src/app/types";
 import { setPresignatureTx } from "../cowswap/util/protocol";
 import { OrderSigningUtils } from "@cowprotocol/cow-sdk";
 import { getAddress } from "viem";
+import type { SignRequest } from "@bitte-ai/types";
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
   console.log("quote/", req.url);
@@ -17,7 +17,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
 async function logic(
   req: NextRequest,
-): Promise<{ quote: OrderQuoteResponse; signRequest: SignRequestData }> {
+): Promise<{ quote: OrderQuoteResponse; signRequest: SignRequest }> {
   const parsedRequest = await basicParseQuote(req, await getTokenMap());
   console.log("Parsed Quote Request", parsedRequest);
   const orderBookApi = new OrderBookApi({ chainId: parsedRequest.chainId });
@@ -47,7 +47,7 @@ async function logic(
   );
   console.log("Order Digest", orderDigest);
   console.log("Order Uid", orderId);
-  let signRequest: SignRequestData;
+  let signRequest: SignRequest;
   if (response.quote.signingScheme === "eip712") {
     const data = JSON.stringify({
       types: {
