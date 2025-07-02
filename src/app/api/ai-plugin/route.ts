@@ -202,8 +202,18 @@ This assistant follows these specifications with zero deviation to ensure secure
           parameters: [
             { $ref: "#/components/parameters/chainId" },
             { $ref: "#/components/parameters/evmAddress" },
-            { $ref: "#/components/parameters/sellToken" },
-            { $ref: "#/components/parameters/buyToken" },
+            {
+              ...addressParam,
+              name: "buyToken",
+              description:
+                "The ERC-20 token address to be bought. Token symbol is not accepted here as the address should already be in the quote",
+            },
+            {
+              ...addressParam,
+              name: "sellToken",
+              description:
+                "The ERC-20 token address to be sold. Token symbol is not accepted here as the address should already be in the quote",
+            },
             { $ref: "#/components/parameters/receiver" },
             {
               in: "query",
