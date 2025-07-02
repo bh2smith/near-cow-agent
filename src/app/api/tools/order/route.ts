@@ -1,5 +1,5 @@
 import { handleRequest } from "@bitte-ai/agent-sdk";
-import { OrderBookApi, OrderKind, SigningScheme } from "@cowprotocol/cow-sdk";
+import { OrderBookApi } from "@cowprotocol/cow-sdk";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
