@@ -40,7 +40,7 @@ async function logic(req: NextRequest): Promise<{
       sellAmount: quote.sellAmount,
       buyAmount: quote.buyAmount,
       validTo: quote.validTo,
-      appData: quote.appData,
+      appData: "0x5a8bb9f6dd0c7f1b4730d9c5a811c2dfe559e67ce9b5ed6965b05e59b8c86b80",
       feeAmount: quote.feeAmount,
       kind: quote.kind,
       partiallyFillable: quote.partiallyFillable,
