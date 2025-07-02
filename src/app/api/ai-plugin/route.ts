@@ -10,8 +10,12 @@ import {
   MetaTransactionSchema,
 } from "@bitte-ai/agent-sdk";
 
-const title =
-  ENV === "staging" ? "Bitte CoWSwap Agent (Staging)" : "Bitte CoWSwap Agent";
+let title = "Bitte CoWSwap Agent";
+let name = "CoWSwap Assistant";
+if (ENV === "staging") {
+  title += " (Staging)";
+  name += " (Staging)";
+}
 
 export async function GET() {
   const pluginData = {
