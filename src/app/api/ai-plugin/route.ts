@@ -290,6 +290,16 @@ This assistant follows these specifications with zero deviation to ensure secure
               },
               description: "Whether the order is partially fillable.",
             },
+            {
+              in: "query",
+              name: "appData",
+              required: true,
+              schema: {
+                type: "string",
+              },
+              description:
+                "The appData hash for the order. This is a hex encoded string. In the future we will have to use the stringified full appdata JSON object.",
+            },
           ],
           // requestBody: {
           //   description: "The input required to place an order on CoW Swap",
