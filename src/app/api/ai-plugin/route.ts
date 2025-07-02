@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { ACCOUNT_ID, PLUGIN_URL } from "../../config";
+import { ACCOUNT_ID, ENV, PLUGIN_URL } from "../../config";
 import {
   addressOrSymbolParam,
   addressParam,
@@ -10,11 +10,14 @@ import {
   MetaTransactionSchema,
 } from "@bitte-ai/agent-sdk";
 
+const title =
+  ENV === "staging" ? "Bitte CoWSwap Agent (Staging)" : "Bitte CoWSwap Agent";
+
 export async function GET() {
   const pluginData = {
     openapi: "3.0.0",
     info: {
-      title: "Bitte CoWSwap Agent",
+      title,
       description: "API for interactions with CoW Protocol",
       version: "1.0.0",
     },
