@@ -10,18 +10,11 @@ import {
   MetaTransactionSchema,
 } from "@bitte-ai/agent-sdk";
 
-let title = "Bitte CoWSwap Agent";
-let name = "CoWSwap Assistant";
-if (ENV === "staging") {
-  title += " (Staging)";
-  name += " (Staging)";
-}
-
 export async function GET() {
   const pluginData = {
     openapi: "3.0.0",
     info: {
-      title,
+      title: "Bitte CoWSwap Agent",
       description: "API for interactions with CoW Protocol",
       version: "1.0.0",
     },
