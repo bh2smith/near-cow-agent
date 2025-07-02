@@ -135,7 +135,7 @@ This assistant follows these specifications with zero deviation to ensure secure
           tags: ["quote"],
           operationId: "getQuote",
           summary:
-            "Quote a price and fee for the specified order parameters. Posts unsigned order to CoW and returns Signable payload",
+            "Quote a price and fee for the specified order parameters. Returns the quote and payload for signing.",
           description: "Retrive quote from CoW API",
           parameters: [
             { $ref: "#/components/parameters/chainId" },
@@ -193,9 +193,9 @@ This assistant follows these specifications with zero deviation to ensure secure
         post: {
           tags: ["order"],
           operationId: "createOrder",
-          summary: "Posts unsigned order to CoW and returns Signable payload",
+          summary: "Posts signed order to CoW and Explorer Order Url",
           description:
-            "Return a full order that can be used directly for signing, and with an included signature, passed directly to the order creation endpoint.",
+            "Consume a signed order and post it to CoW and Explorer Order Url.",
           parameters: [
             { $ref: "#/components/parameters/chainId" },
             { $ref: "#/components/parameters/evmAddress" },
@@ -269,7 +269,7 @@ This assistant follows these specifications with zero deviation to ensure secure
                 type: "string",
                 format: "hex",
               },
-              description: "A signature.",
+              description: "A hex encoded signature.",
             },
           ],
           // requestBody: {
@@ -284,7 +284,24 @@ This assistant follows these specifications with zero deviation to ensure secure
           //   },
           // },
           responses: {
-            "200": { $ref: "#/components/responses/SignRequestResponse200" },
+            "200": {
+              description: "Order posted to CoW and Explorer Order Url.",
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    properties: {
+                      orderUrl: {
+                        type: "string",
+                        description:
+                          "The URL of the order on the CoW Explorer.",
+                      },
+                    },
+                    required: ["orderUrl"],
+                  },
+                },
+              },
+            },
             "400": {
               description: "Error during order validation.",
               content: {

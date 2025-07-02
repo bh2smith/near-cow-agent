@@ -11,7 +11,7 @@ import { getAddress } from "viem";
 import type { SignRequest, SwapFTData } from "@bitte-ai/types";
 import { parseWidgetData } from "../cowswap/util/ui";
 
-export async function POST(req: NextRequest): Promise<NextResponse> {
+export async function GET(req: NextRequest): Promise<NextResponse> {
   console.log("quote/", req.url);
   return handleRequest(req, logic, (result) => NextResponse.json(result));
 }
@@ -51,7 +51,7 @@ async function logic(req: NextRequest): Promise<{
   console.log("Order Uid", orderId);
   let signRequest: SignRequest;
   if (response.quote.signingScheme === "eip712") {
-    const data = JSON.stringify({
+    const typedData = {
       types: {
         EIP712Domain: [
           { name: "name", type: "string" },
@@ -64,11 +64,11 @@ async function logic(req: NextRequest): Promise<{
       domain: await OrderSigningUtils.getDomain(parsedRequest.chainId),
       primaryType: "Order",
       message: response.quote,
-    });
+    };
     signRequest = {
       method: "eth_signTypedData_v4",
       chainId: parsedRequest.chainId,
-      params: [owner, data],
+      params: [owner, JSON.stringify(typedData)],
     };
   } else {
     signRequest = {

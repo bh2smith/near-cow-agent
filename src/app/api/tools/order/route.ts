@@ -10,6 +10,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
 async function logic(req: NextRequest): Promise<{ orderUrl: string }> {
   const requestBody = await req.json();
+  console.log("Order Request Body", requestBody);
   const orderBookApi = new OrderBookApi({ chainId: requestBody.chainId });
 
   const orderUid = await orderBookApi.sendOrder(requestBody);
