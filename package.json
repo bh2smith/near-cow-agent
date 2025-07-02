@@ -7,7 +7,7 @@
     "dev-testnet": "concurrently \"next dev\" \"make-agent dev -t\"",
     "build": "next build",
     "deploy": "make-agent deploy -u https://near-cow-agent.vercel.app/",
-    "deploy-staging": "ENV=staging make-agent deploy -u https://near-cow-agent-git-staging-bitteprotocol.vercel.app/",
+    "deploy-staging": "make-agent deploy -u https://near-cow-agent-git-staging-bitteprotocol.vercel.app/",
     "start": "next start",
     "lint": "next lint && prettier --check '{src/app,tests}/**/*.{js,jsx,ts,tsx}'",
     "fmt": "next lint --fix && prettier --write '{src/app,tests}/**/*.{js,jsx,ts,tsx}'",
