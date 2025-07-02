@@ -32,7 +32,8 @@ async function logic(req: NextRequest): Promise<{
     throw new Error("owner unspecified");
   }
   // Set Referral Code.
-  quote.appData = "0x5a8bb9f6dd0c7f1b4730d9c5a811c2dfe559e67ce9b5ed6965b05e59b8c86b80";
+  quote.appData =
+    "0x5a8bb9f6dd0c7f1b4730d9c5a811c2dfe559e67ce9b5ed6965b05e59b8c86b80";
 
   const owner = getAddress(from);
   const { orderId, orderDigest } = await OrderSigningUtils.generateOrderId(
