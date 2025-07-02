@@ -61,7 +61,7 @@ async function logic(req: NextRequest): Promise<{
         ],
         ...OrderSigningUtils.getEIP712Types(),
       },
-      domain: OrderSigningUtils.getDomain(parsedRequest.chainId),
+      domain: await OrderSigningUtils.getDomain(parsedRequest.chainId),
       primaryType: "Order",
       message: response.quote,
     });
