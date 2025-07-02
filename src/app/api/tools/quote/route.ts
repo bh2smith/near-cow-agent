@@ -11,7 +11,7 @@ import { getAddress } from "viem";
 import type { SignRequest, SwapFTData } from "@bitte-ai/types";
 import { parseWidgetData } from "../cowswap/util/ui";
 
-export async function GET(req: NextRequest): Promise<NextResponse> {
+export async function POST(req: NextRequest): Promise<NextResponse> {
   console.log("quote/", req.url);
   return handleRequest(req, logic, (result) => NextResponse.json(result));
 }
