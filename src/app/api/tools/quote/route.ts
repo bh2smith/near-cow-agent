@@ -1,4 +1,4 @@
-import { handleRequest, signRequestFor } from "@bitte-ai/agent-sdk";
+import { handleRequest } from "@bitte-ai/agent-sdk";
 import type { OrderQuoteResponse } from "@cowprotocol/cow-sdk";
 import { OrderBookApi } from "@cowprotocol/cow-sdk";
 import type { NextRequest } from "next/server";
@@ -77,7 +77,7 @@ async function logic(req: NextRequest): Promise<{
       params: [{ from: owner, ...setPresignatureTx(orderId) }],
     };
   }
-  signRequestFor
+
   return {
     meta: {
       quote: response,
