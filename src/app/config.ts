@@ -13,6 +13,5 @@ if (!PLUGIN_URL) {
   );
   process.exit(1);
 }
-const ENV = process.env.ENV || "production";
 
-export { ACCOUNT_ID, PLUGIN_URL, ENV };
+export { ACCOUNT_ID, PLUGIN_URL };
