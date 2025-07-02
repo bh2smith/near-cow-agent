@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { ACCOUNT_ID, ENV, PLUGIN_URL } from "../../config";
+import { ACCOUNT_ID, PLUGIN_URL } from "../../config";
 import {
   addressOrSymbolParam,
   addressParam,
@@ -280,6 +280,15 @@ This assistant follows these specifications with zero deviation to ensure secure
                 format: "hex",
               },
               description: "A hex encoded signature.",
+            },
+            {
+              in: "query",
+              name: "partiallyFillable",
+              required: true,
+              schema: {
+                type: "boolean",
+              },
+              description: "Whether the order is partially fillable.",
             },
           ],
           // requestBody: {
