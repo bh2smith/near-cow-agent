@@ -1,5 +1,5 @@
 import { handleRequest } from "@bitte-ai/agent-sdk";
-import { OrderBookApi } from "@cowprotocol/cow-sdk";
+import { OrderBookApi, OrderKind, SigningScheme } from "@cowprotocol/cow-sdk";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
@@ -13,7 +13,19 @@ async function logic(req: NextRequest): Promise<{ orderUrl: string }> {
   console.log("Order Request Body", requestBody);
   const orderBookApi = new OrderBookApi({ chainId: requestBody.chainId });
 
-  const orderUid = await orderBookApi.sendOrder(requestBody);
+  const orderUid = await orderBookApi.sendOrder({
+    sellToken: requestBody.sellToken,
+    buyToken: requestBody.buyToken,
+    sellAmount: requestBody.sellAmount,
+    buyAmount: requestBody.buyAmount,
+    validTo: requestBody.validTo,
+    feeAmount: requestBody.feeAmount,
+    kind: requestBody.kind,
+    partiallyFillable: requestBody.partiallyFillable,
+    signingScheme: requestBody.signingScheme,
+    signature: requestBody.signature,
+    appData: requestBody.appData,
+  });
   console.log("Order UID:", orderUid);
   const orderUrl = orderBookApi.getOrderLink(orderUid);
   return { orderUrl };
