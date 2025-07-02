@@ -1,4 +1,4 @@
-import { handleRequest } from "@bitte-ai/agent-sdk";
+import { handleRequest, signRequestFor } from "@bitte-ai/agent-sdk";
 import type { OrderQuoteResponse } from "@cowprotocol/cow-sdk";
 import { OrderBookApi } from "@cowprotocol/cow-sdk";
 import type { NextRequest } from "next/server";
@@ -8,16 +8,18 @@ import { getTokenMap } from "../util";
 import { setPresignatureTx } from "../cowswap/util/protocol";
 import { OrderSigningUtils } from "@cowprotocol/cow-sdk";
 import { getAddress } from "viem";
-import type { SignRequest } from "@bitte-ai/types";
+import type { SignRequest, SwapFTData } from "@bitte-ai/types";
+import { parseWidgetData } from "../cowswap/util/ui";
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
   console.log("quote/", req.url);
   return handleRequest(req, logic, (result) => NextResponse.json(result));
 }
 
-async function logic(
-  req: NextRequest,
-): Promise<{ quote: OrderQuoteResponse; signRequest: SignRequest }> {
+async function logic(req: NextRequest): Promise<{
+  meta: { quote: OrderQuoteResponse; ui: SwapFTData };
+  transaction: SignRequest;
+}> {
   const parsedRequest = await basicParseQuote(req, await getTokenMap());
   console.log("Parsed Quote Request", parsedRequest);
   const orderBookApi = new OrderBookApi({ chainId: parsedRequest.chainId });
@@ -75,5 +77,16 @@ async function logic(
       params: [{ from: owner, ...setPresignatureTx(orderId) }],
     };
   }
-  return { quote: response, signRequest };
+  signRequestFor
+  return {
+    meta: {
+      quote: response,
+      ui: parseWidgetData({
+        chainId,
+        tokenData: parsedRequest.tokenData,
+        quote: response.quote,
+      }),
+    },
+    transaction: signRequest,
+  };
 }

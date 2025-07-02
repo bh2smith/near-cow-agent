@@ -25,7 +25,7 @@
         "dotenv": "^16.6.1",
         "eslint-config-next": "^15.3.4",
         "jest": "^30.0.3",
-        "make-agent": "0.3.2",
+        "make-agent": "^0.3.4",
         "prettier": "^3.6.2",
         "ts-jest": "^29.4.0",
         "ts-node": "^10.9.2",
@@ -1886,7 +1886,7 @@
 
     "lunr": ["lunr@2.3.9", "", {}, "sha512-zTU3DaZaF3Rt9rhN3uBMGQD3dD2/vFQqnvZCDv4dl5iOzq2IZQqTxu90r4E5J+nP70J3ilqVCrbho2eWaeW8Ow=="],
 
-    "make-agent": ["make-agent@0.3.2", "", { "dependencies": { "@apidevtools/swagger-parser": "^12.0.0", "ajv": "^8.17.1", "ajv-draft-04": "^1.0.0", "borsh": "^2.0.0", "commander": "^12.1.0", "dotenv": "^16.4.7", "express": "^4.21.2", "inquirer": "^12.5.0", "is-port-reachable": "^4.0.0", "js-sha256": "^0.11.0", "near-api-js": "^5.1.1", "open": "^10.1.0" }, "bin": { "make-agent": "dist/index.js" } }, "sha512-4RbPKAPhHZeN0xWgCZSzCrantn3FFeQVS/z0ng6u+DBtBpJM/He8HvqgGhNgwoUbMaWN3klzys90f7PwHh4q/g=="],
+    "make-agent": ["make-agent@0.3.4", "", { "dependencies": { "@apidevtools/swagger-parser": "^12.0.0", "ajv": "^8.17.1", "ajv-draft-04": "^1.0.0", "borsh": "^2.0.0", "commander": "^12.1.0", "dotenv": "^16.4.7", "express": "^4.21.2", "inquirer": "^12.5.0", "is-port-reachable": "^4.0.0", "js-sha256": "^0.11.0", "near-api-js": "^5.1.1", "open": "^10.1.0" }, "bin": { "make-agent": "dist/index.js" } }, "sha512-Pfy6L8b6KlTLjpon4/8ULD8Y+YtyelUCh3dDXqo9+ItHozydaNNISNMIOFPhFHiEezkM8vyal06BHF6xowpaCA=="],
 
     "make-dir": ["make-dir@4.0.0", "", { "dependencies": { "semver": "^7.5.3" } }, "sha512-hXdUTZYIVOt1Ex//jAQi+wTZZpUpwBj/0QsOzqegb3rGMMeJiSEu5xLHnYfBrRV4RH2+OCSOO95Is/7x1WJ4bw=="],
 

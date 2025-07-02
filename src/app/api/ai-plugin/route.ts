@@ -54,60 +54,6 @@ This assistant follows these specifications with zero deviation to ensure secure
       },
     },
     paths: {
-      "/api/tools/balances": {
-        get: {
-          tags: ["balances"],
-          summary: "Get Token Balances",
-          description: "Returns token balances for the connected wallet",
-          operationId: "get-balances",
-          parameters: [{ $ref: "#/components/parameters/evmAddress" }],
-          responses: {
-            "200": {
-              description: "List of token balances",
-              content: {
-                "application/json": {
-                  schema: {
-                    type: "array",
-                    items: {
-                      type: "object",
-                      properties: {
-                        chainId: {
-                          $ref: "#/components/schemas/chainId",
-                        },
-                        token: {
-                          $ref: "#/components/schemas/Address",
-                        },
-                        balance: {
-                          type: "string",
-                          description: "Token balance in smallest units (wei)",
-                          example: "1000000000000000000",
-                        },
-                        symbol: {
-                          type: "string",
-                          description: "Token symbol",
-                          example: "USDC",
-                        },
-                        decimals: {
-                          type: "number",
-                          description: "Token decimals",
-                          example: 18,
-                        },
-                        logoUri: {
-                          type: "string",
-                          description: "Token logo URI",
-                          example: "https://example.com/token-logo.png",
-                        },
-                      },
-                      required: ["token", "balance", "symbol", "decimals"],
-                    },
-                  },
-                },
-              },
-            },
-            "400": { $ref: "#/components/responses/BadRequest400" },
-          },
-        },
-      },
       // "/api/tools/cowswap": {
       //   post: {
       //     tags: ["cowswap"],
@@ -220,7 +166,7 @@ This assistant follows these specifications with zero deviation to ensure secure
           //   },
           // },
           responses: {
-            "200": { $ref: "#/components/responses/OrderQuoteResponse" },
+            "200": { $ref: "#/components/responses/QuoteResponse200" },
             "400": {
               description: "Error quoting order.",
               content: {
@@ -321,6 +267,7 @@ This assistant follows these specifications with zero deviation to ensure secure
               required: true,
               schema: {
                 type: "string",
+                format: "hex",
               },
               description: "A signature.",
             },
@@ -394,6 +341,30 @@ This assistant follows these specifications with zero deviation to ensure secure
         },
       },
       responses: {
+        QuoteResponse200: {
+          description: "Quote response including metadata and transaction",
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  meta: {
+                    type: "object",
+                    properties: {
+                      quote: {
+                        $ref: "#/components/schemas/OrderQuoteResponse",
+                      },
+                      ui: { $ref: "#/components/schemas/SwapFTData" },
+                    },
+                    required: ["quote", "ui"],
+                  },
+                  transaction: { $ref: "#/components/schemas/SignRequest" },
+                },
+                required: ["meta", "transaction"],
+              },
+            },
+          },
+        },
         SignRequest200: {
           description:
             "Generic Structure representing an EVM Signature Request",
@@ -401,17 +372,6 @@ This assistant follows these specifications with zero deviation to ensure secure
             "application/json": {
               schema: {
                 $ref: "#/components/schemas/SignRequest",
-              },
-            },
-          },
-        },
-        OrderQuoteResponse: {
-          description:
-            "An order quoted by the backend that can be directly signed and submitted to the order creation backend.",
-          content: {
-            "application/json": {
-              schema: {
-                $ref: "#/components/schemas/OrderQuoteResponse",
               },
             },
           },
@@ -468,6 +428,11 @@ This assistant follows these specifications with zero deviation to ensure secure
         Address: AddressSchema,
         SignRequest: SignRequestSchema,
         MetaTransaction: MetaTransactionSchema,
+        SwapFTData: {
+          type: "object",
+          description: "UI data for swap widget",
+          additionalProperties: true,
+        },
         AppData: {
           description:
             "The string encoding of a JSON object representing some `appData`. The format of the JSON expected in the `appData` field is defined [here](https://github.com/cowprotocol/app-data).",
