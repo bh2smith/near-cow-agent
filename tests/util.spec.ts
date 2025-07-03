@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { validateNextRequest } from "@/src/app/api/tools/util";
 import { zeroAddress } from "viem";
+import { OrderSigningUtils } from "@cowprotocol/cow-sdk";
 
 describe("validateRequest", () => {
   it("should validate a real request", async () => {
@@ -21,5 +22,21 @@ describe("validateRequest", () => {
     const result = await validateNextRequest(request);
     // Assert
     expect(result).toBeNull();
+  });
+
+  // domain: OrderSigningUtils.getDomain(parsedRequest.chainId),
+});
+
+describe("CoW Domain", () => {
+  it("should get the domain", async () => {
+    // This is ASYNC!
+    const domain = await OrderSigningUtils.getDomain(100);
+    console.log(domain);
+    expect(domain).toEqual({
+      name: "Gnosis Protocol",
+      version: "v2",
+      chainId: 100,
+      verifyingContract: "0x9008D19f58AAbD9eD0D60971565AA8510560ab41",
+    });
   });
 });
