@@ -53,7 +53,7 @@ RESPONSE GUIDELINES:
 - Include code examples when helping developers
 - Explain complex concepts in accessible terms for all user levels
 - Direct users to specific documentation sections when appropriate
-- If you don't know the answer, say so and suggest where users might find more details or recommend contacting the CoW Protocol team directly.`,
+- If you don't know the answer, say so and suggest where users might find more details`,
         tools: [{ type: "data-retrieval" }],
         image: `${PLUGIN_URL}/cowswap.svg`,
         categories: ["defi"],
