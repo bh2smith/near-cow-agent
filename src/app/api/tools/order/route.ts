@@ -25,6 +25,10 @@ async function logic(req: NextRequest): Promise<{ orderUrl: string }> {
     signingScheme: requestBody.signingScheme,
     signature: requestBody.signature,
     appData: requestBody.appData,
+    // TODO: Allow user to set receiver.
+    receiver: requestBody.receiver,
+    // Presumably for signature validation.
+    from: requestBody.evmAddress,
   });
   console.log("Order UID:", orderUid);
   const orderUrl = orderBookApi.getOrderLink(orderUid);
