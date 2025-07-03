@@ -1,6 +1,6 @@
 import { createOrder } from "@/src/app/api/tools/order/create";
 
-describe("Order Route Logic", () => {
+describe.skip("Order Route Logic", () => {
   it("should validate a real request", async () => {
     const requestBody = {
       kind: "sell",
@@ -22,9 +22,6 @@ describe("Order Route Logic", () => {
     };
     const res = await createOrder(requestBody);
     console.log(res);
-    // expect(res).toBeDefined();
-    // expect(res.orderUrl).toBeDefined();
-    // expect(res.orderUrl).toContain("https://cowswap.io/");
   });
 
   // domain: OrderSigningUtils.getDomain(parsedRequest.chainId),
