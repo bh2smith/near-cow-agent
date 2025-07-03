@@ -7,14 +7,13 @@ import { basicParseQuote } from "../cowswap/util/parse";
 import { getTokenMap } from "../util";
 import { applySlippage, setPresignatureTx } from "../cowswap/util/protocol";
 import { OrderSigningUtils } from "@cowprotocol/cow-sdk";
-import { getAddress } from "viem";
 import type { SignRequest, SwapFTData } from "@bitte-ai/types";
 import { parseWidgetData } from "../cowswap/util/ui";
+import { preliminarySteps } from "./preliminary";
 
 // TODO: Allow User to set Slippage.
 const slippageBps = Number.parseInt(process.env.SLIPPAGE_BPS || "100");
 
-import { sellTokenApprovalTx } from "@/src/app/api/tools/cowswap/util/protocol";
 export async function POST(req: NextRequest): Promise<NextResponse> {
   console.log("quote/", req.url);
   return handleRequest(req, logic, (result) => NextResponse.json(result));
@@ -24,37 +23,32 @@ async function logic(req: NextRequest): Promise<{
   meta: { quote: OrderQuoteResponse; ui: SwapFTData } | string;
   transaction: SignRequest;
 }> {
-  const parsedRequest = await basicParseQuote(req, await getTokenMap());
-  console.log("Parsed Quote Request", parsedRequest);
-  const orderBookApi = new OrderBookApi({ chainId: parsedRequest.chainId });
+  const { chainId, quoteRequest, tokenData } = await basicParseQuote(
+    req,
+    await getTokenMap(),
+  );
+  console.log("Parsed Quote Request", quoteRequest);
 
-  const result = await orderBookApi.getQuote(parsedRequest.quoteRequest);
-  const { from, expiration, verified } = result;
-  // This needs to be altered.
-  let quote = result.quote;
-  console.log("POST Response for quote:", quote);
-  const { chainId } = parsedRequest;
-  if (from === undefined) {
-    throw new Error("owner unspecified");
-  }
-
-  // TODO(bh2smith): Check For approval before quote Or also return quote with approval somehow.
-  const owner = getAddress(from);
-  const approvalTx = await sellTokenApprovalTx({
-    from: owner,
-    sellToken: quote.sellToken,
-    chainId,
-    sellAmount: quote.sellAmount,
-  });
-  if (approvalTx) {
+  const { steps, owner } = await preliminarySteps(quoteRequest, chainId);
+  if (steps.length > 0) {
     return {
       transaction: signRequestFor({
         from: owner,
         chainId,
-        metaTransactions: [approvalTx],
+        metaTransactions: steps,
       }),
-      meta: "user must approve token before continuing",
+      meta: "user must wrap Native asset and/or approve token before continuing",
     };
+  }
+  const orderBookApi = new OrderBookApi({ chainId });
+
+  const result = await orderBookApi.getQuote(quoteRequest);
+  const { from, expiration, verified } = result;
+  // This needs to be altered.
+  let quote = result.quote;
+  console.log("POST Response for quote:", quote);
+  if (from === undefined) {
+    throw new Error("owner unspecified");
   }
 
   const { sellAmount, feeAmount } = quote;
@@ -100,19 +94,19 @@ async function logic(req: NextRequest): Promise<{
         ],
         ...OrderSigningUtils.getEIP712Types(),
       },
-      domain: await OrderSigningUtils.getDomain(parsedRequest.chainId),
+      domain: await OrderSigningUtils.getDomain(chainId),
       primaryType: "Order",
       message: quote,
     };
     signRequest = {
       method: "eth_signTypedData_v4",
-      chainId: parsedRequest.chainId,
+      chainId,
       params: [owner, JSON.stringify(typedData)],
     };
   } else {
     signRequest = {
       method: "eth_sendTransaction",
-      chainId: parsedRequest.chainId,
+      chainId: chainId,
       params: [{ from: owner, ...setPresignatureTx(orderId) }],
     };
   }
@@ -127,7 +121,7 @@ async function logic(req: NextRequest): Promise<{
       },
       ui: parseWidgetData({
         chainId,
-        tokenData: parsedRequest.tokenData,
+        tokenData,
         quote,
       }),
     },
