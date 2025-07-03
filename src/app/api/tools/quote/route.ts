@@ -1,4 +1,4 @@
-import { handleRequest } from "@bitte-ai/agent-sdk";
+import { handleRequest, signRequestFor } from "@bitte-ai/agent-sdk";
 import type { OrderQuoteResponse } from "@cowprotocol/cow-sdk";
 import { OrderBookApi } from "@cowprotocol/cow-sdk";
 import type { NextRequest } from "next/server";
@@ -11,13 +11,14 @@ import { getAddress } from "viem";
 import type { SignRequest, SwapFTData } from "@bitte-ai/types";
 import { parseWidgetData } from "../cowswap/util/ui";
 
+import { sellTokenApprovalTx } from "@/src/app/api/tools/cowswap/util/protocol";
 export async function POST(req: NextRequest): Promise<NextResponse> {
   console.log("quote/", req.url);
   return handleRequest(req, logic, (result) => NextResponse.json(result));
 }
 
 async function logic(req: NextRequest): Promise<{
-  meta: { quote: OrderQuoteResponse; ui: SwapFTData };
+  meta: { quote: OrderQuoteResponse; ui: SwapFTData } | string;
   transaction: SignRequest;
 }> {
   const parsedRequest = await basicParseQuote(req, await getTokenMap());
@@ -31,11 +32,28 @@ async function logic(req: NextRequest): Promise<{
   if (from === undefined) {
     throw new Error("owner unspecified");
   }
+
+  const owner = getAddress(from);
+  const approvalTx = await sellTokenApprovalTx({
+    from: owner,
+    sellToken: quote.sellToken,
+    chainId,
+    sellAmount: quote.sellAmount,
+  });
+  if (approvalTx) {
+    return {
+      transaction: signRequestFor({
+        from: owner,
+        chainId,
+        metaTransactions: [approvalTx],
+      }),
+      meta: "user must approve token before continuing",
+    };
+  }
   // Set Referral Code.
   quote.appData =
     "0x5a8bb9f6dd0c7f1b4730d9c5a811c2dfe559e67ce9b5ed6965b05e59b8c86b80";
 
-  const owner = getAddress(from);
   const { orderId, orderDigest } = await OrderSigningUtils.generateOrderId(
     chainId,
     {
