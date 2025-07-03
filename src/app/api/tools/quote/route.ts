@@ -25,10 +25,11 @@ async function logic(req: NextRequest): Promise<{
   console.log("Parsed Quote Request", parsedRequest);
   const orderBookApi = new OrderBookApi({ chainId: parsedRequest.chainId });
 
-  const response = await orderBookApi.getQuote(parsedRequest.quoteRequest);
-  console.log("POST Response for quote:", response);
+  const { quote, from, expiration, verified } = await orderBookApi.getQuote(
+    parsedRequest.quoteRequest,
+  );
+  console.log("POST Response for quote:", quote);
   const { chainId } = parsedRequest;
-  const { from, quote } = response;
   if (from === undefined) {
     throw new Error("owner unspecified");
   }
@@ -54,16 +55,18 @@ async function logic(req: NextRequest): Promise<{
   quote.appData =
     "0x5a8bb9f6dd0c7f1b4730d9c5a811c2dfe559e67ce9b5ed6965b05e59b8c86b80";
   const { sellAmount, feeAmount } = quote;
+  // Adjust the sellAmount to account for the fee.
+  // cf: https://learn.cow.fi/tutorial/submit-order
+  quote.sellAmount = (BigInt(sellAmount) + BigInt(feeAmount)).toString();
+  quote.feeAmount = "0";
 
   const { orderId, orderDigest } = await OrderSigningUtils.generateOrderId(
     chainId,
     {
       sellToken: quote.sellToken,
       buyToken: quote.buyToken,
-      // Adjust the sellAmount to account for the fee.
-      // cf: https://learn.cow.fi/tutorial/submit-order
-      sellAmount: (BigInt(sellAmount) + BigInt(feeAmount)).toString(),
-      feeAmount: "0",
+      sellAmount: quote.sellAmount,
+      feeAmount: quote.feeAmount,
       buyAmount: quote.buyAmount,
       validTo: quote.validTo,
       appData: quote.appData,
@@ -75,7 +78,7 @@ async function logic(req: NextRequest): Promise<{
   console.log("Order Digest", orderDigest);
   console.log("Order Uid", orderId);
   let signRequest: SignRequest;
-  if (response.quote.signingScheme === "eip712") {
+  if (quote.signingScheme === "eip712") {
     const typedData = {
       types: {
         EIP712Domain: [
@@ -88,7 +91,7 @@ async function logic(req: NextRequest): Promise<{
       },
       domain: await OrderSigningUtils.getDomain(parsedRequest.chainId),
       primaryType: "Order",
-      message: response.quote,
+      message: quote,
     };
     signRequest = {
       method: "eth_signTypedData_v4",
@@ -105,11 +108,16 @@ async function logic(req: NextRequest): Promise<{
 
   return {
     meta: {
-      quote: response,
+      quote: {
+        from,
+        quote,
+        expiration,
+        verified,
+      },
       ui: parseWidgetData({
         chainId,
         tokenData: parsedRequest.tokenData,
-        quote: response.quote,
+        quote,
       }),
     },
     transaction: signRequest,
