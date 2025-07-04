@@ -9,7 +9,8 @@ export async function getBalances(
   try {
     const zerion = new ZerionAPI(zerionKey);
     const balances = await zerion.ui.getUserBalances(address, {
-      options: { hideDust: 0.05 },
+      useStatic: true,
+      options: { hideDust: 0.01 },
     });
     return zerionToTokenBalances(balances.tokens);
   } catch (error) {
