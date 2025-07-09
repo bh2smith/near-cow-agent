@@ -1,4 +1,4 @@
-import { getNativeAsset, wrapMetaTransaction } from "@bitte-ai/agent-sdk";
+import { wrapMetaTransaction } from "@bitte-ai/agent-sdk";
 import type { MetaTransaction } from "@bitte-ai/types";
 import { isNativeAsset, sellTokenApprovalTx } from "../cowswap/util/protocol";
 import type { Address } from "viem";
