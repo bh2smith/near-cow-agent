@@ -1,5 +1,5 @@
 import { handleRequest, signRequestFor } from "@bitte-ai/agent-sdk";
-import type { OrderQuoteResponse } from "@cowprotocol/cow-sdk";
+import type { OrderParameters, OrderQuoteResponse } from "@cowprotocol/cow-sdk";
 import { OrderBookApi } from "@cowprotocol/cow-sdk";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
@@ -7,61 +7,46 @@ import { basicParseQuote } from "../cowswap/util/parse";
 import { getTokenMap } from "../util";
 import { applySlippage, setPresignatureTx } from "../cowswap/util/protocol";
 import { OrderSigningUtils } from "@cowprotocol/cow-sdk";
-import { getAddress } from "viem";
-import type { SignRequest, SwapFTData } from "@bitte-ai/types";
+import type { MetaTransaction, SignRequest, SwapFTData } from "@bitte-ai/types";
 import { parseWidgetData } from "../cowswap/util/ui";
+import { preliminarySteps } from "./preliminary";
+import type { Address } from "viem";
 
 // TODO: Allow User to set Slippage.
 const slippageBps = Number.parseInt(process.env.SLIPPAGE_BPS || "100");
 
-import { sellTokenApprovalTx } from "@/src/app/api/tools/cowswap/util/protocol";
 export async function POST(req: NextRequest): Promise<NextResponse> {
   console.log("quote/", req.url);
   return handleRequest(req, logic, (result) => NextResponse.json(result));
 }
 
 async function logic(req: NextRequest): Promise<{
-  meta: { quote: OrderQuoteResponse; ui: SwapFTData } | string;
-  transaction: SignRequest;
+  meta: { quote: OrderQuoteResponse; ui: SwapFTData };
+  summary: string;
+  transaction: SignRequest[];
 }> {
-  const parsedRequest = await basicParseQuote(req, await getTokenMap());
-  console.log("Parsed Quote Request", parsedRequest);
-  const orderBookApi = new OrderBookApi({ chainId: parsedRequest.chainId });
+  const { chainId, quoteRequest, tokenData } = await basicParseQuote(
+    req,
+    await getTokenMap(),
+  );
+  console.log("Parsed Quote Request", quoteRequest);
+  const notes: string[] = [];
+  const { steps, owner } = await preliminarySteps(chainId, quoteRequest, notes);
+  const orderBookApi = new OrderBookApi({ chainId });
 
-  const result = await orderBookApi.getQuote(parsedRequest.quoteRequest);
-  const { from, expiration, verified } = result;
-  // This needs to be altered.
-  let quote = result.quote;
-  console.log("POST Response for quote:", quote);
-  const { chainId } = parsedRequest;
-  if (from === undefined) {
+  // WARNING: Do not unpack this result as { quote, ...}. It causes confusion due to modifications.
+  const result = await orderBookApi.getQuote(quoteRequest);
+
+  console.log("POST Response for quote:", result.quote);
+  if (result.from === undefined) {
     throw new Error("owner unspecified");
   }
 
-  // TODO(bh2smith): Check For approval before quote Or also return quote with approval somehow.
-  const owner = getAddress(from);
-  const approvalTx = await sellTokenApprovalTx({
-    from: owner,
-    sellToken: quote.sellToken,
-    chainId,
-    sellAmount: quote.sellAmount,
-  });
-  if (approvalTx) {
-    return {
-      transaction: signRequestFor({
-        from: owner,
-        chainId,
-        metaTransactions: [approvalTx],
-      }),
-      meta: "user must approve token before continuing",
-    };
-  }
-
-  const { sellAmount, feeAmount } = quote;
-  quote = {
-    ...quote,
+  const { sellAmount, feeAmount } = result.quote;
+  result.quote = {
+    ...result.quote,
     // Apply Slippage based on OrderKind
-    ...applySlippage(quote, slippageBps),
+    ...applySlippage(result.quote, slippageBps),
     // Adjust the sellAmount to account for the fee.
     // cf: https://learn.cow.fi/tutorial/submit-order
     sellAmount: (BigInt(sellAmount) + BigInt(feeAmount)).toString(),
@@ -71,7 +56,40 @@ async function logic(req: NextRequest): Promise<{
       "0x5a8bb9f6dd0c7f1b4730d9c5a811c2dfe559e67ce9b5ed6965b05e59b8c86b80",
   };
 
-  const { orderId, orderDigest } = await OrderSigningUtils.generateOrderId(
+  const transaction = await buildTransaction(
+    result.quote,
+    notes,
+    chainId,
+    owner,
+    steps,
+  );
+
+  return {
+    meta: {
+      quote: result,
+      ui: parseWidgetData({
+        chainId,
+        tokenData,
+        quote: result.quote,
+      }),
+    },
+    summary: summarizeNotes(notes),
+    transaction,
+  };
+}
+
+function summarizeNotes(notes: string[]): string {
+  return notes.map((note, i) => `${i + 1}. ${note}`).join("\n");
+}
+
+async function buildTransaction(
+  quote: OrderParameters,
+  notes: string[],
+  chainId: number,
+  owner: Address,
+  steps: MetaTransaction[],
+): Promise<SignRequest[]> {
+  const { orderId } = await OrderSigningUtils.generateOrderId(
     chainId,
     {
       sellToken: quote.sellToken,
@@ -86,10 +104,11 @@ async function logic(req: NextRequest): Promise<{
     },
     { owner },
   );
-  console.log("Order Digest", orderDigest);
   console.log("Order Uid", orderId);
-  let signRequest: SignRequest;
+
+  const transaction: SignRequest[] = [];
   if (quote.signingScheme === "eip712") {
+    notes.push("Off Chain Order Placement (EIP712)");
     const typedData = {
       types: {
         EIP712Domain: [
@@ -100,37 +119,30 @@ async function logic(req: NextRequest): Promise<{
         ],
         ...OrderSigningUtils.getEIP712Types(),
       },
-      domain: await OrderSigningUtils.getDomain(parsedRequest.chainId),
+      domain: await OrderSigningUtils.getDomain(chainId),
       primaryType: "Order",
       message: quote,
     };
-    signRequest = {
+
+    const orderRequest: SignRequest = {
       method: "eth_signTypedData_v4",
-      chainId: parsedRequest.chainId,
+      chainId,
       params: [owner, JSON.stringify(typedData)],
     };
-  } else {
-    signRequest = {
-      method: "eth_sendTransaction",
-      chainId: parsedRequest.chainId,
-      params: [{ from: owner, ...setPresignatureTx(orderId) }],
-    };
-  }
 
-  return {
-    meta: {
-      quote: {
-        from,
-        quote,
-        expiration,
-        verified,
-      },
-      ui: parseWidgetData({
-        chainId,
-        tokenData: parsedRequest.tokenData,
-        quote,
-      }),
-    },
-    transaction: signRequest,
-  };
+    if (steps.length > 0) {
+      transaction.push(signRequestFor({ chainId, metaTransactions: steps }));
+    }
+    transaction.push(orderRequest);
+    // return { meta, summary: summarizeNotes(notes), transaction: orderRequest };
+  } else {
+    // (Safe) In this case all the steps and the order signing are all transactions.
+    notes.push("On Chain Order Signing via setPresignature");
+    transaction.push({
+      method: "eth_sendTransaction",
+      chainId: chainId,
+      params: [...steps, { from: owner, ...setPresignatureTx(orderId) }],
+    });
+  }
+  return transaction;
 }

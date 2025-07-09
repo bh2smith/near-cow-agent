@@ -40,11 +40,9 @@ export async function createOrder(
   console.log("Order Creation", orderCreation);
   try {
     const orderUid = await orderBookApi.sendOrder(orderCreation);
-    console.log("Order UID:", orderUid);
-    // TODO: This getOrderLink is returns API Call.
-    // const orderUrl = orderBookApi.getOrderLink(orderUid);
-    const orderUrl = `https://explorer.cow.fi/orders/${orderUid}`;
-    return { orderUrl };
+    const orderLink = orderBookApi.getOrderLink(orderUid);
+    console.log("Order Link", orderLink);
+    return { orderUrl: `https://explorer.cow.fi/orders/${orderUid}` };
   } catch (error) {
     // console.error("Error creating order", error);
     return { error: parseCowAPIError(error) };

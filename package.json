@@ -34,7 +34,7 @@
     "dotenv": "^17.2.0",
     "eslint-config-next": "^15.3.5",
     "jest": "^30.0.4",
-    "make-agent": "0.3.5",
+    "make-agent": "^0.3.5",
     "prettier": "^3.6.2",
     "ts-jest": "^29.4.0",
     "ts-node": "^10.9.2",
