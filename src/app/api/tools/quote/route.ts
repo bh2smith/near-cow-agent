@@ -34,18 +34,19 @@ async function logic(req: NextRequest): Promise<{
   const { steps, owner } = await preliminarySteps(chainId, quoteRequest, notes);
   const orderBookApi = new OrderBookApi({ chainId });
 
+  // WARNING: Do not unpack this result as { quote, ...}. It causes confusion due to modifications.
   const result = await orderBookApi.getQuote(quoteRequest);
-  const { from, quote } = result;
-  console.log("POST Response for quote:", quote);
-  if (from === undefined) {
+
+  console.log("POST Response for quote:", result.quote);
+  if (result.from === undefined) {
     throw new Error("owner unspecified");
   }
 
-  const { sellAmount, feeAmount } = quote;
+  const { sellAmount, feeAmount } = result.quote;
   result.quote = {
     ...result.quote,
     // Apply Slippage based on OrderKind
-    ...applySlippage(quote, slippageBps),
+    ...applySlippage(result.quote, slippageBps),
     // Adjust the sellAmount to account for the fee.
     // cf: https://learn.cow.fi/tutorial/submit-order
     sellAmount: (BigInt(sellAmount) + BigInt(feeAmount)).toString(),
@@ -56,7 +57,7 @@ async function logic(req: NextRequest): Promise<{
   };
 
   const transaction = await buildTransaction(
-    quote,
+    result.quote,
     notes,
     chainId,
     owner,
@@ -69,7 +70,7 @@ async function logic(req: NextRequest): Promise<{
       ui: parseWidgetData({
         chainId,
         tokenData,
-        quote,
+        quote: result.quote,
       }),
     },
     summary: summarizeNotes(notes),
