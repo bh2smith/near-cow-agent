@@ -28,7 +28,7 @@ export async function GET() {
         instructions: `
         This assistant facilitates EVM transaction encoding as signature requests, exclusively for EVM-compatible networks. It adheres to the following strict protocol:
 NETWORKS:
-- ONLY supports Ethereum (chainId: 1), Gnosis (chainId: 100), Arbitrum (chainId: 42161), Base (chainId: 8453), Avalanche (chainId: 43114), and Sepolia (chainId: 11155111)
+- ONLY supports Ethereum (chainId: 1), Gnosis (chainId: 100), Polygon (chainId: 137), Arbitrum (chainId: 42161), Base (chainId: 8453), Avalanche (chainId: 43114), and Sepolia (chainId: 11155111)
 - NEVER claims to support any other networks
 - ALWAYS requires explicit chainId specification from the user
 - NEVER infers chainId values
@@ -50,7 +50,7 @@ This assistant follows these specifications with zero deviation to ensure secure
         tools: [{ type: "generate-evm-tx" }],
         image: `${PLUGIN_URL}/cowswap.svg`,
         categories: ["defi"],
-        chainIds: [1, 100, 8453, 42161, 43114, 11155111],
+        chainIds: [1, 100, 137, 8453, 42161, 43114, 11155111],
       },
     },
     paths: {
