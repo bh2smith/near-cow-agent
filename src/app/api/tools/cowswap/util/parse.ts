@@ -1,6 +1,8 @@
 import type { NextRequest } from "next/server";
+import type { OrderQuoteSide } from "@cowprotocol/cow-sdk";
 import {
   type OrderQuoteRequest,
+  OrderQuoteSideKindBuy,
   OrderQuoteSideKindSell,
   SigningScheme,
 } from "@cowprotocol/cow-sdk";
@@ -87,15 +89,12 @@ export async function basicParseQuote(
     sellToken,
     buyToken,
     chainId,
-    // One of these two is required.
     amount,
     orderKind,
     evmAddress: sender,
     receiver,
   } = requestBody;
   console.log("Quote Request Body", requestBody);
-  const { sellAmountBeforeFee, buyAmountAfterFee } =
-    determineSellAmountOrBuyAmount(amount, orderKind);
 
   const [sellTokenData, buyTokenData] = await Promise.all([
     getTokenDetails(chainId, sellToken, tokenMap),
@@ -107,20 +106,18 @@ export async function basicParseQuote(
   if (!sellTokenData) {
     throw new Error(`Could not determine sellToken info for: ${sellToken}`);
   }
+  const orderQuoteSide = getOrderQuoteSide(amount, orderKind, {
+    buy: buyTokenData,
+    sell: sellTokenData,
+  });
   const senderIsEoa = await isEOA(chainId, sender);
+
   return {
     chainId,
     quoteRequest: {
       sellToken: sellTokenData.address,
       buyToken: buyTokenData.address,
-      sellAmountBeforeFee: sellAmountBeforeFee
-        ? parseUnits(sellAmountBeforeFee, sellTokenData.decimals).toString()
-        : undefined,
-      // @ts-expect-error - TODO: Something is off with the type inference.
-      buyAmountAfterFee: buyAmountAfterFee
-        ? parseUnits(buyAmountAfterFee, buyTokenData.decimals).toString()
-        : undefined,
-      kind: orderKind,
+      ...orderQuoteSide,
       receiver: receiver ?? sender,
       from: sender,
       signingScheme: senderIsEoa ? SigningScheme.EIP712 : SigningScheme.PRESIGN,
@@ -132,12 +129,21 @@ export async function basicParseQuote(
   };
 }
 
-function determineSellAmountOrBuyAmount(
+function getOrderQuoteSide(
   amount: string,
   orderKind: string,
-): { buyAmountAfterFee?: string; sellAmountBeforeFee?: string } {
+  tokenData: { buy: TokenInfo; sell: TokenInfo },
+): OrderQuoteSide {
   if (orderKind === OrderQuoteSideKindSell.SELL) {
-    return { sellAmountBeforeFee: amount };
+    const sellAmountBeforeFee = parseUnits(
+      amount,
+      tokenData.sell.decimals,
+    ).toString();
+    return { sellAmountBeforeFee, kind: orderKind };
   }
-  return { buyAmountAfterFee: amount };
+  const buyAmountAfterFee = parseUnits(
+    amount,
+    tokenData.buy.decimals,
+  ).toString();
+  return { buyAmountAfterFee, kind: OrderQuoteSideKindBuy.BUY };
 }
