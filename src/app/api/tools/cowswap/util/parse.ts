@@ -4,12 +4,12 @@ import {
   OrderQuoteSideKindSell,
   SigningScheme,
 } from "@cowprotocol/cow-sdk";
-import { getAddress, isAddress, parseUnits } from "viem";
-import { NATIVE_ASSET } from "./protocol";
+import { formatUnits, getAddress, isAddress, parseUnits } from "viem";
+import { isNativeAsset, NATIVE_ASSET } from "./protocol";
 import { getTokenDetails } from "@bitte-ai/agent-sdk";
 import type { BlockchainMapping, TokenInfo } from "@bitte-ai/agent-sdk";
 import type { TokenBalance } from "zerion-sdk";
-import { getBalances } from "../../balance";
+import { getBalances, sufficientSellTokenBalance } from "../../balance";
 
 export interface ParsedQuoteRequest {
   quoteRequest: OrderQuoteRequest;
@@ -30,23 +30,48 @@ export async function parseQuoteRequest(
     sellToken,
     buyToken,
     chainId,
-    sellAmountBeforeFee,
+    sellAmountBeforeFee: sellAmount,
     evmAddress: sender,
   } = requestBody;
-  if (sellAmountBeforeFee === "0") {
+  if (sellAmount === "0") {
     throw new Error("Sell amount cannot be 0");
   }
 
-  const [balances, buyTokenData] = await Promise.all([
-    getBalances(sender, zerionKey),
+  const [sellTokenData, buyTokenData] = await Promise.all([
+    getTokenDetails(chainId, sellToken, tokenMap),
     getTokenDetails(chainId, buyToken, tokenMap),
   ]);
-  const sellTokenData = sellTokenAvailable(chainId, balances, sellToken);
+
+  // const sellTokenData = sellTokenAvailable(chainId, balances, sellToken);
   if (!buyTokenData) {
-    throw new Error(`Buy token not found on chain ${chainId}: ${buyToken}`);
+    throw new Error(
+      `Buy Token not found '${buyToken}': supply address if known`,
+    );
+  }
+  if (!sellTokenData) {
+    throw new Error(
+      `Sell Token not found '${sellToken}': supply address if known`,
+    );
+  }
+
+  const amount = parseUnits(sellAmount, sellTokenData.decimals);
+  const { sufficient, balance } = await sufficientSellTokenBalance(
+    chainId,
+    sender,
+    sellTokenData,
+    amount,
+  );
+  if (!sufficient) {
+    const have =
+      balance !== null
+        ? formatUnits(balance, sellTokenData.decimals)
+        : "unknown";
+    throw new Error(
+      `Insufficient SellToken Balance: Have ${have} - Need ${sellAmount}`,
+    );
   }
   const sellAmt = parseUnits(
-    sellAmountBeforeFee,
+    sellAmount,
     sellTokenData.decimals,
   ).toString();
   return {
@@ -68,34 +93,4 @@ export async function parseQuoteRequest(
       sell: sellTokenData,
     },
   };
-}
-
-function sellTokenAvailable(
-  chainId: number,
-  allBalances: TokenBalance[],
-  sellTokenSymbolOrAddress: string,
-): TokenInfo {
-  let balance: TokenBalance | undefined;
-  const filteredBalances = allBalances.filter((b) => b.chainId === chainId);
-  if (isAddress(sellTokenSymbolOrAddress, { strict: false })) {
-    balance = filteredBalances.find(
-      (b) =>
-        getAddress(b.tokenAddress || NATIVE_ASSET) ===
-        getAddress(sellTokenSymbolOrAddress),
-    );
-  } else {
-    balance = filteredBalances.find(
-      (b) =>
-        b.token?.symbol.toLowerCase() ===
-        sellTokenSymbolOrAddress.toLowerCase(),
-    );
-  }
-  if (balance) {
-    return {
-      address: getAddress(balance.tokenAddress || NATIVE_ASSET),
-      decimals: balance.token?.decimals || 18,
-      symbol: balance.token?.symbol || "UNKONWN",
-    };
-  }
-  throw new Error("Sell token not found in balances");
 }

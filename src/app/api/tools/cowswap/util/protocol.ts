@@ -25,7 +25,7 @@ const MAX_APPROVAL = BigInt(
 );
 
 // CoW (and many other Dex Protocols use this to represent native asset).
-export const NATIVE_ASSET = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
+export const NATIVE_ASSET = getAddress("0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE");
 const GPV2SettlementContract = "0x9008D19f58AAbD9eD0D60971565AA8510560ab41";
 const GPv2VaultRelayer = "0xC92E8bdf79f0507f65a392b0ab4667716BFE0110";
 
