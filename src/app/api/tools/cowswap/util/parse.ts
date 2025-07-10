@@ -4,12 +4,10 @@ import {
   OrderQuoteSideKindSell,
   SigningScheme,
 } from "@cowprotocol/cow-sdk";
-import { formatUnits, getAddress, isAddress, parseUnits } from "viem";
-import { isNativeAsset, NATIVE_ASSET } from "./protocol";
+import { formatUnits, parseUnits } from "viem";
 import { getTokenDetails } from "@bitte-ai/agent-sdk";
 import type { BlockchainMapping, TokenInfo } from "@bitte-ai/agent-sdk";
-import type { TokenBalance } from "zerion-sdk";
-import { getBalances, sufficientSellTokenBalance } from "../../balance";
+import { sufficientSellTokenBalance } from "../../balance";
 
 export interface ParsedQuoteRequest {
   quoteRequest: OrderQuoteRequest;
@@ -20,7 +18,6 @@ export interface ParsedQuoteRequest {
 export async function parseQuoteRequest(
   req: NextRequest,
   tokenMap: BlockchainMapping,
-  zerionKey: string,
 ): Promise<ParsedQuoteRequest> {
   // TODO - Add Type Guard on Request (to determine better if it needs processing below.)
   const requestBody = await req.json();
@@ -58,8 +55,8 @@ export async function parseQuoteRequest(
   const { sufficient, balance } = await sufficientSellTokenBalance(
     chainId,
     sender,
-    sellTokenData,
     amount,
+    sellTokenData.address,
   );
   if (!sufficient) {
     const have =
@@ -70,10 +67,7 @@ export async function parseQuoteRequest(
       `Insufficient SellToken Balance: Have ${have} - Need ${sellAmount}`,
     );
   }
-  const sellAmt = parseUnits(
-    sellAmount,
-    sellTokenData.decimals,
-  ).toString();
+  const sellAmt = parseUnits(sellAmount, sellTokenData.decimals).toString();
   return {
     chainId,
     quoteRequest: {
