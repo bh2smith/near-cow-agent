@@ -115,12 +115,12 @@ async function buildTransaction(
     notes.push("Off Chain Order Placement (EIP712)");
     const typedData = {
       types: {
-        EIP712Domain: [
-          { name: "name", type: "string" },
-          { name: "version", type: "string" },
-          { name: "chainId", type: "uint256" },
-          { name: "verifyingContract", type: "address" },
-        ],
+        // EIP712Domain: [
+        //   { name: "name", type: "string" },
+        //   { name: "version", type: "string" },
+        //   { name: "chainId", type: "uint256" },
+        //   { name: "verifyingContract", type: "address" },
+        // ],
         ...OrderSigningUtils.getEIP712Types(),
       },
       domain: await OrderSigningUtils.getDomain(chainId),

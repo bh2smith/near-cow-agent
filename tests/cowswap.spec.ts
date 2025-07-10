@@ -279,7 +279,7 @@ describe("CowSwap Plugin", () => {
       },
       tokenOut: {
         contractAddress: tokenData.buy.address,
-        amount: "9876543.234567",
+        amount: "0.000009876543234567",
         ...tokenData.buy,
         usdValue: 0,
       },
