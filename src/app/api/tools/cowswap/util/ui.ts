@@ -32,7 +32,6 @@ export function parseWidgetData({
     tokenOut: {
       contractAddress: quote.buyToken,
       amount: formatUnits(BigInt(quote.buyAmount), tokenData.buy.decimals),
-      // TODO: Fix agent-sdk!
       usdValue: 0,
       ...tokenData.buy,
     },
