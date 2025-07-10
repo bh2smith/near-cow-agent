@@ -54,7 +54,7 @@ async function logic(req: NextRequest): Promise<{
     appData:
       "0x5a8bb9f6dd0c7f1b4730d9c5a811c2dfe559e67ce9b5ed6965b05e59b8c86b80",
   };
-  console.log("Got Quote", result.quote);
+  console.log("Modified Quote", result.quote);
   const from = getAddress(quoteRequest.from);
   const steps = await preliminarySteps(chainId, from, result.quote, notes);
   console.log("Preliminary Steps", steps);
@@ -66,7 +66,7 @@ async function logic(req: NextRequest): Promise<{
     steps,
   );
 
-  return {
+  const responsePayload = {
     meta: {
       quote: result,
       ui: parseWidgetData({
@@ -78,6 +78,8 @@ async function logic(req: NextRequest): Promise<{
     summary: summarizeNotes(notes),
     transaction,
   };
+  console.log("Response Payload", responsePayload);
+  return responsePayload;
 }
 
 function summarizeNotes(notes: string[]): string {
