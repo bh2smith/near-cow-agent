@@ -140,10 +140,12 @@ function getOrderQuoteSide(
       tokenData.sell.decimals,
     ).toString();
     return { sellAmountBeforeFee, kind: orderKind };
+  } else if (orderKind === OrderQuoteSideKindBuy.BUY) {
+    const buyAmountAfterFee = parseUnits(
+      amount,
+      tokenData.buy.decimals,
+    ).toString();
+    return { buyAmountAfterFee, kind: OrderQuoteSideKindBuy.BUY };
   }
-  const buyAmountAfterFee = parseUnits(
-    amount,
-    tokenData.buy.decimals,
-  ).toString();
-  return { buyAmountAfterFee, kind: OrderQuoteSideKindBuy.BUY };
+  throw new Error(`Invalid order kind: ${orderKind}`);
 }

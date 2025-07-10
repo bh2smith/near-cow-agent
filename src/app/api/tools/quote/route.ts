@@ -10,7 +10,7 @@ import { OrderSigningUtils } from "@cowprotocol/cow-sdk";
 import type { MetaTransaction, SignRequest, SwapFTData } from "@bitte-ai/types";
 import { parseWidgetData } from "../cowswap/util/ui";
 import { preliminarySteps } from "./preliminary";
-import type { Address } from "viem";
+import { getAddress, type Address } from "viem";
 
 // TODO: Allow User to set Slippage.
 const slippageBps = Number.parseInt(process.env.SLIPPAGE_BPS || "100");
@@ -31,7 +31,6 @@ async function logic(req: NextRequest): Promise<{
   );
   console.log("Parsed Quote Request", quoteRequest);
   const notes: string[] = [];
-  const { steps, owner } = await preliminarySteps(chainId, quoteRequest, notes);
   const orderBookApi = new OrderBookApi({ chainId });
 
   // WARNING: Do not unpack this result as { quote, ...}. It causes confusion due to modifications.
@@ -55,12 +54,15 @@ async function logic(req: NextRequest): Promise<{
     appData:
       "0x5a8bb9f6dd0c7f1b4730d9c5a811c2dfe559e67ce9b5ed6965b05e59b8c86b80",
   };
-
+  console.log("Got Quote", result.quote);
+  const from = getAddress(quoteRequest.from);
+  const steps = await preliminarySteps(chainId, from, result.quote, notes);
+  console.log("Preliminary Steps", steps);
   const transaction = await buildTransaction(
     result.quote,
     notes,
     chainId,
-    owner,
+    from,
     steps,
   );
 
