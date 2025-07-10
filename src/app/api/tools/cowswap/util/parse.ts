@@ -45,7 +45,6 @@ export async function parseQuoteRequest(
   if (!buyTokenData) {
     throw new Error(`Buy token not found on chain ${chainId}: ${buyToken}`);
   }
-  console.log("WE IS HERE");
   const sellAmt = parseUnits(
     sellAmountBeforeFee,
     sellTokenData.decimals,

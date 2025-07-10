@@ -17,6 +17,7 @@ import {
 } from "@bitte-ai/agent-sdk";
 import { parseWidgetData } from "./util/ui";
 import type { SwapFTData } from "@bitte-ai/types";
+import { withCowErrorHandling } from "../../../../lib/error";
 
 const slippageBps = Number.parseInt(process.env.SLIPPAGE_BPS || "100");
 const referralAddress =
@@ -51,14 +52,15 @@ export async function orderRequestFlow({
   const orderbook = new OrderBookApi({ chainId });
   console.log(`Requesting quote for ${JSON.stringify(quoteRequest, null, 2)}`);
 
-  const [quoteResponse, approvalTx] = await Promise.all([
+  const quoteResponse = await withCowErrorHandling(
     orderbook.getQuote(quoteRequest),
-    sellTokenApprovalTx({
-      ...quoteRequest,
-      chainId,
-      sellAmount: quoteRequest.sellAmountBeforeFee,
-    }),
-  ]);
+  );
+  const approvalTx = await sellTokenApprovalTx({
+    ...quoteRequest,
+    chainId,
+    sellAmount: quoteRequest.sellAmountBeforeFee,
+  });
+
   if (approvalTx) {
     metaTransactions.push(approvalTx);
   }
