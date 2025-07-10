@@ -24,7 +24,6 @@ import { checksumAddress, getAddress, zeroAddress } from "viem";
 import { parseQuoteRequest } from "@/src/app/api/tools/cowswap/util/parse";
 import { loadTokenMap } from "@bitte-ai/agent-sdk";
 import { parseWidgetData } from "@/src/app/api/tools/cowswap/util/ui";
-import { getZerionKey } from "@/src/app/api/tools/util";
 
 const SEPOLIA_DAI = getAddress("0xb4f1737af37711e9a5890d9510c9bb60e170cb0d");
 const SEPOLIA_COW = getAddress("0x0625afb445c3b6b7b929342a04a22599fd5dbb59");
@@ -32,11 +31,26 @@ const SEPOLIA_COW = getAddress("0x0625afb445c3b6b7b929342a04a22599fd5dbb59");
 const DEPLOYED_SAFE = getAddress("0x5E1E315D96BD81c8f65c576CFD6E793aa091b480");
 
 const chainId = 11155111;
+const tokenData = {
+  sell: {
+    address: SEPOLIA_DAI,
+    decimals: 18,
+    symbol: "DAI",
+    name: "DAI",
+  },
+  buy: {
+    address: SEPOLIA_COW,
+    decimals: 18,
+    symbol: "COW",
+    name: "CoW Protocol Token",
+  },
+};
+
 const quoteRequest = {
   chainId,
   evmAddress: DEPLOYED_SAFE,
-  sellToken: SEPOLIA_DAI,
-  buyToken: SEPOLIA_COW,
+  sellToken: tokenData.sell.address,
+  buyToken: tokenData.buy.address,
   receiver: DEPLOYED_SAFE,
   kind: OrderQuoteSideKindSell.SELL,
   sellAmountBeforeFee: "2000000000000000000",
@@ -49,6 +63,7 @@ describe("CowSwap Plugin", () => {
     const signRequest = await orderRequestFlow({
       chainId,
       quoteRequest: { ...quoteRequest, from: DEPLOYED_SAFE },
+      tokenData,
     });
     console.log(signRequest);
     console.log(
@@ -96,7 +111,7 @@ describe("CowSwap Plugin", () => {
     expect(
       await sellTokenApprovalTx({
         from: "0x7fa8e8264985C7525Fc50F98aC1A9b3765405489",
-        sellToken: SEPOLIA_DAI,
+        sellToken: tokenData.sell.address,
         sellAmount: "100",
         chainId,
       }),
@@ -108,12 +123,12 @@ describe("CowSwap Plugin", () => {
     expect(
       await sellTokenApprovalTx({
         from: zeroAddress, // Will never be approved
-        sellToken: SEPOLIA_COW,
+        sellToken: tokenData.sell.address,
         sellAmount: "100",
         chainId,
       }),
     ).toStrictEqual({
-      to: SEPOLIA_COW,
+      to: tokenData.sell.address,
       value: "0x0",
       data: "0x095ea7b3000000000000000000000000c92e8bdf79f0507f65a392b0ab4667716bfe0110ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
     });
@@ -155,31 +170,18 @@ describe("CowSwap Plugin", () => {
       body: JSON.stringify(quoteRequest),
     });
     const tokenMap = await loadTokenMap(process.env.TOKEN_MAP_URL);
-    expect(
-      await parseQuoteRequest(request, tokenMap, getZerionKey()),
-    ).toStrictEqual({
+    expect(await parseQuoteRequest(request, tokenMap)).toStrictEqual({
       chainId: 11155111,
       quoteRequest: {
-        buyToken: SEPOLIA_COW,
+        buyToken: tokenData.buy.address,
         from: DEPLOYED_SAFE,
         kind: "sell",
         receiver: DEPLOYED_SAFE,
         sellAmountBeforeFee: "2000000000000000000000000000000000000",
-        sellToken: SEPOLIA_DAI,
+        sellToken: tokenData.sell.address,
         signingScheme: "presign",
       },
-      tokenData: {
-        sell: {
-          address: SEPOLIA_DAI,
-          decimals: 18,
-          symbol: "DAI",
-        },
-        buy: {
-          address: SEPOLIA_COW,
-          decimals: 18,
-          symbol: "COW",
-        },
-      },
+      tokenData,
     });
   });
 
@@ -247,8 +249,8 @@ describe("CowSwap Plugin", () => {
 
   it("parseSwapData", async () => {
     const quote: OrderParameters = {
-      sellToken: SEPOLIA_DAI,
-      buyToken: SEPOLIA_COW,
+      sellToken: tokenData.sell.address,
+      buyToken: tokenData.buy.address,
       sellAmount: "123456789101112131415161718192345",
       buyAmount: "9876543234567",
       validTo: 0,
@@ -259,18 +261,7 @@ describe("CowSwap Plugin", () => {
     };
     const swapData = parseWidgetData({
       chainId: 100,
-      tokenData: {
-        sell: {
-          address: SEPOLIA_DAI,
-          decimals: 18,
-          symbol: "DAI",
-        },
-        buy: {
-          address: SEPOLIA_COW,
-          decimals: 6,
-          symbol: "COW",
-        },
-      },
+      tokenData,
       quote,
     });
     expect(swapData).toStrictEqual({
@@ -281,21 +272,15 @@ describe("CowSwap Plugin", () => {
       type: "swap",
       fee: "123",
       tokenIn: {
-        address: SEPOLIA_DAI,
-        contractAddress: SEPOLIA_DAI,
+        contractAddress: tokenData.sell.address,
         amount: "123456789101112.131415161718192345",
-        name: "DAI",
-        symbol: "DAI",
-        decimals: 18,
+        ...tokenData.sell,
         usdValue: 0,
       },
       tokenOut: {
-        address: SEPOLIA_COW,
-        contractAddress: SEPOLIA_COW,
+        contractAddress: tokenData.buy.address,
         amount: "9876543.234567",
-        name: "COW",
-        symbol: "COW",
-        decimals: 6,
+        ...tokenData.buy,
         usdValue: 0,
       },
     });

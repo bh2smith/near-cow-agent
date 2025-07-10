@@ -16,6 +16,7 @@ export interface ParsedQuoteRequest {
   tokenData: { buy: TokenInfo; sell: TokenInfo };
 }
 
+// TODO(bh2smith): Deprecate this function (or merge with basicParseQuote)
 export async function parseQuoteRequest(
   req: NextRequest,
   tokenMap: BlockchainMapping,
@@ -86,15 +87,15 @@ export async function basicParseQuote(
     sellToken,
     buyToken,
     chainId,
-    sellAmountBeforeFee,
+    // One of these two is required.
+    amount,
+    orderKind,
     evmAddress: sender,
     receiver,
-    orderKind,
   } = requestBody;
   console.log("Quote Request Body", requestBody);
-  if (sellAmountBeforeFee === "0") {
-    throw new Error("Sell amount cannot be 0");
-  }
+  const { sellAmountBeforeFee, buyAmountAfterFee } =
+    determineSellAmountOrBuyAmount(amount, orderKind);
 
   const [sellTokenData, buyTokenData] = await Promise.all([
     getTokenDetails(chainId, sellToken, tokenMap),
@@ -112,11 +113,14 @@ export async function basicParseQuote(
     quoteRequest: {
       sellToken: sellTokenData.address,
       buyToken: buyTokenData.address,
-      sellAmountBeforeFee: parseUnits(
-        sellAmountBeforeFee,
-        sellTokenData.decimals,
-      ).toString(),
-      kind: orderKind ?? OrderQuoteSideKindSell.SELL,
+      sellAmountBeforeFee: sellAmountBeforeFee
+        ? parseUnits(sellAmountBeforeFee, sellTokenData.decimals).toString()
+        : undefined,
+      // @ts-expect-error - TODO: Something is off with the type inference.
+      buyAmountAfterFee: buyAmountAfterFee
+        ? parseUnits(buyAmountAfterFee, buyTokenData.decimals).toString()
+        : undefined,
+      kind: orderKind,
       receiver: receiver ?? sender,
       from: sender,
       signingScheme: senderIsEoa ? SigningScheme.EIP712 : SigningScheme.PRESIGN,
@@ -126,4 +130,14 @@ export async function basicParseQuote(
       sell: sellTokenData,
     },
   };
+}
+
+function determineSellAmountOrBuyAmount(
+  amount: string,
+  orderKind: string,
+): { buyAmountAfterFee?: string; sellAmountBeforeFee?: string } {
+  if (orderKind === OrderQuoteSideKindSell.SELL) {
+    return { sellAmountBeforeFee: amount };
+  }
+  return { buyAmountAfterFee: amount };
 }

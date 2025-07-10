@@ -144,14 +144,23 @@ This assistant follows these specifications with zero deviation to ensure secure
             { $ref: "#/components/parameters/buyToken" },
             { $ref: "#/components/parameters/receiver" },
             {
-              name: "sellAmountBeforeFee",
+              name: "amount",
               in: "query",
               required: true,
               schema: {
                 type: "string",
               },
               description:
-                "The amount of tokens to sell before fees, represented as a decimal string in token units. Not Atoms.",
+                "The amount of tokens to buy or sell after or before fees, represented as a decimal string in token units. Not Atoms.",
+            },
+            {
+              name: "orderKind",
+              in: "query",
+              required: true,
+              schema: {
+                type: "string",
+                enum: ["buy", "sell"],
+              },
             },
           ],
           // requestBody: {
