@@ -1,18 +1,19 @@
 import { getClient } from "near-safe";
-import { erc20Abi, type Address } from "viem";
+import { erc20Abi, formatUnits, type Address } from "viem";
 import { NATIVE_ASSET } from "./cowswap/util/protocol";
+import type { TokenInfo } from "@bitte-ai/agent-sdk";
 
-export async function sufficientSellTokenBalance(
+export async function sufficientBalance(
   chainId: number,
   wallet: Address,
-  sellAmount: bigint,
+  amount: bigint,
   tokenAddress?: Address,
 ): Promise<{ sufficient: boolean; balance: bigint | null }> {
   console.log(
     "Check Sell Token Balance",
     chainId,
     wallet,
-    sellAmount,
+    amount,
     tokenAddress,
   );
   try {
@@ -29,12 +30,35 @@ export async function sufficientSellTokenBalance(
       });
     }
     console.log("Balance", balance);
-    const sufficient = balance >= sellAmount;
+    const sufficient = balance >= amount;
     return { sufficient, balance };
   } catch (error) {
     console.error(
       `Couldn't read wallet balance for token ${tokenAddress} assuming sufficient: ${error}`,
     );
     return { sufficient: true, balance: null };
+  }
+}
+
+export async function assertSufficientBalance(
+  chainId: number,
+  wallet: Address,
+  amount: bigint,
+  token?: TokenInfo,
+): Promise<void> {
+  const { sufficient, balance } = await sufficientBalance(
+    chainId,
+    wallet,
+    amount,
+    token?.address,
+  );
+  if (!sufficient) {
+    const have =
+      balance !== null
+        ? formatUnits(balance, token?.decimals ?? 18)
+        : "unknown";
+    throw new Error(
+      `Insufficient SellToken Balance: Have ${have} - Need ${amount}`,
+    );
   }
 }

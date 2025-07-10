@@ -4,10 +4,10 @@ import {
   OrderQuoteSideKindSell,
   SigningScheme,
 } from "@cowprotocol/cow-sdk";
-import { formatUnits, parseUnits } from "viem";
+import { parseUnits } from "viem";
 import { getTokenDetails } from "@bitte-ai/agent-sdk";
 import type { BlockchainMapping, TokenInfo } from "@bitte-ai/agent-sdk";
-import { sufficientSellTokenBalance } from "../../balance";
+import { assertSufficientBalance } from "../../balance";
 
 export interface ParsedQuoteRequest {
   quoteRequest: OrderQuoteRequest;
@@ -27,10 +27,10 @@ export async function parseQuoteRequest(
     sellToken,
     buyToken,
     chainId,
-    sellAmountBeforeFee: sellAmount,
+    sellAmountBeforeFee,
     evmAddress: sender,
   } = requestBody;
-  if (sellAmount === "0") {
+  if (sellAmountBeforeFee === "0") {
     throw new Error("Sell amount cannot be 0");
   }
 
@@ -51,29 +51,15 @@ export async function parseQuoteRequest(
     );
   }
 
-  const amount = parseUnits(sellAmount, sellTokenData.decimals);
-  const { sufficient, balance } = await sufficientSellTokenBalance(
-    chainId,
-    sender,
-    amount,
-    sellTokenData.address,
-  );
-  if (!sufficient) {
-    const have =
-      balance !== null
-        ? formatUnits(balance, sellTokenData.decimals)
-        : "unknown";
-    throw new Error(
-      `Insufficient SellToken Balance: Have ${have} - Need ${sellAmount}`,
-    );
-  }
-  const sellAmt = parseUnits(sellAmount, sellTokenData.decimals).toString();
+  const sellAmount = parseUnits(sellAmountBeforeFee, sellTokenData.decimals);
+  await assertSufficientBalance(chainId, sender, sellAmount, sellTokenData);
+
   return {
     chainId,
     quoteRequest: {
       sellToken: sellTokenData.address,
       buyToken: buyTokenData.address,
-      sellAmountBeforeFee: sellAmt,
+      sellAmountBeforeFee: sellAmount.toString(),
       // TODO - change this when we want to enable buy orders.
       kind: OrderQuoteSideKindSell.SELL,
       // TODO - change this when we want to enable alternate recipients.

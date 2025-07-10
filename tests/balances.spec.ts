@@ -1,4 +1,4 @@
-import { sufficientSellTokenBalance } from "@/src/app/api/tools/balance";
+import { sufficientBalance } from "@/src/app/api/tools/balance";
 import { zeroAddress } from "viem";
 import dotenv from "dotenv";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
@@ -15,16 +15,11 @@ describe("Balances Route", () => {
 
   // This posts an order to COW Orderbook.
   it("sufficientSellTokenBalance (Native)", async () => {
-    let result = await sufficientSellTokenBalance(
-      chainId,
-      ethHolder,
-      BigInt("1"),
-      eth,
-    );
+    let result = await sufficientBalance(chainId, ethHolder, BigInt("1"), eth);
     expect(result.sufficient).toBe(true);
     expect(result.balance).toBeGreaterThan(BigInt("0"));
 
-    result = await sufficientSellTokenBalance(
+    result = await sufficientBalance(
       chainId,
       ethHolder,
       BigInt("1"),
@@ -34,28 +29,18 @@ describe("Balances Route", () => {
     expect(result.balance).toBeGreaterThan(BigInt("0"));
 
     // Non Holder
-    result = await sufficientSellTokenBalance(
-      chainId,
-      nonHolder,
-      BigInt("1"),
-      eth,
-    );
+    result = await sufficientBalance(chainId, nonHolder, BigInt("1"), eth);
     expect(result.sufficient).toBe(false);
     expect(result.balance).toBe(BigInt("0"));
   });
 
   it("sufficientSellTokenBalance (ERC20)", async () => {
-    let result = await sufficientSellTokenBalance(
-      chainId,
-      ethHolder,
-      BigInt("1"),
-      weth,
-    );
+    let result = await sufficientBalance(chainId, ethHolder, BigInt("1"), weth);
     expect(result.sufficient).toBe(true);
     expect(result.balance).toBeGreaterThan(BigInt("0"));
 
     // Non Holder
-    result = await sufficientSellTokenBalance(
+    result = await sufficientBalance(
       chainId,
       nonHolder,
       BigInt("1"),
