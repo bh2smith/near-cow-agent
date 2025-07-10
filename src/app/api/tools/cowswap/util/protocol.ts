@@ -17,8 +17,8 @@ import {
   OrderKind,
 } from "@cowprotocol/cow-sdk";
 import type { MetaTransaction } from "@bitte-ai/types";
-import { getClient } from "near-safe";
 import stringify from "json-stringify-deterministic";
+import { getClient } from "../../util";
 
 const MAX_APPROVAL = BigInt(
   "115792089237316195423570985008687907853269984665640564039457584007913129639935",
@@ -28,7 +28,9 @@ const MAX_APPROVAL = BigInt(
 export const NATIVE_ASSET = getAddress(
   "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
 );
-const GPV2SettlementContract = "0x9008D19f58AAbD9eD0D60971565AA8510560ab41";
+const SettlementContract = getAddress(
+  "0x9008D19f58AAbD9eD0D60971565AA8510560ab41",
+);
 const GPv2VaultRelayer = "0xC92E8bdf79f0507f65a392b0ab4667716BFE0110";
 
 export function setPresignatureTx(orderUid: string): MetaTransaction {
@@ -36,7 +38,7 @@ export function setPresignatureTx(orderUid: string): MetaTransaction {
     throw new Error(`Invalid OrderUid (not hex): ${orderUid}`);
   }
   return {
-    to: GPV2SettlementContract,
+    to: SettlementContract,
     value: "0x0",
     data: encodeFunctionData({
       abi: parseAbi([

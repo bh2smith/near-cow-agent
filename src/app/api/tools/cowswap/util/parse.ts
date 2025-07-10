@@ -8,6 +8,7 @@ import { parseUnits } from "viem";
 import { getTokenDetails } from "@bitte-ai/agent-sdk";
 import type { BlockchainMapping, TokenInfo } from "@bitte-ai/agent-sdk";
 import { assertSufficientBalance } from "../../balance";
+import { isEOA } from "../../util";
 
 export interface ParsedQuoteRequest {
   quoteRequest: OrderQuoteRequest;
@@ -67,6 +68,58 @@ export async function parseQuoteRequest(
       from: sender,
       // manually add PRESIGN (since this is a safe);
       signingScheme: SigningScheme.PRESIGN,
+    },
+    tokenData: {
+      buy: buyTokenData,
+      sell: sellTokenData,
+    },
+  };
+}
+
+export async function basicParseQuote(
+  req: NextRequest,
+  // TODO: Replace with Data Provider.
+  tokenMap: BlockchainMapping,
+): Promise<ParsedQuoteRequest> {
+  const requestBody = await req.json();
+  const {
+    sellToken,
+    buyToken,
+    chainId,
+    sellAmountBeforeFee,
+    evmAddress: sender,
+    receiver,
+    orderKind,
+  } = requestBody;
+  console.log("Quote Request Body", requestBody);
+  if (sellAmountBeforeFee === "0") {
+    throw new Error("Sell amount cannot be 0");
+  }
+
+  const [sellTokenData, buyTokenData] = await Promise.all([
+    getTokenDetails(chainId, sellToken, tokenMap),
+    getTokenDetails(chainId, buyToken, tokenMap),
+  ]);
+  if (!buyTokenData) {
+    throw new Error(`Could not determine buyToken info for: ${buyToken}`);
+  }
+  if (!sellTokenData) {
+    throw new Error(`Could not determine sellToken info for: ${sellToken}`);
+  }
+  const senderIsEoa = await isEOA(chainId, sender);
+  return {
+    chainId,
+    quoteRequest: {
+      sellToken: sellTokenData.address,
+      buyToken: buyTokenData.address,
+      sellAmountBeforeFee: parseUnits(
+        sellAmountBeforeFee,
+        sellTokenData.decimals,
+      ).toString(),
+      kind: orderKind ?? OrderQuoteSideKindSell.SELL,
+      receiver: receiver ?? sender,
+      from: sender,
+      signingScheme: senderIsEoa ? SigningScheme.EIP712 : SigningScheme.PRESIGN,
     },
     tokenData: {
       buy: buyTokenData,
