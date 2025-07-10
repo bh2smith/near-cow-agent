@@ -1,3 +1,4 @@
+import { withCowErrorHandling } from "@/src/lib/error";
 import type { OrderKind, SigningScheme } from "@cowprotocol/cow-sdk";
 import { OrderBookApi } from "@cowprotocol/cow-sdk";
 
@@ -38,45 +39,10 @@ export async function createOrder(
     from: requestBody.evmAddress,
   };
   console.log("Order Creation", orderCreation);
-  try {
-    const orderUid = await orderBookApi.sendOrder(orderCreation);
-    const orderLink = orderBookApi.getOrderLink(orderUid);
-    console.log("Order Link", orderLink);
-    return { orderUrl: `https://explorer.cow.fi/orders/${orderUid}` };
-  } catch (error) {
-    // console.error("Error creating order", error);
-    return { error: parseCowAPIError(error) };
-  }
-}
-
-interface CowAPIErrorBody {
-  errorType?: string;
-  description?: string;
-}
-/**
- * Parses CoW Protocol API errors to extract meaningful error messages
- * @param error - The error object from the CoW Protocol API
- * @returns A user-friendly error message
- */
-function parseCowAPIError(error: unknown): string {
-  // Default error message
-  let errorMessage = "Failed to create order";
-
-  if (error && typeof error === "object") {
-    // Check if it's a CoW Protocol API error with structured response
-    if ("body" in error && error.body && typeof error.body === "object") {
-      const errorBody = error.body as CowAPIErrorBody;
-      if (errorBody.errorType && errorBody.description) {
-        errorMessage = `${errorBody.errorType}: ${errorBody.description}`;
-      } else if (errorBody.description) {
-        errorMessage = errorBody.description;
-      }
-    }
-    // Fallback to standard error message if available
-    else if ("message" in error && typeof error.message === "string") {
-      errorMessage = error.message;
-    }
-  }
-
-  return errorMessage;
+  const orderUid = await withCowErrorHandling(
+    orderBookApi.sendOrder(orderCreation),
+  );
+  const orderLink = orderBookApi.getOrderLink(orderUid);
+  console.log("Order Link", orderLink);
+  return { orderUrl: `https://explorer.cow.fi/orders/${orderUid}` };
 }
