@@ -114,7 +114,7 @@ export async function orderRequestFlow({
       quote: quoteResponse.quote,
       ui: parseWidgetData({
         chainId,
-        tokenData: tokenData,
+        tokenData,
         quote: quoteResponse.quote,
       }),
     },

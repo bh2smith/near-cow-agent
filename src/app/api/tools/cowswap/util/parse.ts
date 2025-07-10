@@ -1,6 +1,8 @@
 import type { NextRequest } from "next/server";
+import type { OrderQuoteSide } from "@cowprotocol/cow-sdk";
 import {
   type OrderQuoteRequest,
+  OrderQuoteSideKindBuy,
   OrderQuoteSideKindSell,
   SigningScheme,
 } from "@cowprotocol/cow-sdk";
@@ -16,6 +18,7 @@ export interface ParsedQuoteRequest {
   tokenData: { buy: TokenInfo; sell: TokenInfo };
 }
 
+// TODO(bh2smith): Deprecate this function (or merge with basicParseQuote)
 export async function parseQuoteRequest(
   req: NextRequest,
   tokenMap: BlockchainMapping,
@@ -86,15 +89,12 @@ export async function basicParseQuote(
     sellToken,
     buyToken,
     chainId,
-    sellAmountBeforeFee,
+    amount,
+    orderKind,
     evmAddress: sender,
     receiver,
-    orderKind,
   } = requestBody;
   console.log("Quote Request Body", requestBody);
-  if (sellAmountBeforeFee === "0") {
-    throw new Error("Sell amount cannot be 0");
-  }
 
   const [sellTokenData, buyTokenData] = await Promise.all([
     getTokenDetails(chainId, sellToken, tokenMap),
@@ -106,17 +106,18 @@ export async function basicParseQuote(
   if (!sellTokenData) {
     throw new Error(`Could not determine sellToken info for: ${sellToken}`);
   }
+  const orderQuoteSide = getOrderQuoteSide(amount, orderKind, {
+    buy: buyTokenData,
+    sell: sellTokenData,
+  });
   const senderIsEoa = await isEOA(chainId, sender);
+
   return {
     chainId,
     quoteRequest: {
       sellToken: sellTokenData.address,
       buyToken: buyTokenData.address,
-      sellAmountBeforeFee: parseUnits(
-        sellAmountBeforeFee,
-        sellTokenData.decimals,
-      ).toString(),
-      kind: orderKind ?? OrderQuoteSideKindSell.SELL,
+      ...orderQuoteSide,
       receiver: receiver ?? sender,
       from: sender,
       signingScheme: senderIsEoa ? SigningScheme.EIP712 : SigningScheme.PRESIGN,
@@ -126,4 +127,25 @@ export async function basicParseQuote(
       sell: sellTokenData,
     },
   };
+}
+
+function getOrderQuoteSide(
+  amount: string,
+  orderKind: string,
+  tokenData: { buy: TokenInfo; sell: TokenInfo },
+): OrderQuoteSide {
+  if (orderKind === OrderQuoteSideKindSell.SELL) {
+    const sellAmountBeforeFee = parseUnits(
+      amount,
+      tokenData.sell.decimals,
+    ).toString();
+    return { sellAmountBeforeFee, kind: orderKind };
+  } else if (orderKind === OrderQuoteSideKindBuy.BUY) {
+    const buyAmountAfterFee = parseUnits(
+      amount,
+      tokenData.buy.decimals,
+    ).toString();
+    return { buyAmountAfterFee, kind: OrderQuoteSideKindBuy.BUY };
+  }
+  throw new Error(`Invalid order kind: ${orderKind}`);
 }

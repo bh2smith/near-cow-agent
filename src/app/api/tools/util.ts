@@ -19,9 +19,12 @@ export async function validateNextRequest(
   );
 }
 
-function getEnvVar(key: string): string {
+function getEnvVar(key: string, defaultValue?: string): string {
   const value = process.env[key];
   if (!value) {
+    if (defaultValue) {
+      return defaultValue;
+    }
     throw new Error(`${key} is not set`);
   }
   return value;
@@ -34,7 +37,12 @@ export async function getTokenMap(): Promise<BlockchainMapping> {
   const getCachedTokenMap = unstable_cache(
     async () => {
       console.log("Loading TokenMap...");
-      return loadTokenMap(getEnvVar("TOKEN_MAP_URL"));
+      return loadTokenMap(
+        getEnvVar(
+          "TOKEN_MAP_URL",
+          "https://raw.githubusercontent.com/BitteProtocol/core/refs/heads/main/public/tokenMap.json",
+        ),
+      );
     },
     ["token-map"], // cache key
     {

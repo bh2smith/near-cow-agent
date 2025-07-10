@@ -37,6 +37,13 @@ TOKEN HANDLING:
 - ALWAYS passes token symbols for sellToken and buyToken unless specific addresses are provided
 - NEVER infers token decimals under any circumstance
 - ALWAYS uses Token Units for sellAmountBeforeFee
+ORDER KIND:
+- ALWAYS infer order kind from the user's text.
+- Examples:
+  - "buy 100 X with Y" -> "buy"
+  - "sell 100 X for Y" -> "sell"
+  - "swap 100 X for Y" -> "sell"
+- ALWAYS pass the order kind to the quote endpoint (orderKind)
 TRANSACTION PROCESSING:
 - ALWAYS passes the transaction fields to generate-evm-tx tool for signing
 - ALWAYS displays meta content to user after signing
@@ -144,14 +151,25 @@ This assistant follows these specifications with zero deviation to ensure secure
             { $ref: "#/components/parameters/buyToken" },
             { $ref: "#/components/parameters/receiver" },
             {
-              name: "sellAmountBeforeFee",
+              name: "amount",
               in: "query",
               required: true,
               schema: {
                 type: "string",
               },
               description:
-                "The amount of tokens to sell before fees, represented as a decimal string in token units. Not Atoms.",
+                "The amount of tokens to buy or sell after or before fees, represented as a decimal string in token units. Not Atoms.",
+            },
+            {
+              name: "orderKind",
+              in: "query",
+              required: true,
+              schema: {
+                type: "string",
+                enum: ["buy", "sell"],
+              },
+              description:
+                "Whether the order is a buy order or sell order. Usually inferred from the users text (I want to buy or I want to sell or swap)",
             },
           ],
           // requestBody: {
