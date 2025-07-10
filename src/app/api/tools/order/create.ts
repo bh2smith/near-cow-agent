@@ -11,9 +11,9 @@ interface OrderRequestBody {
   buyAmount: string;
   validTo: number;
   feeAmount: string;
-  kind: string;
+  kind: OrderKind;
   partiallyFillable: boolean;
-  signingScheme: string;
+  signingScheme: SigningScheme;
   signature: string;
   appData: string;
   evmAddress: string;
@@ -31,9 +31,9 @@ export async function createOrder(
     buyAmount: requestBody.buyAmount,
     validTo: requestBody.validTo,
     feeAmount: requestBody.feeAmount,
-    kind: requestBody.kind as OrderKind,
+    kind: requestBody.kind,
     partiallyFillable: requestBody.partiallyFillable,
-    signingScheme: requestBody.signingScheme as SigningScheme,
+    signingScheme: requestBody.signingScheme,
     signature: requestBody.signature,
     appData: requestBody.appData,
     from: requestBody.evmAddress,
