@@ -11,7 +11,7 @@ describe("sellTokenApproval", () => {
       sellToken: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
       sellAmount: parseUnits("0.1", 6).toString(),
     });
-    expect(x).toBe({
+    expect(x).toEqual({
       to: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
       value: "0x0",
       data: "0x095ea7b3000000000000000000000000c92e8bdf79f0507f65a392b0ab4667716bfe0110ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
