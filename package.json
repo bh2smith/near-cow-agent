@@ -13,6 +13,7 @@
     "test": "jest --config jest.config.ts"
   },
   "dependencies": {
+    "@account-kit/infra": "^4.49.0",
     "@bitte-ai/agent-sdk": "^0.2.3",
     "@cowprotocol/cow-sdk": "^6.0.0-RC-71",
     "json-stringify-deterministic": "^1.0.12",
