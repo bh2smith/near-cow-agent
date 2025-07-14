@@ -7,12 +7,11 @@ import {
   soneiumMainnet,
 } from "@account-kit/infra";
 import {
-  getChainById,
   loadTokenMap,
   validateRequest,
   type BlockchainMapping,
 } from "@bitte-ai/agent-sdk";
-import { getClient, Network } from "near-safe";
+import { Network } from "near-safe";
 import { unstable_cache } from "next/cache";
 import { NextResponse, type NextRequest } from "next/server";
 import { createPublicClient, http } from "viem";
@@ -81,6 +80,6 @@ export const getAlchemyRpcUrl = (chainId: number): string => {
 
 export const getClientWithAlchemy = (chainId: number) => {
   return createPublicClient({
-    transport: http(getAlchemyRpcUrl(chainId))
+    transport: http(getAlchemyRpcUrl(chainId)),
   });
-}
+};
