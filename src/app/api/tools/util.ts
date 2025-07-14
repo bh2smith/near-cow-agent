@@ -79,7 +79,9 @@ export const getAlchemyRpcUrl = (chainId: number): string => {
 };
 
 export const getClientWithAlchemy = (chainId: number) => {
+  const chain = ALCHEMY_CHAINS.find((c) => c.id === chainId);
   return createPublicClient({
+    chain,
     transport: http(getAlchemyRpcUrl(chainId)),
   });
 };
