@@ -10080,11 +10080,6 @@
       "decimals": 18,
       "symbol": "CAI"
     },
-    "zora": {
-      "address": "0xD8E3FB3b08eBA982F2754988d70D57eDc0055ae6",
-      "decimals": 9,
-      "symbol": "ZORA"
-    },
     "hrd": {
       "address": "0x461B71cff4d4334BbA09489acE4b5Dc1A1813445",
       "decimals": 9,
@@ -62921,8 +62916,8 @@
       "symbol": "SBR"
     },
     "zora": {
-      "address": "0x15bdddC401FA5f2b9417770533632A80057234bD",
-      "decimals": 10,
+      "address": "0x1111111111166b7FE7bd91427724B487980aFc69",
+      "decimals": 18,
       "symbol": "Zora"
     },
     "wally": {
