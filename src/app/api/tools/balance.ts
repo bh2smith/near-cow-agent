@@ -1,7 +1,7 @@
-import { getClient } from "near-safe";
+import { getClientWithAlchemy } from "@/src/app/api/tools/util";
+import type { TokenInfo } from "@bitte-ai/agent-sdk";
 import { erc20Abi, formatUnits, type Address } from "viem";
 import { NATIVE_ASSET } from "./cowswap/util/protocol";
-import type { TokenInfo } from "@bitte-ai/agent-sdk";
 
 export async function sufficientBalance(
   chainId: number,
@@ -17,7 +17,7 @@ export async function sufficientBalance(
     tokenAddress,
   );
   try {
-    const client = getClient(chainId);
+    const client = getClientWithAlchemy(chainId);
     let balance: bigint;
     if (!tokenAddress || tokenAddress === NATIVE_ASSET) {
       balance = await client.getBalance({ address: wallet });

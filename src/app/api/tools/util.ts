@@ -1,10 +1,19 @@
-import { type NextRequest, NextResponse } from "next/server";
-import { unstable_cache } from "next/cache";
+import {
+  arbitrum,
+  base,
+  mainnet,
+  optimism,
+  polygon,
+  soneiumMainnet,
+} from "@account-kit/infra";
 import {
   loadTokenMap,
   validateRequest,
   type BlockchainMapping,
 } from "@bitte-ai/agent-sdk";
+import { getClient, Network } from "near-safe";
+import { unstable_cache } from "next/cache";
+import { NextResponse, type NextRequest } from "next/server";
 
 export async function validateNextRequest(
   req: NextRequest,
@@ -41,4 +50,34 @@ export async function getTokenMap(): Promise<BlockchainMapping> {
   );
 
   return getCachedTokenMap();
+}
+
+const ALCHEMY_CHAINS = [
+  mainnet,
+  base,
+  polygon,
+  arbitrum,
+  optimism,
+  soneiumMainnet,
+];
+
+const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY;
+
+export const getAlchemyRpcUrl = (chainId: number): string => {
+  if (ALCHEMY_API_KEY) {
+    const alchemyChain = ALCHEMY_CHAINS.find((c) => c.id === chainId);
+    const alchemyRpcBase = alchemyChain?.rpcUrls?.alchemy?.http?.[0];
+    if (alchemyRpcBase) {
+      return `${alchemyRpcBase}/${ALCHEMY_API_KEY}`;
+    }
+  }
+
+  return Network.fromChainId(chainId).rpcUrl;
+};
+
+export const getClientWithAlchemy = (chainId: number) =>
+  getClient(chainId, getAlchemyRpcUrl(chainId));
+
+for (const chain of ALCHEMY_CHAINS) {
+  console.log(chain.id, getAlchemyRpcUrl(chain.id));
 }
