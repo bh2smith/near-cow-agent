@@ -63,10 +63,9 @@ export async function isEOA(
 }
 
 export function getClient(chainId: number): PublicClient {
-  const chain = getChainById(chainId);
   const client = createPublicClient({
-    chain,
-    transport: http(chain.rpcUrls.default.http[0]),
+    chain: getChainById(chainId),
+    transport: http(),
   });
   return client;
 }

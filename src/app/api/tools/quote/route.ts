@@ -78,7 +78,7 @@ async function logic(req: NextRequest): Promise<{
     summary: summarizeNotes(notes),
     transaction,
   };
-  console.log("Response Payload", responsePayload);
+  console.log("Response Payload", JSON.stringify(responsePayload));
   return responsePayload;
 }
 
