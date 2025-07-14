@@ -14,7 +14,7 @@
     "test": "jest --config jest.config.ts"
   },
   "dependencies": {
-    "@bitte-ai/agent-sdk": "^0.2.4",
+    "@bitte-ai/agent-sdk": "^0.2.3",
     "@cowprotocol/cow-sdk": "^6.0.0-RC-71",
     "json-stringify-deterministic": "^1.0.12",
     "next": "^15.3.5",
