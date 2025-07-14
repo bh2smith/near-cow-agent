@@ -11,9 +11,10 @@ import {
   validateRequest,
   type BlockchainMapping,
 } from "@bitte-ai/agent-sdk";
-import { getClient, Network } from "near-safe";
+import { Network } from "near-safe";
 import { unstable_cache } from "next/cache";
 import { NextResponse, type NextRequest } from "next/server";
+import { createPublicClient, http } from "viem";
 
 export async function validateNextRequest(
   req: NextRequest,
@@ -65,19 +66,20 @@ const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY;
 
 export const getAlchemyRpcUrl = (chainId: number): string => {
   if (ALCHEMY_API_KEY) {
+    console.log("Using Alchemy RPC");
     const alchemyChain = ALCHEMY_CHAINS.find((c) => c.id === chainId);
     const alchemyRpcBase = alchemyChain?.rpcUrls?.alchemy?.http?.[0];
     if (alchemyRpcBase) {
       return `${alchemyRpcBase}/${ALCHEMY_API_KEY}`;
     }
+    console.warn("No Alchemy Base URL available");
   }
-
+  console.log("using public RPC for chainId", chainId);
   return Network.fromChainId(chainId).rpcUrl;
 };
 
-export const getClientWithAlchemy = (chainId: number) =>
-  getClient(chainId, getAlchemyRpcUrl(chainId));
-
-for (const chain of ALCHEMY_CHAINS) {
-  console.log(chain.id, getAlchemyRpcUrl(chain.id));
-}
+export const getClientWithAlchemy = (chainId: number) => {
+  return createPublicClient({
+    transport: http(getAlchemyRpcUrl(chainId)),
+  });
+};
