@@ -4,9 +4,9 @@
     "": {
       "name": "bitte-cowswap-agent",
       "dependencies": {
-        "@account-kit/infra": "^4.49.0",
-        "@bitte-ai/agent-sdk": "^0.2.3",
-        "@cowprotocol/cow-sdk": "^6.0.0-RC-71",
+        "@account-kit/infra": "^4.50.0",
+        "@bitte-ai/agent-sdk": "^0.2.5",
+        "@cowprotocol/cow-sdk": "^6.0.0-RC-bungee.0",
         "json-stringify-deterministic": "^1.0.12",
         "near-safe": "^0.10.0",
         "next": "^15.3.5",
@@ -20,7 +20,7 @@
         "@bitte-ai/types": "^0.7.0",
         "@types/bun": "^1.2.18",
         "@types/jest": "^30.0.0",
-        "@types/node": "^24.0.12",
+        "@types/node": "^24.0.13",
         "@types/react": "^19.1.8",
         "concurrently": "^9.2.0",
         "dotenv": "^17.2.0",
