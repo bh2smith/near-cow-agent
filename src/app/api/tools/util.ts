@@ -62,15 +62,14 @@ const ALCHEMY_CHAINS = [
 ];
 
 const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY;
-if (!ALCHEMY_API_KEY) {
-  throw new Error("ALCHEMY_API_KEY is not set");
-}
 
 export const getAlchemyRpcUrl = (chainId: number): string => {
-  const alchemyChain = ALCHEMY_CHAINS.find((c) => c.id === chainId);
-  const alchemyRpcBase = alchemyChain?.rpcUrls?.alchemy?.http?.[0];
-  if (alchemyRpcBase) {
-    return `${alchemyRpcBase}/${ALCHEMY_API_KEY}`;
+  if (ALCHEMY_API_KEY) {
+    const alchemyChain = ALCHEMY_CHAINS.find((c) => c.id === chainId);
+    const alchemyRpcBase = alchemyChain?.rpcUrls?.alchemy?.http?.[0];
+    if (alchemyRpcBase) {
+      return `${alchemyRpcBase}/${ALCHEMY_API_KEY}`;
+    }
   }
 
   return Network.fromChainId(chainId).rpcUrl;
@@ -78,3 +77,7 @@ export const getAlchemyRpcUrl = (chainId: number): string => {
 
 export const getClientWithAlchemy = (chainId: number) =>
   getClient(chainId, getAlchemyRpcUrl(chainId));
+
+for (const chain of ALCHEMY_CHAINS) {
+  console.log(chain.id, getAlchemyRpcUrl(chain.id));
+}
