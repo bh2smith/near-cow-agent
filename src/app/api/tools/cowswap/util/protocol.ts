@@ -1,4 +1,3 @@
-import { getClientWithAlchemy } from "@/src/app/api/tools/util";
 import type { MetaTransaction } from "@bitte-ai/types";
 import {
   type OrderBookApi,
@@ -9,6 +8,7 @@ import {
   SigningScheme,
 } from "@cowprotocol/cow-sdk";
 import stringify from "json-stringify-deterministic";
+import type { PublicClient } from "viem";
 import {
   type Address,
   encodeFunctionData,
@@ -51,18 +51,18 @@ export function setPresignatureTx(orderUid: string): MetaTransaction {
 export async function sellTokenApprovalTx(args: {
   from: string;
   sellToken: string;
-  chainId: number;
+  client: PublicClient;
   sellAmount: string;
 }): Promise<MetaTransaction | null> {
-  const { from, sellToken, chainId, sellAmount } = args;
+  const { from, sellToken, client, sellAmount } = args;
   console.log(
-    `Checking approval for account=${from}, token=${sellToken} on chainId=${chainId}`,
+    `Checking approval for account=${from}, token=${sellToken} on chainId=${client.chain?.id}`,
   );
   const allowance = await checkAllowance(
     getAddress(from),
     getAddress(sellToken),
     GPv2VaultRelayer,
-    chainId,
+    client,
   );
 
   if (allowance < BigInt(sellAmount)) {
@@ -135,9 +135,9 @@ async function checkAllowance(
   owner: Address,
   token: Address,
   spender: Address,
-  chainId: number,
+  client: PublicClient,
 ): Promise<bigint> {
-  return getClientWithAlchemy(chainId).readContract({
+  return client.readContract({
     address: token,
     abi: parseAbi([
       "function allowance(address owner, address spender) external view returns (uint256)",
