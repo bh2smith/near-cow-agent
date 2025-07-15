@@ -19,7 +19,6 @@ import {
 import { parseWidgetData } from "./util/ui";
 import type { SwapFTData } from "@bitte-ai/types";
 import { withCowErrorHandling } from "../../../../lib/error";
-import { getClient } from "../util";
 
 const slippageBps = Number.parseInt(process.env.SLIPPAGE_BPS || "100");
 const referralAddress =

@@ -42,7 +42,7 @@ describe("CoW Domain", () => {
   });
 
   it("getTokenDetails (xDAI) Gnosis", async () => {
-    const chainId = 100
+    const chainId = 100;
     const tokenMap = await loadTokenMap([chainId]);
     const tokenData = await getTokenDetails(chainId, "XDAI", tokenMap);
     console.log(tokenData);
