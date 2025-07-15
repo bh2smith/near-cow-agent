@@ -50,8 +50,9 @@ export async function assertSufficientBalance(
       balance !== null
         ? formatUnits(balance, token?.decimals ?? 18)
         : "unknown";
+    const need = formatUnits(amount, token?.decimals ?? 18);
     throw new Error(
-      `Insufficient SellToken Balance: Have ${have} - Need ${amount}`,
+      `Insufficient SellToken Balance: Have ${have} < Need ${need}`,
     );
   }
 }
