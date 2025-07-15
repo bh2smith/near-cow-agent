@@ -24,12 +24,27 @@ import { checksumAddress, getAddress, zeroAddress } from "viem";
 import { parseQuoteRequest } from "@/src/app/api/tools/cowswap/util/parse";
 import { loadTokenMap } from "@bitte-ai/agent-sdk";
 import { parseWidgetData } from "@/src/app/api/tools/cowswap/util/ui";
-import { getZerionKey } from "@/src/app/api/tools/util";
+import { TokenInfo } from "@bitte-ai/types";
 
 const SEPOLIA_DAI = getAddress("0xb4f1737af37711e9a5890d9510c9bb60e170cb0d");
 const SEPOLIA_COW = getAddress("0x0625afb445c3b6b7b929342a04a22599fd5dbb59");
 // Safe Associated with neareth-dev.testnet on Bitte Wallet.
 const DEPLOYED_SAFE = getAddress("0x5E1E315D96BD81c8f65c576CFD6E793aa091b480");
+
+const tokenData = {
+  sell: {
+    address: SEPOLIA_DAI,
+    decimals: 18,
+    symbol: "DAI",
+    name: "DAI Token",
+  },
+  buy: {
+    address: SEPOLIA_COW,
+    decimals: 6,
+    symbol: "COW",
+    name: "CoW Protocol Token",
+  },
+};
 
 const chainId = 11155111;
 const quoteRequest = {
@@ -49,6 +64,7 @@ describe("CowSwap Plugin", () => {
     const signRequest = await orderRequestFlow({
       chainId,
       quoteRequest: { ...quoteRequest, from: DEPLOYED_SAFE },
+      tokenData,
     });
     console.log(signRequest);
     console.log(
@@ -155,9 +171,7 @@ describe("CowSwap Plugin", () => {
       body: JSON.stringify(quoteRequest),
     });
     const tokenMap = await loadTokenMap(process.env.TOKEN_MAP_URL);
-    expect(
-      await parseQuoteRequest(request, tokenMap, getZerionKey()),
-    ).toStrictEqual({
+    expect(await parseQuoteRequest(request, tokenMap)).toStrictEqual({
       chainId: 11155111,
       quoteRequest: {
         buyToken: SEPOLIA_COW,
@@ -259,18 +273,7 @@ describe("CowSwap Plugin", () => {
     };
     const swapData = parseWidgetData({
       chainId: 100,
-      tokenData: {
-        sell: {
-          address: SEPOLIA_DAI,
-          decimals: 18,
-          symbol: "DAI",
-        },
-        buy: {
-          address: SEPOLIA_COW,
-          decimals: 6,
-          symbol: "COW",
-        },
-      },
+      tokenData,
       quote,
     });
     expect(swapData).toStrictEqual({
@@ -284,7 +287,7 @@ describe("CowSwap Plugin", () => {
         address: SEPOLIA_DAI,
         contractAddress: SEPOLIA_DAI,
         amount: "123456789101112.131415161718192345",
-        // name: "DAI",
+        name: "DAI Token",
         symbol: "DAI",
         decimals: 18,
         usdValue: 0,
@@ -293,7 +296,7 @@ describe("CowSwap Plugin", () => {
         address: SEPOLIA_COW,
         contractAddress: SEPOLIA_COW,
         amount: "9876543.234567",
-        // name: "COW",
+        name: "CoW Protocol Token",
         symbol: "COW",
         decimals: 6,
         usdValue: 0,
