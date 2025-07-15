@@ -63,15 +63,12 @@ describe("CowSwap Plugin", () => {
   // This posts an order to COW Orderbook.
   it.skip("orderRequestFlow", async () => {
     console.log("Requesting Quote...");
-    const signRequest = await orderRequestFlow({
+    const signRequest = await orderRequestFlow(client, {
       chainId,
       quoteRequest: { ...quoteRequest, from: DEPLOYED_SAFE },
       tokenData,
     });
     console.log(signRequest);
-    console.log(
-      `https://testnet.wallet.bitte.ai/sign-evm?evmTx=${encodeURI(JSON.stringify(signRequest))}`,
-    );
   });
 
   it("applySlippage", async () => {

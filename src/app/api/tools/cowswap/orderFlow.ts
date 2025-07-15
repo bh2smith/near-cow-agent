@@ -9,6 +9,7 @@ import {
 } from "./util/protocol";
 import { OrderBookApi, type OrderParameters } from "@cowprotocol/cow-sdk";
 import type { ParsedQuoteRequest } from "./util/parse";
+import type { PublicClient } from "viem";
 import { getAddress, zeroAddress } from "viem";
 import {
   getNativeAsset,
@@ -32,12 +33,10 @@ export interface OrderResponse {
   meta: { orderUrl: string; quote: OrderParameters; ui: SwapFTData };
 }
 
-export async function orderRequestFlow({
-  chainId,
-  quoteRequest,
-  tokenData,
-}: ParsedQuoteRequest): Promise<OrderResponse> {
-  const client = getClient(chainId);
+export async function orderRequestFlow(
+  client: PublicClient,
+  { chainId, quoteRequest, tokenData }: ParsedQuoteRequest,
+): Promise<OrderResponse> {
   if (
     !(quoteRequest.kind === "sell" && "sellAmountBeforeFee" in quoteRequest)
   ) {

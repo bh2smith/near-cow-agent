@@ -4,10 +4,13 @@ import { sellTokenApprovalTx } from "@/src/app/api/tools/cowswap/util/protocol";
 import { getClient } from "@/src/app/api/tools/util";
 import { parseUnits } from "viem";
 
+const chainId = 8453;
+const client = getClient(chainId, false);
+
 describe("sellTokenApproval", () => {
   it("check it", async () => {
     const x = await sellTokenApprovalTx({
-      client: getClient(8453, false),
+      client,
       from: "0x800E1A29FaC643b3D19b4561DA573CaF49b9b610",
       sellToken: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
       sellAmount: parseUnits("0.1", 6).toString(),
@@ -48,8 +51,8 @@ describe("sellTokenApproval", () => {
         sell: usdc,
       },
     };
-    await expect(orderRequestFlow(x as ParsedQuoteRequest)).rejects.toThrow(
-      "NoLiquidity: no route found",
-    );
+    await expect(
+      orderRequestFlow(client, x as ParsedQuoteRequest),
+    ).rejects.toThrow("NoLiquidity: no route found");
   });
 });
