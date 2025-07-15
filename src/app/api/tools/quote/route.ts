@@ -4,7 +4,7 @@ import { OrderBookApi } from "@cowprotocol/cow-sdk";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { basicParseQuote } from "../cowswap/util/parse";
-import { getTokenMap } from "../util";
+import { getClient, getTokenMap } from "../util";
 import { applySlippage, setPresignatureTx } from "../cowswap/util/protocol";
 import { OrderSigningUtils } from "@cowprotocol/cow-sdk";
 import type { MetaTransaction, SignRequest, SwapFTData } from "@bitte-ai/types";
@@ -30,6 +30,7 @@ async function logic(req: NextRequest): Promise<{
     await getTokenMap(),
   );
   console.log("Parsed Quote Request", quoteRequest);
+  const client = getClient(chainId);
   const notes: string[] = [];
   const orderBookApi = new OrderBookApi({ chainId });
 
@@ -56,7 +57,7 @@ async function logic(req: NextRequest): Promise<{
   };
   console.log("Modified Quote", result.quote);
   const from = getAddress(quoteRequest.from);
-  const steps = await preliminarySteps(chainId, from, result.quote, notes);
+  const steps = await preliminarySteps(client, from, result.quote, notes);
   console.log("Preliminary Steps", steps);
   const transaction = await buildTransaction(
     result.quote,

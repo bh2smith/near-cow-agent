@@ -3,11 +3,12 @@ import type { MetaTransaction } from "@bitte-ai/types";
 import { isNativeAsset, sellTokenApprovalTx } from "../cowswap/util/protocol";
 import type { Address } from "viem";
 import type { OrderParameters } from "@cowprotocol/cow-sdk";
+import type { EthRpc } from "../util";
 
 // This function mutates input data!
 // quoteRequest.sellToken & notes.
 export async function preliminarySteps(
-  chainId: number,
+  client: EthRpc,
   from: Address,
   // Mutated if necessary
   orderParams: OrderParameters,
@@ -15,7 +16,10 @@ export async function preliminarySteps(
 ): Promise<MetaTransaction[]> {
   const steps: MetaTransaction[] = [];
   if (isNativeAsset(orderParams.sellToken)) {
-    const wrapTx = wrapMetaTransaction(chainId, BigInt(orderParams.sellAmount));
+    const wrapTx = wrapMetaTransaction(
+      client.chain.id,
+      BigInt(orderParams.sellAmount),
+    );
     steps.push(wrapTx);
 
     // Mutate Quote SellToken from native asset to wrapped version and push to notes.
@@ -25,7 +29,7 @@ export async function preliminarySteps(
   const approvalTx = await sellTokenApprovalTx({
     from,
     sellToken: orderParams.sellToken,
-    chainId,
+    client,
     sellAmount: orderParams.sellAmount,
   });
   if (approvalTx) {

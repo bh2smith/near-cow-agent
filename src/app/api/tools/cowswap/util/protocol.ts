@@ -1,3 +1,14 @@
+import type { MetaTransaction } from "@bitte-ai/types";
+import {
+  type OrderBookApi,
+  type OrderCreation,
+  OrderKind,
+  type OrderParameters,
+  type OrderQuoteResponse,
+  SigningScheme,
+} from "@cowprotocol/cow-sdk";
+import stringify from "json-stringify-deterministic";
+import type { PublicClient } from "viem";
 import {
   type Address,
   encodeFunctionData,
@@ -8,17 +19,6 @@ import {
   parseAbi,
   toBytes,
 } from "viem";
-import {
-  type OrderBookApi,
-  type OrderCreation,
-  type OrderQuoteResponse,
-  SigningScheme,
-  type OrderParameters,
-  OrderKind,
-} from "@cowprotocol/cow-sdk";
-import type { MetaTransaction } from "@bitte-ai/types";
-import stringify from "json-stringify-deterministic";
-import { getClient } from "../../util";
 
 const MAX_APPROVAL = BigInt(
   "115792089237316195423570985008687907853269984665640564039457584007913129639935",
@@ -53,18 +53,18 @@ export function setPresignatureTx(orderUid: string): MetaTransaction {
 export async function sellTokenApprovalTx(args: {
   from: string;
   sellToken: string;
-  chainId: number;
+  client: PublicClient;
   sellAmount: string;
 }): Promise<MetaTransaction | null> {
-  const { from, sellToken, chainId, sellAmount } = args;
+  const { from, sellToken, client, sellAmount } = args;
   console.log(
-    `Checking approval for account=${from}, token=${sellToken} on chainId=${chainId}`,
+    `Checking approval for account=${from}, token=${sellToken} on chainId=${client.chain?.id}`,
   );
   const allowance = await checkAllowance(
     getAddress(from),
     getAddress(sellToken),
     GPv2VaultRelayer,
-    chainId,
+    client,
   );
 
   if (allowance < BigInt(sellAmount)) {
@@ -137,9 +137,9 @@ async function checkAllowance(
   owner: Address,
   token: Address,
   spender: Address,
-  chainId: number,
+  client: PublicClient,
 ): Promise<bigint> {
-  return getClient(chainId).readContract({
+  return client.readContract({
     address: token,
     abi: parseAbi([
       "function allowance(address owner, address spender) external view returns (uint256)",

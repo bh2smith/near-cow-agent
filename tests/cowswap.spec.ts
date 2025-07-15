@@ -24,28 +24,32 @@ import { checksumAddress, getAddress, zeroAddress } from "viem";
 import { parseQuoteRequest } from "@/src/app/api/tools/cowswap/util/parse";
 import { loadTokenMap } from "@bitte-ai/agent-sdk";
 import { parseWidgetData } from "@/src/app/api/tools/cowswap/util/ui";
+import { getClient } from "@/src/app/api/tools/util";
+import { COW_SUPPORTED_CHAINS } from "@/src/app/config";
 
 const SEPOLIA_DAI = getAddress("0xb4f1737af37711e9a5890d9510c9bb60e170cb0d");
 const SEPOLIA_COW = getAddress("0x0625afb445c3b6b7b929342a04a22599fd5dbb59");
 // Safe Associated with neareth-dev.testnet on Bitte Wallet.
 const DEPLOYED_SAFE = getAddress("0x5E1E315D96BD81c8f65c576CFD6E793aa091b480");
 
-const chainId = 11155111;
 const tokenData = {
   sell: {
     address: SEPOLIA_DAI,
     decimals: 18,
     symbol: "DAI",
-    name: "DAI",
+    name: "DAI Token",
   },
   buy: {
     address: SEPOLIA_COW,
-    decimals: 18,
+    decimals: 6,
     symbol: "COW",
     name: "CoW Protocol Token",
   },
 };
 
+const chainId = 11155111;
+
+const client = getClient(chainId, false);
 const quoteRequest = {
   chainId,
   evmAddress: DEPLOYED_SAFE,
@@ -60,15 +64,12 @@ describe("CowSwap Plugin", () => {
   // This posts an order to COW Orderbook.
   it.skip("orderRequestFlow", async () => {
     console.log("Requesting Quote...");
-    const signRequest = await orderRequestFlow({
+    const signRequest = await orderRequestFlow(client, {
       chainId,
       quoteRequest: { ...quoteRequest, from: DEPLOYED_SAFE },
       tokenData,
     });
     console.log(signRequest);
-    console.log(
-      `https://testnet.wallet.bitte.ai/sign-evm?evmTx=${encodeURI(JSON.stringify(signRequest))}`,
-    );
   });
 
   it("applySlippage", async () => {
@@ -113,7 +114,7 @@ describe("CowSwap Plugin", () => {
         from: "0x7fa8e8264985C7525Fc50F98aC1A9b3765405489",
         sellToken: tokenData.sell.address,
         sellAmount: "100",
-        chainId,
+        client,
       }),
     ).toStrictEqual(null);
   });
@@ -125,7 +126,7 @@ describe("CowSwap Plugin", () => {
         from: zeroAddress, // Will never be approved
         sellToken: tokenData.sell.address,
         sellAmount: "100",
-        chainId,
+        client,
       }),
     ).toStrictEqual({
       to: tokenData.sell.address,
@@ -141,7 +142,7 @@ describe("CowSwap Plugin", () => {
         from: DEPLOYED_SAFE,
         sellToken: zeroAddress, // Not a token
         sellAmount: "100",
-        chainId,
+        client,
       }),
     ).rejects.toThrow();
   });
@@ -169,7 +170,7 @@ describe("CowSwap Plugin", () => {
       },
       body: JSON.stringify(quoteRequest),
     });
-    const tokenMap = await loadTokenMap(process.env.TOKEN_MAP_URL);
+    const tokenMap = await loadTokenMap(COW_SUPPORTED_CHAINS);
     expect(await parseQuoteRequest(request, tokenMap)).toStrictEqual({
       chainId: 11155111,
       quoteRequest: {
@@ -272,15 +273,21 @@ describe("CowSwap Plugin", () => {
       type: "swap",
       fee: "123",
       tokenIn: {
+        address: tokenData.sell.address,
         contractAddress: tokenData.sell.address,
         amount: "123456789101112.131415161718192345",
-        ...tokenData.sell,
+        name: "DAI Token",
+        symbol: "DAI",
+        decimals: 18,
         usdValue: 0,
       },
       tokenOut: {
-        contractAddress: tokenData.buy.address,
-        amount: "0.000009876543234567",
-        ...tokenData.buy,
+        address: SEPOLIA_COW,
+        contractAddress: SEPOLIA_COW,
+        amount: "9876543.234567",
+        name: "CoW Protocol Token",
+        symbol: "COW",
+        decimals: 6,
         usdValue: 0,
       },
     });

@@ -1,13 +1,14 @@
-import { type NextRequest, NextResponse } from "next/server";
-import { unstable_cache } from "next/cache";
 import {
-  getChainById,
+  getClientForChain,
   loadTokenMap,
   validateRequest,
   type BlockchainMapping,
 } from "@bitte-ai/agent-sdk";
-import type { Address, PublicClient } from "viem";
-import { createPublicClient, http, isHex } from "viem";
+import { unstable_cache } from "next/cache";
+import { NextResponse, type NextRequest } from "next/server";
+import type { Address } from "viem";
+import { isHex, type Chain, type PublicClient, type Transport } from "viem";
+import { COW_SUPPORTED_CHAINS } from "@/src/app/config";
 
 export async function validateNextRequest(
   req: NextRequest,
@@ -37,12 +38,7 @@ export async function getTokenMap(): Promise<BlockchainMapping> {
   const getCachedTokenMap = unstable_cache(
     async () => {
       console.log("Loading TokenMap...");
-      return loadTokenMap(
-        getEnvVar(
-          "TOKEN_MAP_URL",
-          "https://raw.githubusercontent.com/BitteProtocol/core/refs/heads/main/public/tokenMap.json",
-        ),
-      );
+      return loadTokenMap(COW_SUPPORTED_CHAINS);
     },
     ["token-map"], // cache key
     {
@@ -62,10 +58,12 @@ export async function isEOA(
   return !isHex(codeAt);
 }
 
-export function getClient(chainId: number): PublicClient {
-  const client = createPublicClient({
-    chain: getChainById(chainId),
-    transport: http(),
-  });
-  return client;
+export type EthRpc = PublicClient<Transport, Chain>;
+
+export function getClient(chainId: number, alchemy: boolean = true): EthRpc {
+  // TODO: Return PublicClient<Transport, Chain> from dependency and remove cast.
+  return getClientForChain(
+    chainId,
+    alchemy ? getEnvVar("ALCHEMY_API_KEY") : undefined,
+  ) as EthRpc;
 }

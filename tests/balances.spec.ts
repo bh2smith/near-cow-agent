@@ -2,11 +2,13 @@ import { sufficientBalance } from "@/src/app/api/tools/balance";
 import { zeroAddress } from "viem";
 import dotenv from "dotenv";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
+import { getClient } from "@/src/app/api/tools/util";
 
 dotenv.config();
 
 describe("Balances Route", () => {
   const chainId = 8453;
+  const client = getClient(chainId, false);
   const eth = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
   const weth = "0x4200000000000000000000000000000000000006";
   const ethHolder = zeroAddress;
@@ -15,12 +17,12 @@ describe("Balances Route", () => {
 
   // This posts an order to COW Orderbook.
   it("sufficientSellTokenBalance (Native)", async () => {
-    let result = await sufficientBalance(chainId, ethHolder, BigInt("1"), eth);
+    let result = await sufficientBalance(client, ethHolder, BigInt("1"), eth);
     expect(result.sufficient).toBe(true);
     expect(result.balance).toBeGreaterThan(BigInt("0"));
 
     result = await sufficientBalance(
-      chainId,
+      client,
       ethHolder,
       BigInt("1"),
       // Nothing here! (i.e. unspecified tokenAddress)
@@ -29,19 +31,19 @@ describe("Balances Route", () => {
     expect(result.balance).toBeGreaterThan(BigInt("0"));
 
     // Non Holder
-    result = await sufficientBalance(chainId, nonHolder, BigInt("1"), eth);
+    result = await sufficientBalance(client, nonHolder, BigInt("1"), eth);
     expect(result.sufficient).toBe(false);
     expect(result.balance).toBe(BigInt("0"));
   });
 
   it("sufficientSellTokenBalance (ERC20)", async () => {
-    let result = await sufficientBalance(chainId, ethHolder, BigInt("1"), weth);
+    let result = await sufficientBalance(client, ethHolder, BigInt("1"), weth);
     expect(result.sufficient).toBe(true);
     expect(result.balance).toBeGreaterThan(BigInt("0"));
 
     // Non Holder
     result = await sufficientBalance(
-      chainId,
+      client,
       nonHolder,
       BigInt("1"),
       zeroAddress, // NOT A TOKEN ADDRESS!

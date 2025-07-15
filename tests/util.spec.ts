@@ -42,10 +42,9 @@ describe("CoW Domain", () => {
   });
 
   it("getTokenDetails (xDAI) Gnosis", async () => {
-    const tokenMap = await loadTokenMap(
-      "https://raw.githubusercontent.com/BitteProtocol/core/refs/heads/main/public/tokenMap.json",
-    );
-    const tokenData = await getTokenDetails(100, "XDAI", tokenMap);
+    const chainId = 100
+    const tokenMap = await loadTokenMap([chainId]);
+    const tokenData = await getTokenDetails(chainId, "XDAI", tokenMap);
     console.log(tokenData);
     expect(tokenData).toEqual({
       address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
