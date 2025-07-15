@@ -1,7 +1,7 @@
 import { parseQuoteRequest } from "@/src/app/api/tools/cowswap/util/parse";
 import { type NextRequest, NextResponse } from "next/server";
 import { orderRequestFlow, type OrderResponse } from "./orderFlow";
-import { validateNextRequest, getTokenMap, getClient } from "../util";
+import { validateNextRequest, getClient } from "../util";
 import { handleRequest, loadTokenMap } from "@bitte-ai/agent-sdk";
 import { COW_SUPPORTED_CHAINS } from "@/src/app/config";
 
@@ -17,7 +17,10 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 }
 
 async function logic(req: NextRequest): Promise<OrderResponse> {
-  const parsedRequest = await parseQuoteRequest(req, await loadTokenMap(COW_SUPPORTED_CHAINS));
+  const parsedRequest = await parseQuoteRequest(
+    req,
+    await loadTokenMap(COW_SUPPORTED_CHAINS),
+  );
   console.log(`Request for quote:`, parsedRequest);
   const client = getClient(parsedRequest.chainId);
   const result = await orderRequestFlow(client, parsedRequest);
