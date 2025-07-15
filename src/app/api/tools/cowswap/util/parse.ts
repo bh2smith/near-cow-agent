@@ -53,7 +53,7 @@ export async function parseQuoteRequest(
   }
 
   const sellAmount = parseUnits(sellAmountBeforeFee, sellTokenData.decimals);
-  await assertSufficientBalance(chainId, sender, sellAmount, sellTokenData);
+  await assertSufficientBalance(client, sender, sellAmount, sellTokenData);
 
   return {
     chainId,
