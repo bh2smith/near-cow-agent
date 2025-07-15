@@ -51,10 +51,10 @@ export async function getTokenMap(): Promise<BlockchainMapping> {
 }
 
 export async function isEOA(
-  chainId: number,
+  client: EthRpc,
   address: Address,
 ): Promise<boolean> {
-  const codeAt = await getClient(chainId).getCode({ address });
+  const codeAt = await client.getCode({ address });
   return !isHex(codeAt);
 }
 

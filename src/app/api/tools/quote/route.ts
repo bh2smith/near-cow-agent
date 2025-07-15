@@ -31,13 +31,15 @@ async function logic(req: NextRequest): Promise<{
   transaction: SignRequest[];
 }> {
   const requestBody = await req.json();
+  // Early Extract ChainId
+  const client = getClient(requestBody.chainId);
   const { chainId, quoteRequest, tokenData } = await basicParseQuote(
+    client,
     requestBody,
     // Temporarily disable tokenMap Caching
     await loadTokenMap(COW_SUPPORTED_CHAINS),
   );
   console.log("Parsed Quote Request", quoteRequest);
-  const client = getClient(chainId);
   const notes: string[] = [];
   const orderBookApi = new OrderBookApi({ chainId });
 

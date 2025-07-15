@@ -10,6 +10,7 @@ import { parseUnits } from "viem";
 import { getTokenDetails } from "@bitte-ai/agent-sdk";
 import type { BlockchainMapping, TokenInfo } from "@bitte-ai/agent-sdk";
 import { assertSufficientBalance } from "../../balance";
+import type { EthRpc } from "../../util";
 import { getClient, isEOA } from "../../util";
 
 export interface ParsedQuoteRequest {
@@ -89,6 +90,7 @@ type RequestBody = {
 };
 
 export async function basicParseQuote(
+  client: EthRpc,
   requestBody: RequestBody,
   // TODO: Replace with Data Provider.
   tokenMap: BlockchainMapping,
@@ -118,7 +120,7 @@ export async function basicParseQuote(
     buy: buyTokenData,
     sell: sellTokenData,
   });
-  const senderIsEoa = await isEOA(chainId, sender);
+  const senderIsEoa = await isEOA(client, sender);
 
   return {
     chainId,

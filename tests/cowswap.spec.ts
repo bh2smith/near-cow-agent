@@ -162,7 +162,7 @@ describe("CowSwap Plugin", () => {
     });
   });
 
-  it.only("basicParseQuote", async () => {
+  it("basicParseQuote", async () => {
     const tokenMap = await loadTokenMap(COW_SUPPORTED_CHAINS);
     const request = {
       amount: "1",
@@ -173,11 +173,8 @@ describe("CowSwap Plugin", () => {
       sellToken: "USDC",
       evmAddress: getAddress("0x968dc7336Ba79cA4304549089345F9292bBA65bB"),
     };
-    const x = await getTokenDetails(chainId, request.buyToken, tokenMap);
-    console.log(x);
-    const y = await getTokenDetails(chainId, request.sellToken, tokenMap);
-    console.log(y);
-    const parsed = await basicParseQuote(request, tokenMap);
+    const client = getClient(request.chainId, false);
+    const parsed = await basicParseQuote(client, request, tokenMap);
     console.log(tokenMap[1] === tokenMap[8453]);
     expect(parsed.quoteRequest).toStrictEqual({
       sellToken: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
