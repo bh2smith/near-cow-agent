@@ -5,7 +5,7 @@ import {
   SigningScheme,
 } from "@cowprotocol/cow-sdk";
 import { parseUnits } from "viem";
-import { getAlchemyClient, getTokenDetails } from "@bitte-ai/agent-sdk";
+import { getTokenDetails } from "@bitte-ai/agent-sdk";
 import type { BlockchainMapping, TokenInfo } from "@bitte-ai/agent-sdk";
 import { assertSufficientBalance } from "../../balance";
 import { getClient } from "../../util";

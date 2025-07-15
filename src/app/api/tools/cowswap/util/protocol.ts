@@ -1,4 +1,3 @@
-import { getClient } from "@/src/app/api/tools/util";
 import type { MetaTransaction } from "@bitte-ai/types";
 import {
   type OrderBookApi,
