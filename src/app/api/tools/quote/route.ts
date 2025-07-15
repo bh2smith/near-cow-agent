@@ -1,16 +1,21 @@
-import { handleRequest, signRequestFor } from "@bitte-ai/agent-sdk";
+import {
+  handleRequest,
+  loadTokenMap,
+  signRequestFor,
+} from "@bitte-ai/agent-sdk";
 import type { OrderParameters, OrderQuoteResponse } from "@cowprotocol/cow-sdk";
 import { OrderBookApi } from "@cowprotocol/cow-sdk";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { basicParseQuote } from "../cowswap/util/parse";
-import { getClient, getTokenMap } from "../util";
+import { getClient } from "../util";
 import { applySlippage, setPresignatureTx } from "../cowswap/util/protocol";
 import { OrderSigningUtils } from "@cowprotocol/cow-sdk";
 import type { MetaTransaction, SignRequest, SwapFTData } from "@bitte-ai/types";
 import { parseWidgetData } from "../cowswap/util/ui";
 import { preliminarySteps } from "./preliminary";
 import { getAddress, type Address } from "viem";
+import { COW_SUPPORTED_CHAINS } from "@/src/app/config";
 
 // TODO: Allow User to set Slippage.
 const slippageBps = Number.parseInt(process.env.SLIPPAGE_BPS || "100");
@@ -25,9 +30,11 @@ async function logic(req: NextRequest): Promise<{
   summary: string;
   transaction: SignRequest[];
 }> {
+  const requestBody = await req.json();
   const { chainId, quoteRequest, tokenData } = await basicParseQuote(
-    req,
-    await getTokenMap(),
+    requestBody,
+    // Temporarily disable tokenMap Caching
+    await loadTokenMap(COW_SUPPORTED_CHAINS),
   );
   console.log("Parsed Quote Request", quoteRequest);
   const client = getClient(chainId);

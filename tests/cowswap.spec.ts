@@ -21,8 +21,11 @@ import {
 } from "@cowprotocol/cow-sdk";
 import { NextRequest } from "next/server";
 import { checksumAddress, getAddress, zeroAddress } from "viem";
-import { parseQuoteRequest } from "@/src/app/api/tools/cowswap/util/parse";
-import { loadTokenMap } from "@bitte-ai/agent-sdk";
+import {
+  basicParseQuote,
+  parseQuoteRequest,
+} from "@/src/app/api/tools/cowswap/util/parse";
+import { getTokenDetails, loadTokenMap } from "@bitte-ai/agent-sdk";
 import { parseWidgetData } from "@/src/app/api/tools/cowswap/util/ui";
 import { getClient } from "@/src/app/api/tools/util";
 import { COW_SUPPORTED_CHAINS } from "@/src/app/config";
@@ -156,6 +159,31 @@ describe("CowSwap Plugin", () => {
       to: "0x9008D19f58AAbD9eD0D60971565AA8510560ab41",
       value: "0x0",
       data: "0xec6cb13f0000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000011200000000000000000000000000000000000000000000000000000000000000",
+    });
+  });
+
+  it.only("basicParseQuote", async () => {
+    const tokenMap = await loadTokenMap(COW_SUPPORTED_CHAINS);
+    const request = {
+      amount: "1",
+      chainId: 8453,
+      buyToken: "ETH",
+      receiver: "0x968dc7336Ba79cA4304549089345F9292bBA65bB",
+      orderKind: "sell",
+      sellToken: "USDC",
+      evmAddress: getAddress("0x968dc7336Ba79cA4304549089345F9292bBA65bB"),
+    };
+    const x = await getTokenDetails(chainId, request.buyToken, tokenMap);
+    const parsed = await basicParseQuote(request, tokenMap);
+
+    expect(parsed.quoteRequest).toStrictEqual({
+      sellToken: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+      buyToken: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+      sellAmountBeforeFee: "1000000",
+      kind: "sell",
+      receiver: "0x968dc7336Ba79cA4304549089345F9292bBA65bB",
+      from: "0x968dc7336Ba79cA4304549089345F9292bBA65bB",
+      signingScheme: "eip712",
     });
   });
   // TODO: Mock getBalances and/or sellTokenAvailable!

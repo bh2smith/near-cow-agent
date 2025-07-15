@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { getTokenMap, validateNextRequest } from "@/src/app/api/tools/util";
+import { validateNextRequest } from "@/src/app/api/tools/util";
 import { zeroAddress } from "viem";
 import { OrderSigningUtils } from "@cowprotocol/cow-sdk";
 import { getTokenDetails, loadTokenMap } from "@bitte-ai/agent-sdk";

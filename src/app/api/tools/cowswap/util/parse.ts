@@ -78,13 +78,21 @@ export async function parseQuoteRequest(
     },
   };
 }
+type RequestBody = {
+  sellToken: string;
+  buyToken: string;
+  chainId: number;
+  amount: string;
+  orderKind: string;
+  evmAddress: `0x${string}`;
+  receiver: string;
+};
 
 export async function basicParseQuote(
-  req: NextRequest,
+  requestBody: RequestBody,
   // TODO: Replace with Data Provider.
   tokenMap: BlockchainMapping,
 ): Promise<ParsedQuoteRequest> {
-  const requestBody = await req.json();
   const {
     sellToken,
     buyToken,
