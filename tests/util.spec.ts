@@ -3,6 +3,7 @@ import { validateNextRequest } from "@/src/app/api/tools/util";
 import { zeroAddress } from "viem";
 import { OrderSigningUtils } from "@cowprotocol/cow-sdk";
 import { getTokenDetails, loadTokenMap } from "@bitte-ai/agent-sdk";
+import { COW_SUPPORTED_CHAINS } from "@/src/app/config";
 
 describe("validateRequest", () => {
   it("should validate a real request", async () => {
@@ -43,7 +44,7 @@ describe("CoW Domain", () => {
 
   it("getTokenDetails (xDAI) Gnosis", async () => {
     const chainId = 100;
-    const tokenMap = await loadTokenMap([chainId]);
+    const tokenMap = await loadTokenMap(COW_SUPPORTED_CHAINS);
     const tokenData = await getTokenDetails(chainId, "XDAI", tokenMap);
     console.log(tokenData);
     expect(tokenData).toEqual({
