@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { ACCOUNT_ID, PLUGIN_URL } from "../../config";
+import { ACCOUNT_ID, PLUGIN_URL, COW_SUPPORTED_CHAINS } from "../../config";
 import {
   addressOrSymbolParam,
   addressParam,
@@ -50,7 +50,7 @@ This assistant follows these specifications with zero deviation to ensure secure
         tools: [{ type: "generate-evm-tx" }],
         image: `${PLUGIN_URL}/cowswap.svg`,
         categories: ["defi"],
-        chainIds: [1, 100, 137, 8453, 42161, 43114, 11155111],
+        chainIds: COW_SUPPORTED_CHAINS,
       },
     },
     paths: {

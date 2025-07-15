@@ -5,9 +5,6 @@ import { validateNextRequest, getTokenMap } from "../util";
 import { handleRequest } from "@bitte-ai/agent-sdk";
 
 // Refer to https://api.cow.fi/docs/#/ for Specifics on Quoting and Order posting.
-
-export const dynamic = "force-dynamic";
-
 export async function POST(req: NextRequest): Promise<NextResponse> {
   console.log("swap/", req.url);
   const headerError = await validateNextRequest(req);

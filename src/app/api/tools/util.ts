@@ -1,20 +1,13 @@
 import {
-  arbitrum,
-  base,
-  mainnet,
-  optimism,
-  polygon,
-  soneiumMainnet,
-} from "@account-kit/infra";
-import {
+  getClientForChain,
   loadTokenMap,
   validateRequest,
   type BlockchainMapping,
 } from "@bitte-ai/agent-sdk";
-import { Network } from "near-safe";
 import { unstable_cache } from "next/cache";
 import { NextResponse, type NextRequest } from "next/server";
-import { createPublicClient, http } from "viem";
+import type { Chain, PublicClient, Transport } from "viem";
+import { COW_SUPPORTED_CHAINS } from "@/src/app/config";
 
 export async function validateNextRequest(
   req: NextRequest,
@@ -41,7 +34,7 @@ export async function getTokenMap(): Promise<BlockchainMapping> {
   const getCachedTokenMap = unstable_cache(
     async () => {
       console.log("Loading TokenMap...");
-      return loadTokenMap(getEnvVar("TOKEN_MAP_URL"));
+      return loadTokenMap(COW_SUPPORTED_CHAINS);
     },
     ["token-map"], // cache key
     {
@@ -53,38 +46,13 @@ export async function getTokenMap(): Promise<BlockchainMapping> {
   return getCachedTokenMap();
 }
 
-const ALCHEMY_CHAINS = [
-  mainnet,
-  base,
-  polygon,
-  arbitrum,
-  optimism,
-  soneiumMainnet,
-];
-
-const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY;
-
-export const getAlchemyRpcUrl = (chainId: number): string => {
-  if (ALCHEMY_API_KEY) {
-    console.log("Using Alchemy RPC");
-    const alchemyChain = ALCHEMY_CHAINS.find((c) => c.id === chainId);
-    const alchemyRpcBase = alchemyChain?.rpcUrls?.alchemy?.http?.[0];
-    if (alchemyRpcBase) {
-      return `${alchemyRpcBase}/${ALCHEMY_API_KEY}`;
-    }
-    console.warn("No Alchemy Base URL available");
-  }
-  console.log("using public RPC for chainId", chainId);
-  return Network.fromChainId(chainId).rpcUrl;
-};
-
-export const getClientWithAlchemy = (chainId: number) => {
-  const chain = ALCHEMY_CHAINS.find((c) => c.id === chainId);
-  return createPublicClient({
-    batch: {
-      multicall: true,
-    },
-    chain,
-    transport: http(getAlchemyRpcUrl(chainId)),
-  });
-};
+export function getClient(
+  chainId: number,
+  alchemy: boolean = true,
+): PublicClient<Transport, Chain> {
+  // TODO: Return PublicClient<Transport, Chain> from dependency and remove cast.
+  return getClientForChain(
+    chainId,
+    alchemy ? getEnvVar("ALCHEMY_API_KEY") : undefined,
+  ) as PublicClient<Transport, Chain>;
+}

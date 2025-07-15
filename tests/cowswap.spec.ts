@@ -24,7 +24,8 @@ import { checksumAddress, getAddress, zeroAddress } from "viem";
 import { parseQuoteRequest } from "@/src/app/api/tools/cowswap/util/parse";
 import { loadTokenMap } from "@bitte-ai/agent-sdk";
 import { parseWidgetData } from "@/src/app/api/tools/cowswap/util/ui";
-import { TokenInfo } from "@bitte-ai/types";
+import { COW_SUPPORTED_CHAINS } from "@/src/app/config";
+import { getClient } from "@/src/app/api/tools/util";
 
 const SEPOLIA_DAI = getAddress("0xb4f1737af37711e9a5890d9510c9bb60e170cb0d");
 const SEPOLIA_COW = getAddress("0x0625afb445c3b6b7b929342a04a22599fd5dbb59");
@@ -47,6 +48,7 @@ const tokenData = {
 };
 
 const chainId = 11155111;
+const client = getClient(chainId, false);
 const quoteRequest = {
   chainId,
   evmAddress: DEPLOYED_SAFE,
@@ -114,7 +116,7 @@ describe("CowSwap Plugin", () => {
         from: "0x7fa8e8264985C7525Fc50F98aC1A9b3765405489",
         sellToken: SEPOLIA_DAI,
         sellAmount: "100",
-        chainId,
+        client,
       }),
     ).toStrictEqual(null);
   });
@@ -126,7 +128,7 @@ describe("CowSwap Plugin", () => {
         from: zeroAddress, // Will never be approved
         sellToken: SEPOLIA_COW,
         sellAmount: "100",
-        chainId,
+        client,
       }),
     ).toStrictEqual({
       to: SEPOLIA_COW,
@@ -142,7 +144,7 @@ describe("CowSwap Plugin", () => {
         from: DEPLOYED_SAFE,
         sellToken: zeroAddress, // Not a token
         sellAmount: "100",
-        chainId,
+        client,
       }),
     ).rejects.toThrow();
   });
@@ -170,7 +172,7 @@ describe("CowSwap Plugin", () => {
       },
       body: JSON.stringify(quoteRequest),
     });
-    const tokenMap = await loadTokenMap(process.env.TOKEN_MAP_URL);
+    const tokenMap = await loadTokenMap(COW_SUPPORTED_CHAINS);
     expect(await parseQuoteRequest(request, tokenMap)).toStrictEqual({
       chainId: 11155111,
       quoteRequest: {

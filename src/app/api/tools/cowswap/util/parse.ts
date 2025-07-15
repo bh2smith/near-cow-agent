@@ -5,10 +5,10 @@ import {
   SigningScheme,
 } from "@cowprotocol/cow-sdk";
 import { parseUnits } from "viem";
-import { getTokenDetails } from "@bitte-ai/agent-sdk";
+import { getAlchemyClient, getTokenDetails } from "@bitte-ai/agent-sdk";
 import type { BlockchainMapping, TokenInfo } from "@bitte-ai/agent-sdk";
 import { assertSufficientBalance } from "../../balance";
-import { getClientWithAlchemy } from "../../util";
+import { getClient } from "../../util";
 
 export interface ParsedQuoteRequest {
   quoteRequest: OrderQuoteRequest;
@@ -34,7 +34,7 @@ export async function parseQuoteRequest(
   if (sellAmountBeforeFee === "0") {
     throw new Error("Sell amount cannot be 0");
   }
-  const client = getClientWithAlchemy(chainId);
+  const client = getClient(chainId);
   const [sellTokenData, buyTokenData] = await Promise.all([
     getTokenDetails(chainId, sellToken, tokenMap, client),
     getTokenDetails(chainId, buyToken, tokenMap, client),

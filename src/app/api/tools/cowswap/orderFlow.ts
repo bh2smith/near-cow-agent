@@ -18,6 +18,7 @@ import {
 import { parseWidgetData } from "./util/ui";
 import type { SwapFTData } from "@bitte-ai/types";
 import { withCowErrorHandling } from "../../../../lib/error";
+import { getClient } from "../util";
 
 const slippageBps = Number.parseInt(process.env.SLIPPAGE_BPS || "100");
 const referralAddress =
@@ -36,6 +37,7 @@ export async function orderRequestFlow({
   quoteRequest,
   tokenData,
 }: ParsedQuoteRequest): Promise<OrderResponse> {
+  const client = getClient(chainId);
   if (
     !(quoteRequest.kind === "sell" && "sellAmountBeforeFee" in quoteRequest)
   ) {
@@ -57,7 +59,7 @@ export async function orderRequestFlow({
   );
   const approvalTx = await sellTokenApprovalTx({
     ...quoteRequest,
-    chainId,
+    client,
     sellAmount: quoteRequest.sellAmountBeforeFee,
   });
 
