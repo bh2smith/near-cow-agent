@@ -1,9 +1,11 @@
-import { createOrder } from "@/src/app/api/tools/order/create";
+import { createOrder } from "@/src/lib/protocol/order";
+import { OrderRequestBody } from "@/src/lib/types";
+import { OrderKind, SigningScheme } from "@cowprotocol/cow-sdk";
 
 describe.skip("Order Route Logic", () => {
   it("should validate a real request", async () => {
-    const requestBody = {
-      kind: "sell",
+    const requestBody: OrderRequestBody = {
+      kind: OrderKind.SELL,
       appData:
         "0x5a8bb9f6dd0c7f1b4730d9c5a811c2dfe559e67ce9b5ed6965b05e59b8c86b80",
       chainId: 100,
@@ -17,7 +19,7 @@ describe.skip("Order Route Logic", () => {
         "0x49c1f71a855d203456cfdcdd67b076f7a37d195d2ffd156a3cda6dedb961204d75a73a28df1152e0b4fd533210f738371a1d2fd2ee86044364388f2ffae534311c",
       evmAddress: "0xB00b4C1e371DEe4F6F32072641430656D3F7c064",
       sellAmount: "4999999999534321",
-      signingScheme: "eip712",
+      signingScheme: SigningScheme.EIP712,
       partiallyFillable: false,
     };
     const res = await createOrder(requestBody);

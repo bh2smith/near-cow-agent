@@ -1,4 +1,3 @@
-import { orderRequestFlow } from "@/src/app/api/tools/cowswap/orderFlow";
 import {
   appDataExists,
   applySlippage,
@@ -8,7 +7,10 @@ import {
   NATIVE_ASSET,
   sellTokenApprovalTx,
   setPresignatureTx,
-} from "@/src/app/api/tools/cowswap/util/protocol";
+} from "@/src/lib/protocol/util";
+import { getClient } from "@/src/lib/rpc";
+import { parseWidgetData } from "@/src/lib/ui";
+import { basicParseQuote } from "@/src/lib/protocol/quote";
 import {
   BuyTokenDestination,
   OrderBookApi,
@@ -19,15 +21,8 @@ import {
   SellTokenSource,
   SigningScheme,
 } from "@cowprotocol/cow-sdk";
-import { NextRequest } from "next/server";
 import { checksumAddress, getAddress, zeroAddress } from "viem";
-import {
-  basicParseQuote,
-  parseQuoteRequest,
-} from "@/src/app/api/tools/cowswap/util/parse";
-import { getTokenDetails, loadTokenMap } from "@bitte-ai/agent-sdk";
-import { parseWidgetData } from "@/src/app/api/tools/cowswap/util/ui";
-import { getClient } from "@/src/app/api/tools/util";
+import { loadTokenMap } from "@bitte-ai/agent-sdk";
 import { COW_SUPPORTED_CHAINS } from "@/src/app/config";
 
 const SEPOLIA_DAI = getAddress("0xb4f1737af37711e9a5890d9510c9bb60e170cb0d");
@@ -52,7 +47,7 @@ const tokenData = {
 
 const chainId = 11155111;
 
-const client = getClient(chainId, false);
+const client = getClient(chainId);
 const quoteRequest = {
   chainId,
   evmAddress: DEPLOYED_SAFE,
@@ -64,17 +59,6 @@ const quoteRequest = {
 };
 
 describe("CowSwap Plugin", () => {
-  // This posts an order to COW Orderbook.
-  it.skip("orderRequestFlow", async () => {
-    console.log("Requesting Quote...");
-    const signRequest = await orderRequestFlow(client, {
-      chainId,
-      quoteRequest: { ...quoteRequest, from: DEPLOYED_SAFE },
-      tokenData,
-    });
-    console.log(signRequest);
-  });
-
   it("applySlippage", async () => {
     const amounts = { buyAmount: "1000", sellAmount: "1000" };
     expect(
@@ -173,7 +157,7 @@ describe("CowSwap Plugin", () => {
       sellToken: "USDC",
       evmAddress: getAddress("0x968dc7336Ba79cA4304549089345F9292bBA65bB"),
     };
-    const client = getClient(request.chainId, false);
+    const client = getClient(request.chainId);
     const parsed = await basicParseQuote(client, request, tokenMap);
     console.log(tokenMap[1] === tokenMap[8453]);
     expect(parsed.quoteRequest).toStrictEqual({
@@ -184,33 +168,6 @@ describe("CowSwap Plugin", () => {
       receiver: "0x968dc7336Ba79cA4304549089345F9292bBA65bB",
       from: "0x968dc7336Ba79cA4304549089345F9292bBA65bB",
       signingScheme: "eip712",
-    });
-  });
-  // TODO: Mock getBalances and/or sellTokenAvailable!
-  it.skip("parseQuoteRequest", async () => {
-    const request = new NextRequest("https://fake-url.xyz", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "mb-metadata": JSON.stringify({
-          accountId: "neareth-dev.testnet",
-        }),
-      },
-      body: JSON.stringify(quoteRequest),
-    });
-    const tokenMap = await loadTokenMap(COW_SUPPORTED_CHAINS);
-    expect(await parseQuoteRequest(request, tokenMap)).toStrictEqual({
-      chainId: 11155111,
-      quoteRequest: {
-        buyToken: tokenData.buy.address,
-        from: DEPLOYED_SAFE,
-        kind: "sell",
-        receiver: DEPLOYED_SAFE,
-        sellAmountBeforeFee: "2000000000000000000000000000000000000",
-        sellToken: tokenData.sell.address,
-        signingScheme: "presign",
-      },
-      tokenData,
     });
   });
 

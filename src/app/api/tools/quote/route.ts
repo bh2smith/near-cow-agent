@@ -3,19 +3,19 @@ import {
   loadTokenMap,
   signRequestFor,
 } from "@bitte-ai/agent-sdk";
-import type { OrderParameters, OrderQuoteResponse } from "@cowprotocol/cow-sdk";
-import { OrderBookApi } from "@cowprotocol/cow-sdk";
-import type { NextRequest } from "next/server";
+import { OrderBookApi, OrderSigningUtils } from "@cowprotocol/cow-sdk";
 import { NextResponse } from "next/server";
-import { basicParseQuote } from "../cowswap/util/parse";
-import { getClient } from "../util";
-import { applySlippage, setPresignatureTx } from "../cowswap/util/protocol";
-import { OrderSigningUtils } from "@cowprotocol/cow-sdk";
-import type { MetaTransaction, SignRequest, SwapFTData } from "@bitte-ai/types";
-import { parseWidgetData } from "../cowswap/util/ui";
-import { preliminarySteps } from "./preliminary";
 import { getAddress, type Address } from "viem";
-import { COW_SUPPORTED_CHAINS } from "@/src/app/config";
+
+import { COW_SUPPORTED_CHAINS, getAlchemyKey } from "@/src/app/config";
+import { basicParseQuote, preliminarySteps } from "@/src/lib/protocol/quote";
+import { applySlippage, setPresignatureTx } from "@/src/lib/protocol/util";
+import { getClient } from "@/src/lib/rpc";
+import { parseWidgetData } from "@/src/lib/ui";
+
+import type { MetaTransaction, SignRequest, SwapFTData } from "@bitte-ai/types";
+import type { OrderParameters, OrderQuoteResponse } from "@cowprotocol/cow-sdk";
+import type { NextRequest } from "next/server";
 
 // TODO: Allow User to set Slippage.
 const slippageBps = Number.parseInt(process.env.SLIPPAGE_BPS || "100");
@@ -32,7 +32,7 @@ async function logic(req: NextRequest): Promise<{
 }> {
   const requestBody = await req.json();
   // Early Extract ChainId
-  const client = getClient(requestBody.chainId);
+  const client = getClient(requestBody.chainId, getAlchemyKey());
   const { chainId, quoteRequest, tokenData } = await basicParseQuote(
     client,
     requestBody,
@@ -63,6 +63,16 @@ async function logic(req: NextRequest): Promise<{
     // Set Referral Code.
     appData:
       "0x5a8bb9f6dd0c7f1b4730d9c5a811c2dfe559e67ce9b5ed6965b05e59b8c86b80",
+    // // TODO: This shit is too Slow.
+    // appData: await buildAndPostAppData(
+    //   orderbook,
+    //   "bitte.ai/CowAgent",
+    //   referralAddress,
+    //   {
+    //     recipient: partnerAddress,
+    //     bps: partnerBps,
+    //   },
+    // );
   };
   console.log("Modified Quote", result.quote);
   const from = getAddress(quoteRequest.from);
