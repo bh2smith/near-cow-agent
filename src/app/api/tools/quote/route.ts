@@ -17,9 +17,6 @@ import type { MetaTransaction, SignRequest, SwapFTData } from "@bitte-ai/types";
 import type { OrderParameters, OrderQuoteResponse } from "@cowprotocol/cow-sdk";
 import type { NextRequest } from "next/server";
 
-// TODO: Allow User to set Slippage.
-const slippageBps = Number.parseInt(process.env.SLIPPAGE_BPS || "100");
-
 export async function POST(req: NextRequest): Promise<NextResponse> {
   console.log("quote/", req.url);
   return handleRequest(req, logic, (result) => NextResponse.json(result));
@@ -33,12 +30,13 @@ async function logic(req: NextRequest): Promise<{
   const requestBody = await req.json();
   // Early Extract ChainId
   const client = getClient(requestBody.chainId, getAlchemyKey());
-  const { chainId, quoteRequest, tokenData } = await basicParseQuote(
-    client,
-    requestBody,
-    // Temporarily disable tokenMap Caching
-    await loadTokenMap(COW_SUPPORTED_CHAINS),
-  );
+  const { chainId, quoteRequest, tokenData, slippageBps } =
+    await basicParseQuote(
+      client,
+      requestBody,
+      // Temporarily disable tokenMap Caching
+      await loadTokenMap(COW_SUPPORTED_CHAINS),
+    );
   console.log("Parsed Quote Request", quoteRequest);
   const notes: string[] = [];
   const orderBookApi = new OrderBookApi({ chainId });

@@ -31,11 +31,13 @@ export type QuoteRequestBody = {
   orderKind: string;
   evmAddress: `0x${string}`;
   receiver: string;
+  slippageBps?: number;
 };
 export interface ParsedQuoteRequest {
   quoteRequest: OrderQuoteRequest;
   chainId: number;
   tokenData: { buy: TokenInfo; sell: TokenInfo };
+  slippageBps: number;
 }
 
 export type EthRpc = PublicClient<Transport, Chain>;
