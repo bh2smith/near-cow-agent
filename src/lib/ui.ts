@@ -44,8 +44,7 @@ export async function altGetTokenLogoUri(
   chainId: number,
 ): Promise<string | undefined> {
   if (isNativeAsset(address)) {
-    // TODO: Get other native logos.
-    return "https://cryptologos.cc/logos/ethereum-eth-logo.png?v=040";
+    return NATIVE_ASSET_ICONS[chainId];
   }
   const baseUrl = `https://raw.githubusercontent.com/cowprotocol/token-lists/main/src/public/images/${chainId}/${address}/logo.png`;
   // Check it URL resolves.
