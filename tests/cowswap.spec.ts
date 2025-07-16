@@ -11,7 +11,7 @@ import {
 import { getClient } from "@/src/lib/rpc";
 import {
   altGetTokenLogoUri,
-  getTokenLogoUri,
+  getTokenMeta,
   parseWidgetData,
 } from "@/src/lib/ui";
 import { basicParseQuote } from "@/src/lib/protocol/quote";
@@ -237,7 +237,7 @@ describe("CowSwap Plugin", () => {
     expect(await appDataExists(orderbook, appData)).toBe(false);
   });
 
-  it.only("getTokenLogoUri", async () => {
+  it("getTokenLogoUri", async () => {
     const chainId = 1;
     const tokens = {
       sellToken: tokenData.sell.address,
@@ -251,6 +251,19 @@ describe("CowSwap Plugin", () => {
       altGetTokenLogoUri(cow, chainId),
       altGetTokenLogoUri(eth, chainId),
     ]);
+  });
+
+  it("getTokenDetails", async () => {
+    const chainId = 1;
+    const gno = "0x6810e776880c02933d47db1b9fc05908e5386b96";
+    const cow = "0xdef1ca1fb7fbcdc777520aa7f396b4e015f497ab";
+    const eth = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
+    const details = await Promise.all([
+      getTokenMeta(chainId, gno),
+      getTokenMeta(chainId, cow),
+      getTokenMeta(chainId, eth),
+    ]);
+    console.log(details);
   });
   it("parseSwapData", async () => {
     const quote: OrderParameters = {
@@ -284,6 +297,7 @@ describe("CowSwap Plugin", () => {
         symbol: "DAI",
         decimals: 18,
         usdValue: 0,
+        price: 0,
       },
       tokenOut: {
         address: SEPOLIA_COW,
@@ -293,6 +307,7 @@ describe("CowSwap Plugin", () => {
         symbol: "COW",
         decimals: 6,
         usdValue: 0,
+        price: 0,
       },
     });
   });
