@@ -76,6 +76,15 @@ This assistant follows these specifications with zero deviation to ensure secure
             { $ref: "#/components/parameters/buyToken" },
             { $ref: "#/components/parameters/receiver" },
             {
+              name: "slippageBps",
+              in: "query",
+              schema: {
+                type: "number",
+              },
+              description:
+                "The slippage tolerance for the quote, represented as a percentage in basis points (BPS).",
+            },
+            {
               name: "amount",
               in: "query",
               required: true,

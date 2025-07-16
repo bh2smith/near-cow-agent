@@ -14,6 +14,8 @@ import type { MetaTransaction } from "@bitte-ai/types";
 import type { OrderParameters, OrderQuoteSide } from "@cowprotocol/cow-sdk";
 import type { Address } from "viem";
 
+const slippageDefault = Number.parseInt(process.env.SLIPPAGE_BPS || "100");
+
 export async function basicParseQuote(
   client: EthRpc,
   requestBody: QuoteRequestBody,
@@ -28,6 +30,7 @@ export async function basicParseQuote(
     orderKind,
     evmAddress: sender,
     receiver,
+    slippageBps,
   } = requestBody;
   console.log("Quote Request Body", requestBody);
 
@@ -61,6 +64,7 @@ export async function basicParseQuote(
       buy: buyTokenData,
       sell: sellTokenData,
     },
+    slippageBps: slippageBps ?? slippageDefault,
   };
 }
 
