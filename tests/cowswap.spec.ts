@@ -9,7 +9,11 @@ import {
   setPresignatureTx,
 } from "@/src/lib/protocol/util";
 import { getClient } from "@/src/lib/rpc";
-import { parseWidgetData } from "@/src/lib/ui";
+import {
+  altGetTokenLogoUri,
+  getTokenMeta,
+  parseWidgetData,
+} from "@/src/lib/ui";
 import { basicParseQuote } from "@/src/lib/protocol/quote";
 import {
   BuyTokenDestination,
@@ -233,6 +237,34 @@ describe("CowSwap Plugin", () => {
     expect(await appDataExists(orderbook, appData)).toBe(false);
   });
 
+  it("getTokenLogoUri", async () => {
+    const chainId = 1;
+    const tokens = {
+      sellToken: tokenData.sell.address,
+      buyToken: tokenData.buy.address,
+    };
+    const gno = "0x6810e776880c02933d47db1b9fc05908e5386b96";
+    const cow = "0xdef1ca1fb7fbcdc777520aa7f396b4e015f497ab";
+    const eth = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
+    const logos = await Promise.all([
+      altGetTokenLogoUri(gno, chainId),
+      altGetTokenLogoUri(cow, chainId),
+      altGetTokenLogoUri(eth, chainId),
+    ]);
+  });
+
+  it("getTokenDetails", async () => {
+    const chainId = 1;
+    const gno = "0x6810e776880c02933d47db1b9fc05908e5386b96";
+    const cow = "0xdef1ca1fb7fbcdc777520aa7f396b4e015f497ab";
+    const eth = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
+    const details = await Promise.all([
+      getTokenMeta(chainId, gno),
+      getTokenMeta(chainId, cow),
+      getTokenMeta(chainId, eth),
+    ]);
+    console.log(details);
+  });
   it("parseSwapData", async () => {
     const quote: OrderParameters = {
       sellToken: tokenData.sell.address,
@@ -245,7 +277,7 @@ describe("CowSwap Plugin", () => {
       kind: OrderKind.BUY,
       partiallyFillable: false,
     };
-    const swapData = parseWidgetData({
+    const swapData = await parseWidgetData({
       chainId: 100,
       tokenData,
       quote,
@@ -253,7 +285,7 @@ describe("CowSwap Plugin", () => {
     expect(swapData).toStrictEqual({
       network: {
         name: "Gnosis",
-        icon: "",
+        icon: "https://storage.googleapis.com/bitte-public/intents/chains/gnosis.svg",
       },
       type: "swap",
       fee: "123",
@@ -265,6 +297,7 @@ describe("CowSwap Plugin", () => {
         symbol: "DAI",
         decimals: 18,
         usdValue: 0,
+        price: 0,
       },
       tokenOut: {
         address: SEPOLIA_COW,
@@ -274,6 +307,7 @@ describe("CowSwap Plugin", () => {
         symbol: "COW",
         decimals: 6,
         usdValue: 0,
+        price: 0,
       },
     });
   });

@@ -87,7 +87,7 @@ async function logic(req: NextRequest): Promise<{
   const responsePayload = {
     meta: {
       quote: result,
-      ui: parseWidgetData({
+      ui: await parseWidgetData({
         chainId,
         tokenData,
         quote: result.quote,
