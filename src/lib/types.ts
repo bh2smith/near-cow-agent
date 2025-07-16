@@ -20,6 +20,7 @@ export interface OrderRequestBody {
   signingScheme: SigningScheme;
   signature: string;
   appData: string;
+  appDataHash?: string;
   evmAddress: string;
 }
 
