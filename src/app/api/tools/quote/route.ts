@@ -63,9 +63,7 @@ async function logic(req: NextRequest): Promise<{
     // cf: https://learn.cow.fi/tutorial/submit-order
     sellAmount: (BigInt(sellAmount) + BigInt(feeAmount)).toString(),
     feeAmount: "0",
-    // Set Referral Code.
-    appData: appDataContent, //   "0x5a8bb9f6dd0c7f1b4730d9c5a811c2dfe559e67ce9b5ed6965b05e59b8c86b80",
-    // appDataHash: appDataHex,
+    appData: appDataContent,
   };
   console.log("Modified Quote", result.quote);
   const from = getAddress(quoteRequest.from);

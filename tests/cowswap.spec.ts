@@ -14,7 +14,6 @@ import {
   OrderKind,
   OrderParameters,
   OrderQuoteResponse,
-  OrderQuoteSideKindSell,
   SellTokenSource,
   SigningScheme,
 } from "@cowprotocol/cow-sdk";

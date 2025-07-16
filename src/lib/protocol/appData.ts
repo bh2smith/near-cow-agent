@@ -29,14 +29,11 @@ export async function buildAppData(slippageBips: number): Promise<AppDataInfo> {
         },
       ],
       utm: {
-        utmSource: "bitte.ai/CowAgent",
+        utmSource: appCode,
         utmMedium: "cow",
         utmCampaign: "bitte.ai",
         utmContent: "bitte.ai",
         utmTerm: "nextJS",
-      },
-      widget: {
-        appCode,
       },
     },
   });
