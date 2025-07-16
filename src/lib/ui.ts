@@ -134,7 +134,7 @@ export async function parseWidgetData({
       amount: buyAmount,
       usdValue: parseFloat(buyAmount) * buyTokenDetails.price,
       ...tokenData.buy,
-      ...sellTokenDetails,
+      ...buyTokenDetails,
     },
   };
 }

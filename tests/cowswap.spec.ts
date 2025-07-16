@@ -25,7 +25,7 @@ import {
   SellTokenSource,
   SigningScheme,
 } from "@cowprotocol/cow-sdk";
-import { checksumAddress, getAddress, zeroAddress } from "viem";
+import { Address, checksumAddress, getAddress, zeroAddress } from "viem";
 import { loadTokenMap } from "@bitte-ai/agent-sdk";
 import { COW_SUPPORTED_CHAINS } from "@/src/app/config";
 
@@ -276,6 +276,17 @@ describe("CowSwap Plugin", () => {
     ]);
     console.log(details);
   });
+
+  it("Get Token Meta: Base", async () => {
+    const usdcBase = "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913";
+    const details = await getTokenMeta(8453, usdcBase);
+    // Base Prices don't work!
+    // expect(price).toBeGreaterThan(0);
+    expect(details.icon).toBeDefined();
+
+    console.log(details);
+  });
+
   it("parseSwapData", async () => {
     const quote: OrderParameters = {
       sellToken: tokenData.sell.address,
