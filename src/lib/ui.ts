@@ -64,7 +64,9 @@ export async function getTokenMeta(
   if (isNativeAsset(address)) {
     // TODO: Cache this data (we only need the ID)
     const chains = await zerion.getChains(true);
-    const relevantChain = chains.filter(x => BigInt(x.attributes.external_id) === BigInt(chainId));
+    const relevantChain = chains.filter(
+      (x) => BigInt(x.attributes.external_id) === BigInt(chainId),
+    );
     if (relevantChain.length === 0) {
       throw new Error(`Wrapped Token not found for chainId=${chainId}`);
     }
@@ -78,7 +80,6 @@ export async function getTokenMeta(
     };
   }
   try {
-    
     const token = await zerion.fungibles(address.toLowerCase());
     return {
       icon: token.attributes.icon.url,

@@ -266,8 +266,7 @@ describe("CowSwap Plugin", () => {
     console.log(details);
   });
 
-  it.only("getWrapped Token Meta", async () => {
-    const chainId = 1;
+  it("getWrapped Token Meta", async () => {
     const eth = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
     const details = await Promise.all([
       getTokenMeta(1, eth),
