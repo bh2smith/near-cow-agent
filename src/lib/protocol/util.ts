@@ -1,4 +1,3 @@
-import type { MetaTransaction } from "@bitte-ai/types";
 import {
   type OrderBookApi,
   type OrderCreation,
@@ -8,17 +7,19 @@ import {
   SigningScheme,
 } from "@cowprotocol/cow-sdk";
 import stringify from "json-stringify-deterministic";
-import type { PublicClient } from "viem";
 import {
   type Address,
   encodeFunctionData,
   getAddress,
   type Hex,
+  type PublicClient,
   isHex,
   keccak256,
   parseAbi,
   toBytes,
 } from "viem";
+
+import type { MetaTransaction } from "@bitte-ai/types";
 
 const MAX_APPROVAL = BigInt(
   "115792089237316195423570985008687907853269984665640564039457584007913129639935",

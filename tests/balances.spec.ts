@@ -1,14 +1,14 @@
-import { sufficientBalance } from "@/src/app/api/tools/balance";
+import { sufficientBalance } from "@/src/lib/balance";
+import { getClient } from "@/src/lib/rpc";
 import { zeroAddress } from "viem";
 import dotenv from "dotenv";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
-import { getClient } from "@/src/app/api/tools/util";
 
 dotenv.config();
 
 describe("Balances Route", () => {
   const chainId = 8453;
-  const client = getClient(chainId, false);
+  const client = getClient(chainId);
   const eth = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
   const weth = "0x4200000000000000000000000000000000000006";
   const ethHolder = zeroAddress;

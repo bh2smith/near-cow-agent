@@ -1,23 +1,8 @@
-import { withCowErrorHandling } from "@/src/lib/error";
-import type { OrderKind, SigningScheme } from "@cowprotocol/cow-sdk";
 import { OrderBookApi } from "@cowprotocol/cow-sdk";
 
-interface OrderRequestBody {
-  chainId: number;
-  sellToken: string;
-  buyToken: string;
-  receiver: string;
-  sellAmount: string;
-  buyAmount: string;
-  validTo: number;
-  feeAmount: string;
-  kind: OrderKind;
-  partiallyFillable: boolean;
-  signingScheme: SigningScheme;
-  signature: string;
-  appData: string;
-  evmAddress: string;
-}
+import { withCowErrorHandling } from "../error";
+
+import type { OrderRequestBody } from "../types";
 
 export async function createOrder(
   requestBody: OrderRequestBody,

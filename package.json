@@ -10,8 +10,7 @@
     "deploy-staging": "make-agent deploy -u https://near-cow-agent-git-staging-bitteprotocol.vercel.app/",
     "start": "next start",
     "lint": "next lint && prettier --check '{src,tests}/**/*.{js,jsx,ts,tsx}'",
-    "fmt": "next lint --fix && prettier --write '{src,tests}/**/*.{js,jsx,ts,tsx}'",
-    "test": "jest --config jest.config.ts"
+    "fmt": "next lint --fix . && prettier --write '{src,tests}/**/*.{js,jsx,ts,tsx}'"
   },
   "dependencies": {
     "@bitte-ai/agent-sdk": "^0.2.7",
@@ -33,10 +32,8 @@
     "concurrently": "^9.2.0",
     "dotenv": "^17.2.0",
     "eslint-config-next": "^15.4.1",
-    "jest": "^30.0.4",
     "make-agent": "^0.3.5",
     "prettier": "^3.6.2",
-    "ts-jest": "^29.4.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   }

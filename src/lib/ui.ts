@@ -1,8 +1,9 @@
-import type { TokenInfo } from "@bitte-ai/agent-sdk";
-import type { OrderParameters } from "@cowprotocol/cow-sdk";
-import { formatUnits } from "viem";
-import type { SwapFTData } from "@bitte-ai/types";
 import { getChainById } from "@bitte-ai/agent-sdk";
+import { formatUnits } from "viem";
+
+import type { TokenInfo } from "@bitte-ai/agent-sdk";
+import type { SwapFTData } from "@bitte-ai/types";
+import type { OrderParameters } from "@cowprotocol/cow-sdk";
 
 interface SwapDetails {
   chainId: number;
