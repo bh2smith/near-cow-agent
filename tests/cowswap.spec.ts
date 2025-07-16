@@ -285,7 +285,7 @@ describe("CowSwap Plugin", () => {
     expect(swapData).toStrictEqual({
       network: {
         name: "Gnosis",
-        icon: "",
+        icon: "https://storage.googleapis.com/bitte-public/intents/chains/gnosis.svg",
       },
       type: "swap",
       fee: "123",

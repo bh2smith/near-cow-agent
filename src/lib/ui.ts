@@ -15,30 +15,29 @@ interface SwapDetails {
   tokenData: { buy: TokenInfo; sell: TokenInfo };
   quote: OrderParameters;
 }
+const bucketUrl = "https://storage.googleapis.com/bitte-public";
+const tokensUrl = `${bucketUrl}/intents/tokens`;
+const chainsUrl = `${bucketUrl}/intents/chains`;
 
-// export interface CowTokenInfo {
-//   address: string;
-//   symbol: string;
-//   name: string;
-//   decimals: number;
-//   chainId: number;
-//   logoURI: string;
-// }
+export const NATIVE_ASSET_ICONS: Record<number, string> = {
+  1: `${tokensUrl}/eth_token.svg`,
+  100: `${tokensUrl}/xdai_token.svg`,
+  137: `${chainsUrl}/polygon.svg`, // TODO: GET TOKEN.
+  8453: `${tokensUrl}/eth_token.svg`,
+  42161: `${tokensUrl}/eth_token.svg`,
+  43114: `${chainsUrl}/avax.svg`, // TODO: GET TOKEN.
+  11155111: `${tokensUrl}/eth_token.svg`,
+};
 
-// export async function getTokenLogoUri(
-//   address: string,
-//   chainId: number,
-// ): Promise<string | undefined> {
-//   const res = await fetch("https://files.cow.fi/tokens/CowSwap.json");
-//   if (!res.ok) return undefined;
-//   const { tokens } = (await res.json()) as { tokens: CowTokenInfo[] };
-//   console.log(tokens);
-//   const token = tokens
-//     .filter((t) => t.chainId === chainId)
-//     .find((t) => t.address.toLowerCase() === address.toLowerCase());
-//   console.log(token);
-//   return token?.logoURI;
-// }
+export const CHAIN_ICONS: Record<number, string> = {
+  1: `${chainsUrl}/eth.svg`,
+  100: `${chainsUrl}/gnosis.svg`,
+  137: `${chainsUrl}/polygon.svg`,
+  8453: `${chainsUrl}/base.svg`,
+  42161: `${chainsUrl}/arbi.svg`,
+  43114: `${chainsUrl}/avax.svg`,
+  11155111: `${chainsUrl}/eth.svg`,
+};
 
 export async function altGetTokenLogoUri(
   address: string,
@@ -63,12 +62,13 @@ export async function getTokenMeta(
 ): Promise<{ icon?: string; price: number }> {
   const zerion = new ZerionAPI(getZerionKey());
   if (isNativeAsset(address)) {
-    // TODO: Get other native logos.
-    const icon = "https://cryptologos.cc/logos/ethereum-eth-logo.png?v=040";
     // Zerion uses lower case for some reason.
     const wrappedAddress = getNativeAsset(chainId).address.toLowerCase();
     const wrappedToken = await zerion.fungibles(wrappedAddress);
-    return { icon, price: wrappedToken.attributes.market_data.price };
+    return {
+      icon: NATIVE_ASSET_ICONS[chainId],
+      price: wrappedToken.attributes.market_data.price,
+    };
   }
   try {
     const token = await zerion.fungibles(address.toLowerCase());
@@ -109,7 +109,7 @@ export async function parseWidgetData({
   return {
     network: {
       name: chain.name,
-      icon: "", // TODO: Get this!
+      icon: CHAIN_ICONS[chainId] ?? "",
     },
     type: "swap",
     fee: quote.feeAmount,
