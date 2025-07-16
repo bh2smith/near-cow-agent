@@ -8,6 +8,7 @@ import { NextResponse } from "next/server";
 import { getAddress, type Address } from "viem";
 
 import { COW_SUPPORTED_CHAINS, getAlchemyKey } from "@/src/app/config";
+import { buildAppData } from "@/src/lib/protocol/appData";
 import { basicParseQuote, preliminarySteps } from "@/src/lib/protocol/quote";
 import { applySlippage, setPresignatureTx } from "@/src/lib/protocol/util";
 import { getClient } from "@/src/lib/rpc";
@@ -52,6 +53,8 @@ async function logic(req: NextRequest): Promise<{
   }
 
   const { sellAmount, feeAmount } = result.quote;
+  const { appDataContent, appDataHex } = await buildAppData(slippageBps);
+  console.log("AppDataHex", appDataHex);
   result.quote = {
     ...result.quote,
     // Apply Slippage based on OrderKind
@@ -61,18 +64,8 @@ async function logic(req: NextRequest): Promise<{
     sellAmount: (BigInt(sellAmount) + BigInt(feeAmount)).toString(),
     feeAmount: "0",
     // Set Referral Code.
-    appData:
-      "0x5a8bb9f6dd0c7f1b4730d9c5a811c2dfe559e67ce9b5ed6965b05e59b8c86b80",
-    // // TODO: This shit is too Slow.
-    // appData: await buildAndPostAppData(
-    //   orderbook,
-    //   "bitte.ai/CowAgent",
-    //   referralAddress,
-    //   {
-    //     recipient: partnerAddress,
-    //     bps: partnerBps,
-    //   },
-    // );
+    appData: appDataContent, //   "0x5a8bb9f6dd0c7f1b4730d9c5a811c2dfe559e67ce9b5ed6965b05e59b8c86b80",
+    // appDataHash: appDataHex,
   };
   console.log("Modified Quote", result.quote);
   const from = getAddress(quoteRequest.from);
