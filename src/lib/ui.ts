@@ -59,14 +59,24 @@ export async function getTokenMeta(
   chainId: number,
   address: string,
 ): Promise<{ icon?: string; price: number }> {
+  // Note: Zerion uses lower case addresses for some reason.
   const zerion = new ZerionAPI(getZerionKey());
   if (isNativeAsset(address)) {
-    // Zerion uses lower case for some reason.
-    const wrappedAddress = getNativeAsset(chainId).address.toLowerCase();
-    const wrappedToken = await zerion.fungibles(wrappedAddress);
+    // TODO: Cache this data (we only need the ID)
+    const chains = await zerion.getChains(true);
+    const relevantChain = chains.filter(
+      (x) => BigInt(x.attributes.external_id) === BigInt(chainId),
+    );
+    if (relevantChain.length === 0) {
+      throw new Error(`Wrapped Token not found for chainId=${chainId}`);
+    }
+
+    const wrappedAsset = relevantChain[0].relationships.wrapped_native_fungible;
+    const wethFallback = getNativeAsset(chainId).address.toLowerCase();
+    const token = await zerion.fungibles(wrappedAsset?.data.id || wethFallback);
     return {
       icon: NATIVE_ASSET_ICONS[chainId],
-      price: wrappedToken.attributes.market_data.price,
+      price: token.attributes.market_data.price,
     };
   }
   try {
