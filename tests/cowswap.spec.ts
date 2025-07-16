@@ -265,6 +265,18 @@ describe("CowSwap Plugin", () => {
     ]);
     console.log(details);
   });
+
+  it.only("getWrapped Token Meta", async () => {
+    const chainId = 1;
+    const eth = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
+    const details = await Promise.all([
+      getTokenMeta(1, eth),
+      getTokenMeta(100, eth),
+      getTokenMeta(137, eth),
+      getTokenMeta(8453, eth),
+    ]);
+    console.log(details);
+  });
   it("parseSwapData", async () => {
     const quote: OrderParameters = {
       sellToken: tokenData.sell.address,
