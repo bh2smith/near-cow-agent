@@ -1,7 +1,8 @@
+import { erc20Abi, formatUnits, type Address, type PublicClient } from "viem";
+
+import { NATIVE_ASSET } from "./protocol/util";
+
 import type { TokenInfo } from "@bitte-ai/agent-sdk";
-import type { PublicClient } from "viem";
-import { erc20Abi, formatUnits, type Address } from "viem";
-import { NATIVE_ASSET } from "./cowswap/util/protocol";
 
 export async function sufficientBalance(
   client: PublicClient,

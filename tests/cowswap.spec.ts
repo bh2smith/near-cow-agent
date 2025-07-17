@@ -1,4 +1,3 @@
-import { orderRequestFlow } from "@/src/app/api/tools/cowswap/orderFlow";
 import {
   appDataExists,
   applySlippage,
@@ -8,7 +7,10 @@ import {
   NATIVE_ASSET,
   sellTokenApprovalTx,
   setPresignatureTx,
-} from "@/src/app/api/tools/cowswap/util/protocol";
+} from "@/src/lib/protocol/util";
+import { getClient } from "@/src/lib/rpc";
+import { parseWidgetData } from "@/src/lib/ui";
+import { basicParseQuote } from "@/src/lib/protocol/quote";
 import {
   BuyTokenDestination,
   OrderBookApi,
@@ -19,13 +21,9 @@ import {
   SellTokenSource,
   SigningScheme,
 } from "@cowprotocol/cow-sdk";
-import { NextRequest } from "next/server";
 import { checksumAddress, getAddress, zeroAddress } from "viem";
-import { parseQuoteRequest } from "@/src/app/api/tools/cowswap/util/parse";
 import { loadTokenMap } from "@bitte-ai/agent-sdk";
-import { parseWidgetData } from "@/src/app/api/tools/cowswap/util/ui";
 import { COW_SUPPORTED_CHAINS } from "@/src/app/config";
-import { getClient } from "@/src/app/api/tools/util";
 
 const SEPOLIA_DAI = getAddress("0xb4f1737af37711e9a5890d9510c9bb60e170cb0d");
 const SEPOLIA_COW = getAddress("0x0625afb445c3b6b7b929342a04a22599fd5dbb59");
@@ -48,29 +46,19 @@ const tokenData = {
 };
 
 const chainId = 11155111;
-const client = getClient(chainId, false);
+
+const client = getClient(chainId);
 const quoteRequest = {
   chainId,
   evmAddress: DEPLOYED_SAFE,
-  sellToken: SEPOLIA_DAI,
-  buyToken: SEPOLIA_COW,
+  sellToken: tokenData.sell.address,
+  buyToken: tokenData.buy.address,
   receiver: DEPLOYED_SAFE,
   kind: OrderQuoteSideKindSell.SELL,
   sellAmountBeforeFee: "2000000000000000000",
 };
 
 describe("CowSwap Plugin", () => {
-  // This posts an order to COW Orderbook.
-  it.skip("orderRequestFlow", async () => {
-    console.log("Requesting Quote...");
-    const signRequest = await orderRequestFlow(client, {
-      chainId,
-      quoteRequest: { ...quoteRequest, from: DEPLOYED_SAFE },
-      tokenData,
-    });
-    console.log(signRequest);
-  });
-
   it("applySlippage", async () => {
     const amounts = { buyAmount: "1000", sellAmount: "1000" };
     expect(
@@ -111,7 +99,7 @@ describe("CowSwap Plugin", () => {
     expect(
       await sellTokenApprovalTx({
         from: "0x7fa8e8264985C7525Fc50F98aC1A9b3765405489",
-        sellToken: SEPOLIA_DAI,
+        sellToken: tokenData.sell.address,
         sellAmount: "100",
         client,
       }),
@@ -123,12 +111,12 @@ describe("CowSwap Plugin", () => {
     expect(
       await sellTokenApprovalTx({
         from: zeroAddress, // Will never be approved
-        sellToken: SEPOLIA_COW,
+        sellToken: tokenData.sell.address,
         sellAmount: "100",
         client,
       }),
     ).toStrictEqual({
-      to: SEPOLIA_COW,
+      to: tokenData.sell.address,
       value: "0x0",
       data: "0x095ea7b3000000000000000000000000c92e8bdf79f0507f65a392b0ab4667716bfe0110ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
     });
@@ -157,42 +145,29 @@ describe("CowSwap Plugin", () => {
       data: "0xec6cb13f0000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000011200000000000000000000000000000000000000000000000000000000000000",
     });
   });
-  // TODO: Mock getBalances and/or sellTokenAvailable!
-  it.skip("parseQuoteRequest", async () => {
-    const request = new NextRequest("https://fake-url.xyz", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "mb-metadata": JSON.stringify({
-          accountId: "neareth-dev.testnet",
-        }),
-      },
-      body: JSON.stringify(quoteRequest),
-    });
+
+  it("basicParseQuote", async () => {
     const tokenMap = await loadTokenMap(COW_SUPPORTED_CHAINS);
-    expect(await parseQuoteRequest(request, tokenMap)).toStrictEqual({
-      chainId: 11155111,
-      quoteRequest: {
-        buyToken: SEPOLIA_COW,
-        from: DEPLOYED_SAFE,
-        kind: "sell",
-        receiver: DEPLOYED_SAFE,
-        sellAmountBeforeFee: "2000000000000000000000000000000000000",
-        sellToken: SEPOLIA_DAI,
-        signingScheme: "presign",
-      },
-      tokenData: {
-        sell: {
-          address: SEPOLIA_DAI,
-          decimals: 18,
-          symbol: "DAI",
-        },
-        buy: {
-          address: SEPOLIA_COW,
-          decimals: 18,
-          symbol: "COW",
-        },
-      },
+    const request = {
+      amount: "1",
+      chainId: 8453,
+      buyToken: "ETH",
+      receiver: "0x968dc7336Ba79cA4304549089345F9292bBA65bB",
+      orderKind: "sell",
+      sellToken: "USDC",
+      evmAddress: getAddress("0x968dc7336Ba79cA4304549089345F9292bBA65bB"),
+    };
+    const client = getClient(request.chainId);
+    const parsed = await basicParseQuote(client, request, tokenMap);
+    console.log(tokenMap[1] === tokenMap[8453]);
+    expect(parsed.quoteRequest).toStrictEqual({
+      sellToken: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+      buyToken: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+      sellAmountBeforeFee: "1000000",
+      kind: "sell",
+      receiver: "0x968dc7336Ba79cA4304549089345F9292bBA65bB",
+      from: "0x968dc7336Ba79cA4304549089345F9292bBA65bB",
+      signingScheme: "eip712",
     });
   });
 
@@ -260,8 +235,8 @@ describe("CowSwap Plugin", () => {
 
   it("parseSwapData", async () => {
     const quote: OrderParameters = {
-      sellToken: SEPOLIA_DAI,
-      buyToken: SEPOLIA_COW,
+      sellToken: tokenData.sell.address,
+      buyToken: tokenData.buy.address,
       sellAmount: "123456789101112131415161718192345",
       buyAmount: "9876543234567",
       validTo: 0,
@@ -283,8 +258,8 @@ describe("CowSwap Plugin", () => {
       type: "swap",
       fee: "123",
       tokenIn: {
-        address: SEPOLIA_DAI,
-        contractAddress: SEPOLIA_DAI,
+        address: tokenData.sell.address,
+        contractAddress: tokenData.sell.address,
         amount: "123456789101112.131415161718192345",
         name: "DAI Token",
         symbol: "DAI",
