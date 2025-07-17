@@ -6,6 +6,6 @@ describe("External Price Feed", () => {
       chainId: 100,
       address: "0x6a023ccd1ff6f2045c3309768ead9e68f978f6e1",
     });
-    console.log(res);
+    expect(res).toBeGreaterThan(0);
   });
 });
