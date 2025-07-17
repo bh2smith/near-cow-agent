@@ -21,7 +21,8 @@
     "react-dom": "^19.1.0",
     "redoc": "^2.5.0",
     "vercel-url": "^0.2.8",
-    "viem": "^2.31.7"
+    "viem": "^2.31.7",
+    "zerion-sdk": "^0.1.4"
   },
   "devDependencies": {
     "@bitte-ai/types": "^0.7.0",

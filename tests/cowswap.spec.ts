@@ -9,7 +9,7 @@ import {
   setPresignatureTx,
 } from "@/src/lib/protocol/util";
 import { getClient } from "@/src/lib/rpc";
-import { parseWidgetData } from "@/src/lib/ui";
+import { parseWidgetData, getCoWLogo } from "@/src/lib/ui";
 import { basicParseQuote } from "@/src/lib/protocol/quote";
 import {
   BuyTokenDestination,
@@ -21,7 +21,7 @@ import {
   SellTokenSource,
   SigningScheme,
 } from "@cowprotocol/cow-sdk";
-import { checksumAddress, getAddress, zeroAddress } from "viem";
+import { Address, checksumAddress, getAddress, zeroAddress } from "viem";
 import { loadTokenMap } from "@bitte-ai/agent-sdk";
 import { COW_SUPPORTED_CHAINS } from "@/src/app/config";
 
@@ -233,6 +233,18 @@ describe("CowSwap Plugin", () => {
     expect(await appDataExists(orderbook, appData)).toBe(false);
   });
 
+  it("getTokenLogoUri", async () => {
+    const chainId = 1;
+    const gno = "0x6810e776880c02933d47db1b9fc05908e5386b96";
+    const cow = "0xdef1ca1fb7fbcdc777520aa7f396b4e015f497ab";
+    const eth = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
+    await Promise.all([
+      getCoWLogo(gno, chainId),
+      getCoWLogo(cow, chainId),
+      getCoWLogo(eth, chainId),
+    ]);
+  });
+
   it("parseSwapData", async () => {
     const quote: OrderParameters = {
       sellToken: tokenData.sell.address,
@@ -245,7 +257,7 @@ describe("CowSwap Plugin", () => {
       kind: OrderKind.BUY,
       partiallyFillable: false,
     };
-    const swapData = parseWidgetData({
+    const swapData = await parseWidgetData({
       chainId: 100,
       tokenData,
       quote,
@@ -253,7 +265,7 @@ describe("CowSwap Plugin", () => {
     expect(swapData).toStrictEqual({
       network: {
         name: "Gnosis",
-        icon: "",
+        icon: "https://storage.googleapis.com/bitte-public/intents/chains/gnosis.svg",
       },
       type: "swap",
       fee: "123",
