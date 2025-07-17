@@ -2,9 +2,9 @@ export async function externalPriceFeed(query: {
   chainId: number;
   address: string;
 }): Promise<number | null> {
-  const priceAgent = "https://price-agent.vercel.app/api/tools";
+  const priceAgent = "https://price-agent.vercel.app/api/tools/prices";
   const url = `${priceAgent}?chainId=${query.chainId}&address=${query.address}`;
-
+  console.log("URL", url);
   try {
     const response = await fetch(url);
 
