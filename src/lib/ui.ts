@@ -1,9 +1,7 @@
-import { getChainById, getNativeAsset } from "@bitte-ai/agent-sdk";
+import { getChainById } from "@bitte-ai/agent-sdk";
 import { formatUnits } from "viem";
-import { ZerionAPI } from "zerion-sdk";
 
-import { getZerionKey } from "../app/config";
-
+import { externalPriceFeed } from "./external";
 import { isNativeAsset } from "./protocol/util";
 
 import type { TokenInfo } from "@bitte-ai/agent-sdk";
@@ -39,7 +37,7 @@ export const CHAIN_ICONS: Record<number, string> = {
   11155111: `${chainsUrl}/eth.svg`,
 };
 
-export async function altGetTokenLogoUri(
+export async function getCoWLogo(
   address: string,
   chainId: number,
 ): Promise<string | undefined> {
@@ -55,46 +53,6 @@ export async function altGetTokenLogoUri(
   return undefined;
 }
 
-export async function getTokenMeta(
-  chainId: number,
-  address: string,
-): Promise<{ icon?: string; price: number }> {
-  // Note: Zerion uses lower case addresses for some reason.
-  const zerion = new ZerionAPI(getZerionKey());
-  if (isNativeAsset(address)) {
-    // TODO: Cache this data (we only need the ID)
-    const chains = await zerion.getChains(true);
-    const relevantChain = chains.filter(
-      (x) => BigInt(x.attributes.external_id) === BigInt(chainId),
-    );
-    if (relevantChain.length === 0) {
-      throw new Error(`Wrapped Token not found for chainId=${chainId}`);
-    }
-
-    const wrappedAsset = relevantChain[0].relationships.wrapped_native_fungible;
-    const wethFallback = getNativeAsset(chainId).address.toLowerCase();
-    const token = await zerion.fungibles(wrappedAsset?.data.id || wethFallback);
-    return {
-      icon: NATIVE_ASSET_ICONS[chainId],
-      price: token.attributes.market_data.price,
-    };
-  }
-  try {
-    const token = await zerion.fungibles(address.toLowerCase());
-    return {
-      icon: token.attributes.icon.url,
-      price: token.attributes.market_data.price,
-    };
-  } catch (error) {
-    console.warn("Token Meta", error);
-    const icon = await altGetTokenLogoUri(address, chainId);
-    return {
-      ...(icon !== undefined && { icon }),
-      price: 0,
-    };
-  }
-}
-
 export async function parseWidgetData({
   chainId,
   tokenData,
@@ -102,10 +60,13 @@ export async function parseWidgetData({
 }: SwapDetails): Promise<SwapFTData> {
   const chain = getChainById(chainId);
 
-  const [sellTokenDetails, buyTokenDetails] = await Promise.all([
-    getTokenMeta(chainId, quote.sellToken),
-    getTokenMeta(chainId, quote.buyToken),
+  const [sellPrice, buyPrice] = await Promise.all([
+    externalPriceFeed({ chainId, address: quote.sellToken }),
+    externalPriceFeed({ chainId, address: quote.buyToken }),
   ]);
+  console.log(
+    `Retrieved Prices: sellTokenPrice:${sellPrice}, buyTokenPrice:${buyPrice}`,
+  );
   const sellAmount = formatUnits(
     BigInt(quote.sellAmount),
     tokenData.sell.decimals,
@@ -125,16 +86,14 @@ export async function parseWidgetData({
     tokenIn: {
       contractAddress: quote.sellToken,
       amount: sellAmount,
-      usdValue: parseFloat(sellAmount) * sellTokenDetails.price,
+      usdValue: parseFloat(sellAmount) * (sellPrice ?? 0),
       ...tokenData.sell,
-      ...sellTokenDetails,
     },
     tokenOut: {
       contractAddress: quote.buyToken,
       amount: buyAmount,
-      usdValue: parseFloat(buyAmount) * buyTokenDetails.price,
+      usdValue: parseFloat(buyAmount) * (buyPrice ?? 0),
       ...tokenData.buy,
-      ...buyTokenDetails,
     },
   };
 }

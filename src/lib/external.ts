@@ -1,0 +1,27 @@
+export async function externalPriceFeed(query: {
+  chainId: number;
+  address: string;
+}): Promise<number | null> {
+  const priceAgent = "https://price-agent.vercel.app/api/tools";
+  const url = `${priceAgent}?chainId=${query.chainId}&address=${query.address}`;
+
+  try {
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      console.error(
+        `API call failed: ${response.status} ${response.statusText}`,
+      );
+      return null;
+    }
+
+    const price = await response.json();
+    console.log("Price API response:", price);
+
+    // Assuming the API returns a number directly
+    return typeof price === "number" ? price : null;
+  } catch (error) {
+    console.error("Error calling price API:", error);
+    return null;
+  }
+}
