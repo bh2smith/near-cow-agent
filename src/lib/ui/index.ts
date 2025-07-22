@@ -9,6 +9,7 @@ import { getZerionKey } from "@/src/app/config";
 
 import { CHAIN_ICONS } from "./icon";
 
+import type { TokenQuery } from "./types";
 import type { TokenInfo } from "@bitte-ai/agent-sdk";
 import type { SwapFTData } from "@bitte-ai/types";
 import type { OrderParameters } from "@cowprotocol/cow-sdk";
@@ -31,17 +32,14 @@ export async function parseWidgetData({
   //   externalPriceFeed({ chainId, address: quote.sellToken }),
   //   externalPriceFeed({ chainId, address: quote.buyToken }),
   // ]);
-  const zerion = new ZerionAPI(getZerionKey());
+
   const [sellData, buyData] = await Promise.all([
-    zerion.getToken({ chainId, address: quote.sellToken as Address }),
-    zerion.getToken({ chainId, address: quote.buyToken as Address }),
+    getPriceAndIcon({ chainId, address: quote.sellToken as Address }),
+    getPriceAndIcon({ chainId, address: quote.buyToken as Address }),
   ]);
 
-  const sellPrice = sellData.attributes.market_data.price;
-  const buyPrice = buyData.attributes.market_data.price;
-
   console.log(
-    `Retrieved Prices: sellTokenPrice:${sellPrice}, buyTokenPrice:${buyPrice}`,
+    `Retrieved Prices: sellTokenPrice:${sellData.price}, buyTokenPrice:${buyData.price}`,
   );
   const sellAmount = formatUnits(
     BigInt(quote.sellAmount),
@@ -60,18 +58,31 @@ export async function parseWidgetData({
     type: "swap",
     fee: quote.feeAmount,
     tokenIn: {
+      // TODO: Remove this duplicated field.
       contractAddress: quote.sellToken,
       amount: sellAmount,
-      usdValue: parseFloat(sellAmount) * (sellPrice ?? 0),
-      icon: sellData.attributes.icon.url,
+      usdValue: parseFloat(sellAmount) * (sellData.price ?? 0),
+      ...sellData,
       ...tokenData.sell,
     },
     tokenOut: {
       contractAddress: quote.buyToken,
       amount: buyAmount,
-      usdValue: parseFloat(buyAmount) * (buyPrice ?? 0),
-      icon: buyData.attributes.icon.url,
+      usdValue: parseFloat(buyAmount) * (buyData.price ?? 0),
+      ...buyData,
       ...tokenData.buy,
     },
+  };
+}
+
+export async function getPriceAndIcon(
+  args: TokenQuery,
+): Promise<{ price: number; icon: string }> {
+  const zerion = new ZerionAPI(getZerionKey());
+  // { chainId, address: quote.sellToken as Address }
+  const { attributes } = await zerion.getToken(args);
+  return {
+    price: attributes.market_data.price || 0,
+    icon: attributes.icon?.url || "",
   };
 }
