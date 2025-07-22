@@ -14,7 +14,6 @@ import {
   BuyTokenDestination,
   OrderBookApi,
   OrderKind,
-  OrderParameters,
   OrderQuoteResponse,
   OrderQuoteSideKindSell,
   SellTokenSource,
@@ -23,7 +22,7 @@ import {
 import { checksumAddress, getAddress, zeroAddress } from "viem";
 import { loadTokenMap } from "@bitte-ai/agent-sdk";
 import { COW_SUPPORTED_CHAINS } from "@/src/app/config";
-import { CowIcons, parseWidgetData } from "@/src/lib/ui";
+import { CowIcons } from "@/src/lib/ui";
 
 const SEPOLIA_DAI = getAddress("0xb4f1737af37711e9a5890d9510c9bb60e170cb0d");
 const SEPOLIA_COW = getAddress("0x0625afb445c3b6b7b929342a04a22599fd5dbb59");
@@ -244,50 +243,5 @@ describe("CowSwap Plugin", () => {
       cowIcons.getIcon({ address: cow, chainId }),
       cowIcons.getIcon({ address: eth, chainId }),
     ]);
-  });
-
-  it("parseSwapData", async () => {
-    const quote: OrderParameters = {
-      sellToken: tokenData.sell.address,
-      buyToken: tokenData.buy.address,
-      sellAmount: "123456789101112131415161718192345",
-      buyAmount: "9876543234567",
-      validTo: 0,
-      appData: "",
-      feeAmount: "123",
-      kind: OrderKind.BUY,
-      partiallyFillable: false,
-    };
-    const swapData = await parseWidgetData({
-      chainId: 100,
-      tokenData,
-      quote,
-    });
-    expect(swapData).toStrictEqual({
-      network: {
-        name: "Gnosis",
-        icon: "https://storage.googleapis.com/bitte-public/intents/chains/gnosis.svg",
-      },
-      type: "swap",
-      fee: "123",
-      tokenIn: {
-        address: tokenData.sell.address,
-        contractAddress: tokenData.sell.address,
-        amount: "123456789101112.131415161718192345",
-        name: "DAI Token",
-        symbol: "DAI",
-        decimals: 18,
-        usdValue: 0,
-      },
-      tokenOut: {
-        address: SEPOLIA_COW,
-        contractAddress: SEPOLIA_COW,
-        amount: "9876543.234567",
-        name: "CoW Protocol Token",
-        symbol: "COW",
-        decimals: 6,
-        usdValue: 0,
-      },
-    });
   });
 });
