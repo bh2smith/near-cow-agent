@@ -1,5 +1,3 @@
-import { NextResponse } from "next/server";
-import { ACCOUNT_ID, PLUGIN_URL, COW_SUPPORTED_CHAINS } from "../../config";
 import {
   addressOrSymbolParam,
   addressParam,
@@ -9,6 +7,9 @@ import {
   SignRequestSchema,
   MetaTransactionSchema,
 } from "@bitte-ai/agent-sdk";
+import { NextResponse } from "next/server";
+
+import { ACCOUNT_ID, PLUGIN_URL, COW_SUPPORTED_CHAINS } from "@/src/app/config";
 
 export async function GET() {
   const pluginData = {
@@ -37,6 +38,13 @@ TOKEN HANDLING:
 - ALWAYS passes token symbols for sellToken and buyToken unless specific addresses are provided
 - NEVER infers token decimals under any circumstance
 - ALWAYS uses Token Units for sellAmountBeforeFee
+ORDER KIND:
+- ALWAYS infer order kind from the user's text.
+- Examples:
+  - "buy 100 X with Y" -> "buy"
+  - "sell 100 X for Y" -> "sell"
+  - "swap 100 X for Y" -> "sell"
+- ALWAYS pass the order kind to the quote endpoint (orderKind)
 TRANSACTION PROCESSING:
 - ALWAYS passes the transaction fields to generate-evm-tx tool for signing
 - ALWAYS displays meta content to user after signing
@@ -54,14 +62,13 @@ This assistant follows these specifications with zero deviation to ensure secure
       },
     },
     paths: {
-      "/api/tools/cowswap": {
+      "/api/tools/quote": {
         post: {
-          tags: ["cowswap"],
-          operationId: "swap",
+          tags: ["quote"],
+          operationId: "getQuote",
           summary:
-            "Quote a price and fee for the specified order parameters. Posts unsigned order to CoW and returns Signable payload",
-          description:
-            "Given a partial order compute the minimum fee and a price estimate for the order. Return a full order that can be used directly for signing, and with an included signature, passed directly to the order creation endpoint.",
+            "Quote a price and fee for the specified order parameters. Returns the quote and payload for signing.",
+          description: "Retrive quote from CoW API",
           parameters: [
             { $ref: "#/components/parameters/chainId" },
             { $ref: "#/components/parameters/evmAddress" },
@@ -69,14 +76,34 @@ This assistant follows these specifications with zero deviation to ensure secure
             { $ref: "#/components/parameters/buyToken" },
             { $ref: "#/components/parameters/receiver" },
             {
-              name: "sellAmountBeforeFee",
+              name: "slippageBps",
+              in: "query",
+              schema: {
+                type: "number",
+              },
+              description:
+                "The slippage tolerance for the quote, represented as a percentage in basis points (BPS).",
+            },
+            {
+              name: "amount",
               in: "query",
               required: true,
               schema: {
                 type: "string",
               },
               description:
-                "The amount of tokens to sell before fees, represented as a decimal string in token units. Not Atoms.",
+                "The amount of tokens to buy or sell after or before fees, represented as a decimal string in token units. Not Atoms.",
+            },
+            {
+              name: "orderKind",
+              in: "query",
+              required: true,
+              schema: {
+                type: "string",
+                enum: ["buy", "sell"],
+              },
+              description:
+                "Whether the order is a buy order or sell order. Usually inferred from the users text (I want to buy or I want to sell or swap)",
             },
           ],
           // requestBody: {
@@ -91,7 +118,7 @@ This assistant follows these specifications with zero deviation to ensure secure
           //   },
           // },
           responses: {
-            "200": { $ref: "#/components/responses/SignRequestResponse200" },
+            "200": { $ref: "#/components/responses/QuoteResponse200" },
             "400": {
               description: "Error quoting order.",
               content: {
@@ -101,6 +128,173 @@ This assistant follows these specifications with zero deviation to ensure secure
                   },
                 },
               },
+            },
+            "404": {
+              description: "No route was found for the specified order.",
+            },
+            "429": {
+              description: "Too many order quotes.",
+            },
+            "500": {
+              description: "Unexpected error quoting an order.",
+            },
+          },
+        },
+      },
+      "/api/tools/order": {
+        post: {
+          tags: ["order"],
+          operationId: "createOrder",
+          summary: "Posts signed order to CoW and Explorer Order Url",
+          description:
+            "Consume a signed order and post it to CoW and Explorer Order Url.",
+          parameters: [
+            { $ref: "#/components/parameters/chainId" },
+            { $ref: "#/components/parameters/evmAddress" },
+            {
+              ...addressParam,
+              name: "buyToken",
+              description:
+                "The ERC-20 token address to be bought. Token symbol is not accepted here as the address should already be in the quote",
+            },
+            {
+              ...addressParam,
+              name: "sellToken",
+              description:
+                "The ERC-20 token address to be sold. Token symbol is not accepted here as the address should already be in the quote",
+            },
+            { $ref: "#/components/parameters/receiver" },
+            {
+              in: "query",
+              name: "sellAmount",
+              required: true,
+              schema: {
+                type: "string",
+              },
+              description:
+                "The amount of tokens to sell after fees, represented in WEI (token atoms).",
+            },
+            {
+              in: "query",
+              name: "buyAmount",
+              required: true,
+              schema: {
+                type: "string",
+              },
+              description:
+                "The amount of tokens to buy, represented in WEI (token atoms).",
+            },
+            {
+              in: "query",
+              name: "validTo",
+              required: true,
+              schema: {
+                type: "number",
+              },
+              description: "Unix timestamp of order expiration.",
+            },
+            {
+              in: "query",
+              name: "kind",
+              required: true,
+              schema: {
+                type: "string",
+                enum: ["buy", "sell"],
+              },
+              description: "The kind is either a buy or sell order.",
+            },
+            {
+              in: "query",
+              name: "feeAmount",
+              required: true,
+              schema: {
+                type: "string",
+              },
+              description:
+                "The amount of tokens to fee attributed to the order, represented in WEI (token atoms).",
+            },
+            {
+              in: "query",
+              name: "signingScheme",
+              required: true,
+              schema: {
+                type: "string",
+                enum: ["eip712", "ethsign", "presign", "eip1271"],
+              },
+              description: "How was the order signed?",
+            },
+            {
+              in: "query",
+              name: "signature",
+              required: true,
+              schema: {
+                type: "string",
+                format: "hex",
+              },
+              description: "A hex encoded signature.",
+            },
+            {
+              in: "query",
+              name: "partiallyFillable",
+              required: true,
+              schema: {
+                type: "boolean",
+              },
+              description: "Whether the order is partially fillable.",
+            },
+            {
+              in: "query",
+              name: "appData",
+              required: true,
+              schema: {
+                type: "string",
+              },
+              description:
+                "The appData hash for the order. This is a hex encoded string. In the future we will have to use the stringified full appdata JSON object.",
+            },
+          ],
+          // requestBody: {
+          //   description: "The input required to place an order on CoW Swap",
+          //   required: true,
+          //   content: {
+          //     "application/json": {
+          //       schema: {
+          //         $ref: "#/components/schemas/OrderCreation",
+          //       },
+          //     },
+          //   },
+          // },
+          responses: {
+            "200": {
+              description: "Order posted to CoW and Explorer Order Url.",
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    properties: {
+                      orderUrl: {
+                        type: "string",
+                        description:
+                          "The URL of the order on the CoW Explorer.",
+                      },
+                    },
+                    required: ["orderUrl"],
+                  },
+                },
+              },
+            },
+            "400": {
+              description: "Error during order validation.",
+              content: {
+                "application/json": {
+                  schema: {
+                    $ref: "#/components/schemas/OrderPostError",
+                  },
+                },
+              },
+            },
+            "403": {
+              description: "Forbidden, your account is deny-listed.",
             },
             "404": {
               description: "No route was found for the specified order.",
@@ -145,6 +339,41 @@ This assistant follows these specifications with zero deviation to ensure secure
         },
       },
       responses: {
+        QuoteResponse200: {
+          description: "Quote response including metadata and transaction",
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  meta: {
+                    type: "object",
+                    properties: {
+                      quote: {
+                        $ref: "#/components/schemas/OrderQuoteResponse",
+                      },
+                      ui: { $ref: "#/components/schemas/SwapFTData" },
+                    },
+                    required: ["quote", "ui"],
+                  },
+                  transaction: { $ref: "#/components/schemas/SignRequest" },
+                },
+                required: ["meta", "transaction"],
+              },
+            },
+          },
+        },
+        SignRequest200: {
+          description:
+            "Generic Structure representing an EVM Signature Request",
+          content: {
+            "application/json": {
+              schema: {
+                $ref: "#/components/schemas/SignRequest",
+              },
+            },
+          },
+        },
         SignRequestResponse200: {
           description:
             "Cowswap order response including transaction and order URL",
@@ -197,6 +426,11 @@ This assistant follows these specifications with zero deviation to ensure secure
         Address: AddressSchema,
         SignRequest: SignRequestSchema,
         MetaTransaction: MetaTransactionSchema,
+        SwapFTData: {
+          type: "object",
+          description: "UI data for swap widget",
+          additionalProperties: true,
+        },
         AppData: {
           description:
             "The string encoding of a JSON object representing some `appData`. The format of the JSON expected in the `appData` field is defined [here](https://github.com/cowprotocol/app-data).",
@@ -223,6 +457,48 @@ This assistant follows these specifications with zero deviation to ensure secure
             "How good should the price estimate be?\n\nFast: The price estimate is chosen among the fastest N price estimates.\nOptimal: The price estimate is chosen among all price estimates.\nVerified: The price estimate is chosen among all verified/simulated price estimates.\n\n**NOTE**: Orders are supposed to be created from `verified` or `optimal` price estimates.",
           type: "string",
           enum: ["fast", "optimal", "verified"],
+        },
+        OrderPostError: {
+          type: "object",
+          properties: {
+            errorType: {
+              type: "string",
+              enum: [
+                "DuplicatedOrder",
+                "QuoteNotFound",
+                "QuoteNotVerified",
+                "InvalidQuote",
+                "MissingFrom",
+                "WrongOwner",
+                "InvalidEip1271Signature",
+                "InsufficientBalance",
+                "InsufficientAllowance",
+                "InvalidSignature",
+                "SellAmountOverflow",
+                "TransferSimulationFailed",
+                "ZeroAmount",
+                "IncompatibleSigningScheme",
+                "TooManyLimitOrders",
+                "TooMuchGas",
+                "UnsupportedBuyTokenDestination",
+                "UnsupportedSellTokenSource",
+                "UnsupportedOrderType",
+                "InsufficientValidTo",
+                "ExcessiveValidTo",
+                "InvalidNativeSellToken",
+                "SameBuyAndSellToken",
+                "UnsupportedToken",
+                "InvalidAppData",
+                "AppDataHashMismatch",
+                "AppdataFromMismatch",
+                "OldOrderActivelyBidOn",
+              ],
+            },
+            description: {
+              type: "string",
+            },
+          },
+          required: ["errorType", "description"],
         },
         SigningScheme: {
           description: "How was the order signed?",
@@ -322,9 +598,8 @@ This assistant follows these specifications with zero deviation to ensure secure
           ],
         },
         OrderQuoteResponse: {
-          description:
-            "An order quoted by the backend that can be directly signed and submitted to the order creation backend.",
           type: "object",
+          description: "Response for Quote from CoW Orderbook API",
           properties: {
             quote: { $ref: "#/components/schemas/OrderParameters" },
             from: { $ref: "#/components/schemas/Address" },
@@ -367,6 +642,107 @@ This assistant follows these specifications with zero deviation to ensure secure
           description: "Is this order a buy or sell?",
           type: "string",
           enum: ["buy", "sell"],
+        },
+        OrderCreation: {
+          description: "Data a user provides when creating a new order.",
+          type: "object",
+          properties: {
+            sellToken: {
+              description: "see `OrderParameters::sellToken`",
+              allOf: [{ $ref: "#/components/schemas/Address" }],
+            },
+            buyToken: {
+              description: "see `OrderParameters::buyToken`",
+              allOf: [{ $ref: "#/components/schemas/Address" }],
+            },
+            receiver: {
+              description: "see `OrderParameters::receiver`",
+              allOf: [{ $ref: "#/components/schemas/Address" }],
+              nullable: true,
+            },
+            sellAmount: {
+              description: "see `OrderParameters::sellAmount`",
+              allOf: [{ $ref: "#/components/schemas/TokenAmount" }],
+            },
+            buyAmount: {
+              description: "see `OrderParameters::buyAmount`",
+              allOf: [{ $ref: "#/components/schemas/TokenAmount" }],
+            },
+            validTo: {
+              description: "see `OrderParameters::validTo`",
+              type: "integer",
+            },
+            feeAmount: {
+              description: "see `OrderParameters::feeAmount`",
+              allOf: [{ $ref: "#/components/schemas/TokenAmount" }],
+            },
+            kind: {
+              description: "see `OrderParameters::kind`",
+              allOf: [{ $ref: "#/components/schemas/OrderKind" }],
+            },
+            partiallyFillable: {
+              description: "see `OrderParameters::partiallyFillable`",
+              type: "boolean",
+            },
+            sellTokenBalance: {
+              description: "see `OrderParameters::sellTokenBalance`",
+              allOf: [{ $ref: "#/components/schemas/SellTokenSource" }],
+              default: "erc20",
+            },
+            buyTokenBalance: {
+              description: "see `OrderParameters::buyTokenBalance`",
+              allOf: [{ $ref: "#/components/schemas/BuyTokenDestination" }],
+              default: "erc20",
+            },
+            signingScheme: {
+              $ref: "#/components/schemas/SigningScheme",
+            },
+            signature: {
+              $ref: "#/components/schemas/Signature",
+            },
+            from: {
+              description: "Ensures the decoded signer matches this address",
+              allOf: [{ $ref: "#/components/schemas/Address" }],
+              nullable: true,
+            },
+            quoteId: {
+              description: "Optional quote ID for slippage analysis.",
+              type: "integer",
+              nullable: true,
+            },
+            appData: {
+              description:
+                "Arbitrary app-specific metadata; must be valid JSON string.",
+              anyOf: [
+                {
+                  title: "Full App Data",
+                  allOf: [{ $ref: "#/components/schemas/AppData" }],
+                  description:
+                    "A JSON string that gets hashed and signed. Use '{}' and match hash when unsure.",
+                  type: "string",
+                },
+                { $ref: "#/components/schemas/AppDataHash" },
+              ],
+            },
+            appDataHash: {
+              description: "Optional hash of appData for verification.",
+              allOf: [{ $ref: "#/components/schemas/AppDataHash" }],
+              nullable: true,
+            },
+          },
+          required: [
+            "sellToken",
+            "buyToken",
+            "sellAmount",
+            "buyAmount",
+            "validTo",
+            "appData",
+            "feeAmount",
+            "kind",
+            "partiallyFillable",
+            "signingScheme",
+            "signature",
+          ],
         },
         OrderParameters: {
           description: "Order parameters.",

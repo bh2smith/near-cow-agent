@@ -7,21 +7,22 @@
     "dev-testnet": "concurrently \"next dev\" \"make-agent dev -t\"",
     "build": "next build",
     "deploy": "make-agent deploy -u https://near-cow-agent.vercel.app/",
+    "deploy-staging": "make-agent deploy -u https://near-cow-agent-git-staging-bitteprotocol.vercel.app/",
     "start": "next start",
     "lint": "next lint && prettier --check '{src,tests}/**/*.{js,jsx,ts,tsx}'",
-    "fmt": "next lint --fix && prettier --write '{src,tests}/**/*.{js,jsx,ts,tsx}'",
-    "test": "jest --config jest.config.ts"
+    "fmt": "next lint --fix . && prettier --write '{src,tests}/**/*.{js,jsx,ts,tsx}'"
   },
   "dependencies": {
     "@bitte-ai/agent-sdk": "^0.2.7",
-    "@cowprotocol/cow-sdk": "6.0.0-RC.71",
+    "@cowprotocol/cow-sdk": "6.0.0-RC.73",
     "json-stringify-deterministic": "^1.0.12",
     "next": "^15.4.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "redoc": "^2.5.0",
     "vercel-url": "^0.2.8",
-    "viem": "^2.31.7"
+    "viem": "^2.31.7",
+    "zerion-sdk": "^0.1.5"
   },
   "devDependencies": {
     "@bitte-ai/types": "^0.7.0",
@@ -32,10 +33,8 @@
     "concurrently": "^9.2.0",
     "dotenv": "^17.2.0",
     "eslint-config-next": "^15.4.1",
-    "jest": "^30.0.4",
-    "make-agent": "0.3.5",
+    "make-agent": "^0.3.5",
     "prettier": "^3.6.2",
-    "ts-jest": "^29.4.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   }

@@ -29,8 +29,6 @@ jobs:
           bun install
 
       - name: Lint, Test & Build
-        env:
-          TOKEN_MAP_URL:  ${{secrets.TOKEN_MAP_URL}}
         run: |
           bun lint
           bun test
