@@ -79,7 +79,6 @@ export async function getPriceAndIcon(
   args: TokenQuery,
 ): Promise<{ price: number; icon: string }> {
   const zerion = new ZerionAPI(getZerionKey());
-  // { chainId, address: quote.sellToken as Address }
   const { attributes } = await zerion.getToken(args);
   return {
     price: attributes.market_data.price || 0,
