@@ -1,9 +1,13 @@
+export * from "./icon";
+export * from "./types";
+
 import { getChainById } from "@bitte-ai/agent-sdk";
 import { formatUnits } from "viem";
 import { ZerionAPI } from "zerion-sdk";
 
-import { getZerionKey } from "../app/config";
-import { CHAIN_ICONS } from "./ui/icon";
+import { getZerionKey } from "@/src/app/config";
+
+import { CHAIN_ICONS } from "./icon";
 
 import type { TokenInfo } from "@bitte-ai/agent-sdk";
 import type { SwapFTData } from "@bitte-ai/types";
@@ -22,7 +26,7 @@ export async function parseWidgetData({
   quote,
 }: SwapDetails): Promise<SwapFTData> {
   const chain = getChainById(chainId);
-  // TODO: Enable Price Agent
+  // TODO(bh2smith): Enable Price Agent https://github.com/bh2smith/price-agent
   // const [sellPrice, buyPrice] = await Promise.all([
   //   externalPriceFeed({ chainId, address: quote.sellToken }),
   //   externalPriceFeed({ chainId, address: quote.buyToken }),

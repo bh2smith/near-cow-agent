@@ -9,7 +9,6 @@ import {
   setPresignatureTx,
 } from "@/src/lib/protocol/util";
 import { getClient } from "@/src/lib/rpc";
-import { parseWidgetData, getCoWLogo } from "@/src/lib/ui";
 import { basicParseQuote } from "@/src/lib/protocol/quote";
 import {
   BuyTokenDestination,
@@ -21,9 +20,10 @@ import {
   SellTokenSource,
   SigningScheme,
 } from "@cowprotocol/cow-sdk";
-import { Address, checksumAddress, getAddress, zeroAddress } from "viem";
+import { checksumAddress, getAddress, zeroAddress } from "viem";
 import { loadTokenMap } from "@bitte-ai/agent-sdk";
 import { COW_SUPPORTED_CHAINS } from "@/src/app/config";
+import { CowIcons, parseWidgetData } from "@/src/lib/ui";
 
 const SEPOLIA_DAI = getAddress("0xb4f1737af37711e9a5890d9510c9bb60e170cb0d");
 const SEPOLIA_COW = getAddress("0x0625afb445c3b6b7b929342a04a22599fd5dbb59");
@@ -238,10 +238,11 @@ describe("CowSwap Plugin", () => {
     const gno = "0x6810e776880c02933d47db1b9fc05908e5386b96";
     const cow = "0xdef1ca1fb7fbcdc777520aa7f396b4e015f497ab";
     const eth = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
+    const cowIcons = new CowIcons();
     await Promise.all([
-      getCoWLogo(gno, chainId),
-      getCoWLogo(cow, chainId),
-      getCoWLogo(eth, chainId),
+      cowIcons.getIcon({ address: gno, chainId }),
+      cowIcons.getIcon({ address: cow, chainId }),
+      cowIcons.getIcon({ address: eth, chainId }),
     ]);
   });
 
