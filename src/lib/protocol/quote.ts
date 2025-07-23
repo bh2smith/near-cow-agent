@@ -6,7 +6,7 @@ import {
 } from "@cowprotocol/cow-sdk";
 import { isHex, parseUnits } from "viem";
 
-import { isNativeAsset, sellTokenApprovalTx } from "./util";
+import { sellTokenApprovalTx } from "./util";
 
 import type { EthRpc, ParsedQuoteRequest, QuoteRequestBody } from "../types";
 import type { BlockchainMapping, TokenInfo } from "@bitte-ai/agent-sdk";
@@ -102,17 +102,16 @@ export async function preliminarySteps(
   // Mutated if necessary
   orderParams: OrderParameters,
   notes: string[],
+  nativeSell: boolean,
 ): Promise<MetaTransaction[]> {
   const steps: MetaTransaction[] = [];
-  if (isNativeAsset(orderParams.sellToken)) {
+  if (nativeSell) {
+    // Technically, should only need to wrap their sellAmount - current WETH Balance, but this might be confusing.
     const wrapTx = wrapMetaTransaction(
       client.chain.id,
       BigInt(orderParams.sellAmount),
     );
     steps.push(wrapTx);
-
-    // Mutate Quote SellToken from native asset to wrapped version and push to notes.
-    orderParams.sellToken = wrapTx.to;
     notes.push("Wrap Native Asset for Sell Token.");
   }
   const approvalTx = await sellTokenApprovalTx({

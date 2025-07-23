@@ -1,4 +1,5 @@
 import {
+  getNativeAsset,
   handleRequest,
   loadTokenMap,
   signRequestFor,
@@ -6,6 +7,7 @@ import {
 import { OrderBookApi, OrderSigningUtils } from "@cowprotocol/cow-sdk";
 import { NextResponse } from "next/server";
 import { getAddress, type Address } from "viem";
+import { isNativeAsset } from "zerion-sdk";
 
 import { COW_SUPPORTED_CHAINS, getAlchemyKey } from "@/src/app/config";
 import { basicParseQuote, preliminarySteps } from "@/src/lib/protocol/quote";
@@ -38,7 +40,11 @@ async function logic(req: NextRequest): Promise<{
       await loadTokenMap(COW_SUPPORTED_CHAINS),
     );
   console.log("Parsed Quote Request", quoteRequest);
-  const notes: string[] = [];
+  // Flag used a few times later.
+  const nativeSell = isNativeAsset(quoteRequest.sellToken);
+  if (nativeSell) {
+    quoteRequest.sellToken = getNativeAsset(chainId).address;
+  }
   const orderBookApi = new OrderBookApi({ chainId });
 
   // WARNING: Do not unpack this result as { quote, ...}. It causes confusion due to modifications.
@@ -73,8 +79,19 @@ async function logic(req: NextRequest): Promise<{
     // );
   };
   console.log("Modified Quote", result.quote);
+  const notes: string[] = [];
   const from = getAddress(quoteRequest.from);
-  const steps = await preliminarySteps(client, from, result.quote, notes);
+  const steps = await preliminarySteps(
+    client,
+    from,
+    {
+      ...result.quote,
+      // Put back the original sell token (in case it was substituted) for the wrapping.
+      sellToken: quoteRequest.sellToken,
+    },
+    notes,
+    nativeSell,
+  );
   console.log("Preliminary Steps", steps);
   const transaction = await buildTransaction(
     result.quote,
