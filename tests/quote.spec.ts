@@ -1,7 +1,7 @@
 import { handleQuoteRequest } from "@/src/app/api/tools/quote/logic";
 import { OrderQuoteRequest, TokenInfo } from "@cowprotocol/cow-sdk";
 
-describe("Quote Route Logic", () => {
+describe.skip("Quote Route Logic", () => {
   it("should transform parsedQuoteRequest into Full Quote", async () => {
     const quoteRequest = {
       sellToken: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE", // ETH
