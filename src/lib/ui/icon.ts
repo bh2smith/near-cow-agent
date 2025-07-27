@@ -4,9 +4,9 @@ import { isNativeAsset } from "../protocol/util";
 
 import type { TokenQuery } from "./types";
 
-const bucketUrl = "https://storage.googleapis.com/bitte-public";
-const tokensUrl = `${bucketUrl}/intents/tokens`;
-const chainsUrl = `${bucketUrl}/intents/chains`;
+const bitteBucket = "https://storage.googleapis.com/bitte-public";
+const tokensUrl = `${bitteBucket}/intents/tokens`;
+const chainsUrl = `${bitteBucket}/intents/chains`;
 
 export const NATIVE_ASSET_ICONS: Record<number, string> = {
   1: `${tokensUrl}/eth_token.svg`,
@@ -41,8 +41,25 @@ export class DexScreenerIcons implements IconFeed {
     if (isNativeAsset(address)) {
       return NATIVE_ASSET_ICONS[chainId];
     }
-    // ethereum/0xe485e2f1bab389c08721b291f6b59780fec83fd7.png
-    const fullUrl = `${bucketUrl}/${chainId}/${address}.png`;
+    const fullUrl = `${this.bucketUrl}/${chainId}/${address}.png`;
+    // Check it URL resolves.
+    const res = await fetch(fullUrl);
+    if (res.ok) {
+      return fullUrl;
+    }
+    return undefined;
+  }
+}
+
+export class IconArchive implements IconFeed {
+  name = "Archive";
+  bucketUrl = "https://storage.googleapis.com/bitte-public/tokens";
+
+  async getIcon({ address, chainId }: TokenQuery): Promise<string | undefined> {
+    if (isNativeAsset(address)) {
+      return NATIVE_ASSET_ICONS[chainId];
+    }
+    const fullUrl = `${this.bucketUrl}/${chainId}/${address}.png`;
     // Check it URL resolves.
     const res = await fetch(fullUrl);
     if (res.ok) {
@@ -60,7 +77,7 @@ export class CowIcons implements IconFeed {
     if (isNativeAsset(address)) {
       return NATIVE_ASSET_ICONS[chainId];
     }
-    const fullUrl = `${bucketUrl}/${chainId}/${address}/logo.png`;
+    const fullUrl = `${this.bucketUrl}/${chainId}/${address}/logo.png`;
     // Check it URL resolves.
     const res = await fetch(fullUrl);
     if (res.ok) {
@@ -68,4 +85,14 @@ export class CowIcons implements IconFeed {
     }
     return undefined;
   }
+}
+
+const archive = new IconArchive();
+const cow = new CowIcons();
+const screener = new DexScreenerIcons();
+
+export async function getIcon(args: TokenQuery): Promise<string | undefined> {
+  const iconFeeds = [cow, archive, screener];
+  const results = await Promise.all(iconFeeds.map((f) => f.getIcon(args)));
+  return results.find((icon): icon is string => icon !== undefined);
 }
