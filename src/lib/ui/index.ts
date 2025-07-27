@@ -6,7 +6,7 @@ import { formatUnits } from "viem";
 
 import { externalPriceFeed } from "../external";
 
-import { CHAIN_ICONS } from "./icon";
+import { CHAIN_ICONS, CowIcons, getIcon, IconArchive } from "./icon";
 
 import type { TokenQuery } from "./types";
 import type { TokenInfo } from "@bitte-ai/agent-sdk";
@@ -26,11 +26,15 @@ export async function parseWidgetData({
   quote,
 }: SwapDetails): Promise<SwapFTData> {
   const chain = getChainById(chainId);
-
-  const [sellData, buyData] = await Promise.all([
-    getPriceAndIcon({ chainId, address: quote.sellToken as Address }),
-    getPriceAndIcon({ chainId, address: quote.buyToken as Address }),
-  ]);
+  // TODO: Multi Query.
+  const sellData = await getPriceAndIcon({
+    chainId,
+    address: quote.sellToken as Address,
+  });
+  const buyData = await getPriceAndIcon({
+    chainId,
+    address: quote.buyToken as Address,
+  });
 
   console.log(
     `Retrieved Prices: sellTokenPrice:${sellData.price}, buyTokenPrice:${buyData.price}`,
@@ -75,6 +79,6 @@ export async function getPriceAndIcon(
   return {
     price: (await externalPriceFeed(args)) || 0,
     // TODO: Use Price/Token Agent for Icons.
-    icon: `https://storage.googleapis.com/bitte-public/tokens/${args.chainId}/${args.address}.png`,
+    icon: (await getIcon(args)) || "",
   };
 }
