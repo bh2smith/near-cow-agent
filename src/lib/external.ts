@@ -29,10 +29,12 @@ export async function externalPriceFeed(
       return null;
     }
 
-    const { price } = await response.json();
-
+    const data = (await response.json()) as {
+      price: number;
+      source: string;
+    } | null;
     // Assuming the API returns a number directly
-    return typeof price === "number" ? price : null;
+    return data?.price || null;
   } catch (error) {
     console.error("Error calling price API:", error);
     return null;
