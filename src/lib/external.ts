@@ -1,21 +1,13 @@
 import { type Hex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { wrapFetchWithPayment } from "x402-fetch";
+
+import { getEnvVar } from "../app/config";
 interface TokenQuery {
   chainId: number;
   address: string;
 }
 
-const privateKey = process.env.PRIVATE_KEY as Hex;
-
-if (!privateKey) {
-  console.error("Missing required environment variables");
-  process.exit(1);
-}
-
-const account = privateKeyToAccount(privateKey);
-console.log("Paying with", account.address);
-const fetchWithPayment = wrapFetchWithPayment(fetch, account);
 // const priceAgentFree = "https://price-agent.vercel.app/api/tools/prices";
 const priceAgentUrl =
   "https://price-agent-git-x402-maxnormal.vercel.app/api/tools/prices";
@@ -23,6 +15,9 @@ const priceAgentUrl =
 export async function externalPriceFeed(
   query: TokenQuery,
 ): Promise<number | null> {
+  const account = privateKeyToAccount(getEnvVar("PRIVATE_KEY") as Hex);
+  console.log("Paying with", account.address);
+  const fetchWithPayment = wrapFetchWithPayment(fetch, account);
   const url = `${priceAgentUrl}?chainId=${query.chainId}&address=${query.address}`;
   try {
     const response = await fetchWithPayment(url, {});
