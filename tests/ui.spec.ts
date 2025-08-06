@@ -1,4 +1,11 @@
-import { getPriceAndIcon, parseWidgetData } from "@/src/lib/ui";
+import {
+  CowIcons,
+  DexScreenerIcons,
+  getPriceAndIcon,
+  IconArchive,
+  parseWidgetData,
+  TokenQuery,
+} from "@/src/lib/ui";
 import { OrderKind, OrderParameters } from "@cowprotocol/cow-sdk";
 import { getAddress } from "viem";
 
@@ -70,5 +77,23 @@ describe("getPriceAndIcon", () => {
     //     ...tokenData.buy,
     //   },
     // });
+  });
+
+  it("COW Gnosis", async () => {
+    const args = {
+      chainId: 100,
+      address: "0x177127622c4a00f3d409b75571e12cb3c8973d3c",
+    } as TokenQuery;
+    const archive = new IconArchive();
+    const cow = new CowIcons();
+    const screener = new DexScreenerIcons();
+
+    const a = await archive.getIcon(args);
+    const b = await cow.getIcon(args);
+    const c = await screener.getIcon(args);
+
+    console.log(a);
+    console.log(b);
+    console.log(c);
   });
 });

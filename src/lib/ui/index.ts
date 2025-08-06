@@ -3,11 +3,10 @@ export * from "./types";
 
 import { getChainById } from "@bitte-ai/agent-sdk";
 import { formatUnits } from "viem";
-import { ZerionAPI } from "zerion-sdk";
 
-import { getZerionKey } from "@/src/app/config";
+import { externalPriceFeed } from "../external";
 
-import { CHAIN_ICONS } from "./icon";
+import { CHAIN_ICONS, getIcon } from "./icon";
 
 import type { TokenQuery } from "./types";
 import type { TokenInfo } from "@bitte-ai/agent-sdk";
@@ -27,16 +26,15 @@ export async function parseWidgetData({
   quote,
 }: SwapDetails): Promise<SwapFTData> {
   const chain = getChainById(chainId);
-  // TODO(bh2smith): Enable Price Agent https://github.com/bh2smith/price-agent
-  // const [sellPrice, buyPrice] = await Promise.all([
-  //   externalPriceFeed({ chainId, address: quote.sellToken }),
-  //   externalPriceFeed({ chainId, address: quote.buyToken }),
-  // ]);
-
-  const [sellData, buyData] = await Promise.all([
-    getPriceAndIcon({ chainId, address: quote.sellToken as Address }),
-    getPriceAndIcon({ chainId, address: quote.buyToken as Address }),
-  ]);
+  // TODO: Multi Query.
+  const sellData = await getPriceAndIcon({
+    chainId,
+    address: quote.sellToken as Address,
+  });
+  const buyData = await getPriceAndIcon({
+    chainId,
+    address: quote.buyToken as Address,
+  });
 
   console.log(
     `Retrieved Prices: sellTokenPrice:${sellData.price}, buyTokenPrice:${buyData.price}`,
@@ -78,10 +76,9 @@ export async function parseWidgetData({
 export async function getPriceAndIcon(
   args: TokenQuery,
 ): Promise<{ price: number; icon: string }> {
-  const zerion = new ZerionAPI(getZerionKey());
-  const { attributes } = await zerion.getToken(args);
   return {
-    price: attributes.market_data.price || 0,
-    icon: attributes.icon?.url || "",
+    price: (await externalPriceFeed(args)) || 0,
+    // TODO: Use Price/Token Agent for Icons.
+    icon: (await getIcon(args)) || "",
   };
 }
