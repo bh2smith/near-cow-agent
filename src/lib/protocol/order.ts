@@ -1,4 +1,5 @@
 import { OrderBookApi } from "@cowprotocol/cow-sdk";
+import { keccak256, toBytes } from "viem";
 
 import { withCowErrorHandling } from "../error";
 
@@ -21,6 +22,7 @@ export async function createOrder(
     signingScheme: requestBody.signingScheme,
     signature: requestBody.signature,
     appData: requestBody.appData,
+    appDataHash: keccak256(toBytes(requestBody.appData)),
     from: requestBody.evmAddress,
   };
   console.log("Order Creation", orderCreation);
