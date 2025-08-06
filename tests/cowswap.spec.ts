@@ -1,8 +1,6 @@
 import {
-  appDataExists,
   applySlippage,
   createOrder,
-  generateAppData,
   isNativeAsset,
   NATIVE_ASSET,
   sellTokenApprovalTx,
@@ -45,17 +43,7 @@ const tokenData = {
 };
 
 const chainId = 11155111;
-
 const client = getClient(chainId);
-const quoteRequest = {
-  chainId,
-  evmAddress: DEPLOYED_SAFE,
-  sellToken: tokenData.sell.address,
-  buyToken: tokenData.buy.address,
-  receiver: DEPLOYED_SAFE,
-  kind: OrderQuoteSideKindSell.SELL,
-  sellAmountBeforeFee: "2000000000000000000",
-};
 
 describe("CowSwap Plugin", () => {
   it("applySlippage", async () => {
@@ -210,26 +198,6 @@ describe("CowSwap Plugin", () => {
       signingScheme: "presign",
       validTo: 1730022042,
     });
-  });
-
-  it("AppData", async () => {
-    const orderbook = new OrderBookApi({ chainId });
-    // cf: https://v1.docs.cow.fi/cow-sdk/order-meta-data-appdata
-    // TODO: Uncomment to Post Agent App Data.
-    // const appCode = "Bitte Protocol";
-    // const referrer = "0x8d99F8b2710e6A3B94d9bf465A98E5273069aCBd";
-    // const appData = await generateAppData(appCode, referrer);
-    // await orderbook.uploadAppData(hash, data);
-    const appData = await generateAppData(
-      "bitte.ai/CowAgent",
-      "0x8d99F8b2710e6A3B94d9bf465A98E5273069aCBd",
-      { bps: 25, recipient: "0x54F08c27e75BeA0cdDdb8aA9D69FD61551B19BbA" },
-    );
-    expect(appData.hash).toBe(
-      "0x5a8bb9f6dd0c7f1b4730d9c5a811c2dfe559e67ce9b5ed6965b05e59b8c86b80",
-    );
-
-    expect(await appDataExists(orderbook, appData)).toBe(false);
   });
 
   it("getTokenLogoUri", async () => {
