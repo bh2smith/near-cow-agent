@@ -41,3 +41,9 @@ export interface ParsedQuoteRequest {
 }
 
 export type EthRpc = PublicClient<Transport, Chain>;
+
+export type OrderCreationResponse = {
+  orderUrl?: string;
+  orderUid?: string;
+  error?: string;
+};

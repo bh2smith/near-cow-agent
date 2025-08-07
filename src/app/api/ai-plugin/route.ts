@@ -277,6 +277,11 @@ This assistant follows these specifications with zero deviation to ensure secure
                         description:
                           "The URL of the order on the CoW Explorer.",
                       },
+                      orderUid: {
+                        type: "string",
+                        description:
+                          "The unique identifier of the user's order.",
+                      },
                     },
                     required: ["orderUrl"],
                   },
@@ -305,6 +310,68 @@ This assistant follows these specifications with zero deviation to ensure secure
             "500": {
               description: "Unexpected error quoting an order.",
             },
+          },
+        },
+      },
+      "/api/tools/cancel": {
+        get: {
+          tags: ["cancel"],
+          operationId: "cancelOrder",
+          summary: "Sets in motion the off-chain cancellation of an order.",
+          description: `
+            This is a best effort cancellation, and might not prevent solvers from settling the orders (if the order is part of an in-flight settlement transaction for example). 
+            Authentication must be provided by an EIP-712 signature of an OrderCancellations(bytes[] orderUids) message.
+            CASE WHEN signature is not provided, the tool returns signable payload.
+            ELSE tool will post the order & signature to the CoW API order cancellation endpoint.
+          `,
+          parameters: [
+            { $ref: "#/components/parameters/chainId" },
+            {
+              in: "query",
+              name: "orderUid",
+              required: true,
+              schema: {
+                type: "string",
+              },
+              description: "The order UID to cancel.",
+            },
+            {
+              in: "query",
+              name: "signature",
+              schema: {
+                type: "string",
+                format: "hex",
+              },
+              description: "A hex encoded signature.",
+            },
+          ],
+          responses: {
+            "200": {
+              description: "Either signable payload or cancellation response.",
+              content: {
+                "application/json": {
+                  schema: {
+                    oneOf: [
+                      {
+                        $ref: "#/components/schemas/SignRequest200",
+                      },
+                      {
+                        type: "string",
+                        description: "Order(s) are cancelled.",
+                      },
+                    ],
+                  },
+                },
+              },
+            },
+            // "200": { description: "Order(s) Cancelled." },
+            "400": { description: "Malformed signature." },
+            "401": { description: "Invalid signature." },
+            "404": {
+              description:
+                "One or more orders were not found and no orders were cancelled.",
+            },
+            "500": { description: "Internal Server Error." },
           },
         },
       },
