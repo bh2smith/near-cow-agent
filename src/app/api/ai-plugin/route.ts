@@ -364,7 +364,6 @@ This assistant follows these specifications with zero deviation to ensure secure
                 },
               },
             },
-            // "200": { description: "Order(s) Cancelled." },
             "400": { description: "Malformed signature." },
             "401": { description: "Invalid signature." },
             "404": {
