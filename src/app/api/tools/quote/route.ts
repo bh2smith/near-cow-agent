@@ -1,5 +1,6 @@
-import { handleRequest } from "@bitte-ai/agent-sdk";
 import { NextResponse } from "next/server";
+
+import { withRedactedErrorHandling } from "@/src/lib/error";
 
 import { logic } from "./logic";
 
@@ -7,5 +8,13 @@ import type { NextRequest } from "next/server";
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
   console.log("quote/", req.url);
-  return handleRequest(req, logic, (result) => NextResponse.json(result));
+  try {
+    const result = await withRedactedErrorHandling(logic(req));
+    return NextResponse.json(result, { status: 200 });
+  } catch (error: unknown) {
+    return NextResponse.json(
+      { message: (error as Error).message },
+      { status: 500 },
+    );
+  }
 }

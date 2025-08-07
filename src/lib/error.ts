@@ -39,3 +39,20 @@ export const withCowErrorHandling = <T>(promise: Promise<T>): Promise<T> =>
     console.error(error);
     throw new Error(error);
   });
+
+export const withRedactedErrorHandling = <T>(promise: Promise<T>): Promise<T> =>
+  promise.catch((e: unknown) => {
+    const message = e instanceof Error ? e.message : String(e);
+    console.error(message);
+    throw new Error(redactAlchemyKey(message));
+  });
+
+const ALCHEMY_KEY_REGEX =
+  /https:\/\/[^/]+\.alchemy\.com\/v2\/[a-zA-Z0-9_-]{20,}/g;
+
+function redactAlchemyKey(str: string): string {
+  return str.replace(ALCHEMY_KEY_REGEX, (match) => {
+    const parts = match.split("/");
+    return parts.slice(0, -1).join("/") + "/<REDACTED>";
+  });
+}

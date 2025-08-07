@@ -1,7 +1,9 @@
 import { handleQuoteRequest } from "@/src/app/api/tools/quote/logic";
-import { OrderQuoteRequest, TokenInfo } from "@cowprotocol/cow-sdk";
+import { withRedactedErrorHandling } from "@/src/lib/error";
+import { ParsedQuoteRequest } from "@/src/lib/types";
+import { OrderQuoteRequest } from "@cowprotocol/cow-sdk";
 
-describe.skip("Quote Route Logic", () => {
+describe("Quote Route Logic", () => {
   it("should transform parsedQuoteRequest into Full Quote", async () => {
     const quoteRequest = {
       sellToken: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE", // ETH
@@ -26,8 +28,13 @@ describe.skip("Quote Route Logic", () => {
         name: "Circles USD",
       },
     };
-    const input = { chainId: 8453, quoteRequest, tokenData, slippageBps: 100 };
-    // @ts-expect-error: tokenData isn't happy.
-    expect(handleQuoteRequest(input)).resolves.toBeDefined();
-  });
+    const input = {
+      chainId: 8453,
+      quoteRequest,
+      tokenData,
+      slippageBps: 100,
+    } as ParsedQuoteRequest;
+    const result = await withRedactedErrorHandling(handleQuoteRequest(input));
+    console.log(result);
+  }, 10000);
 });
