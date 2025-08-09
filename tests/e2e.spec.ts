@@ -101,11 +101,6 @@ describe("End To End", () => {
   }, 10000);
 
   it("Quote to Order", async () => {
-    const wallet = createWalletClient({
-      transport: http(),
-      chain: mainnet,
-      account: privateKeyToAccount(process.env.PRIVATE_KEY! as `0x${string}`),
-    });
     const order = {
       orderUrl:
         "https://explorer.cow.fi/orders/0xeaa2608341c2263962070fbebd56bee368d399960265d4e34e217108c56b2190b00b4c1e371dee4f6f32072641430656d3f7c06468962347",
