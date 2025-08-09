@@ -48,11 +48,11 @@ export async function buildCancelOrderData(
   const typedData = {
     domain: OrderSigningUtils.getDomain(chainId),
     types: {
-      OrderCancellations: [{ name: "orderUids", type: "bytes[]" }],
+      OrderCancellations: [{ name: "orderUid", type: "bytes[]" }],
     },
     primaryType: "OrderCancellations",
     message: {
-      orderUids: [orderUid],
+      orderUid: [orderUid],
     },
   };
   return {
