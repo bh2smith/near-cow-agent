@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 
 import { createOrder } from "@/src/lib/protocol/order";
 
+import type { OrderCreationResponse } from "@/src/lib/types";
 import type { NextRequest } from "next/server";
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
@@ -10,9 +11,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   return handleRequest(req, logic, (result) => NextResponse.json(result));
 }
 
-async function logic(
-  req: NextRequest,
-): Promise<{ orderUrl?: string; error?: string }> {
+async function logic(req: NextRequest): Promise<OrderCreationResponse> {
   const requestBody = await req.json();
   console.log("Order Request Body", requestBody);
   return createOrder(requestBody);

@@ -2,11 +2,11 @@ import { OrderBookApi } from "@cowprotocol/cow-sdk";
 
 import { withCowErrorHandling } from "../error";
 
-import type { OrderRequestBody } from "../types";
+import type { OrderCreationResponse, OrderRequestBody } from "../types";
 
 export async function createOrder(
   requestBody: OrderRequestBody,
-): Promise<{ orderUrl?: string; error?: string }> {
+): Promise<OrderCreationResponse> {
   const orderBookApi = new OrderBookApi({ chainId: requestBody.chainId });
   const orderCreation = {
     sellToken: requestBody.sellToken,
@@ -29,5 +29,5 @@ export async function createOrder(
   );
   const orderLink = orderBookApi.getOrderLink(orderUid);
   console.log("Order Link", orderLink);
-  return { orderUrl: `https://explorer.cow.fi/orders/${orderUid}` };
+  return { orderUrl: `https://explorer.cow.fi/orders/${orderUid}`, orderUid };
 }
