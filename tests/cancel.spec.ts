@@ -17,6 +17,4 @@ describe("Order Cancellation Route", () => {
       }),
     ).rejects.toThrow("NotFound: Order was not found");
   });
-
-  // domain: OrderSigningUtils.getDomain(parsedRequest.chainId),
 });
