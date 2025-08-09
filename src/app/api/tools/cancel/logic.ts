@@ -34,6 +34,7 @@ export async function handleCancellationRequest({
   }
 }
 
+// TODO(bh2smith): multiple simultaneous order cancellations.
 export async function buildCancelOrderData(
   orderbook: OrderBookApi,
   orderUid: string,
