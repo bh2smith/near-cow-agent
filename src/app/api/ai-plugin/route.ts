@@ -15,7 +15,7 @@ export async function GET() {
   const pluginData = {
     openapi: "3.0.0",
     info: {
-      title: "Bitte CoWSwap Agent",
+      title: "Bitte CoW Swap Agent",
       description: "API for interactions with CoW Protocol",
       version: "1.0.0",
     },
@@ -23,7 +23,7 @@ export async function GET() {
     "x-mb": {
       "account-id": ACCOUNT_ID || "max-normal.near",
       assistant: {
-        name: "CoWSwap Assistant",
+        name: "CoW Swap Assistant",
         description:
           "An assistant that generates EVM transaction data for CoW Protocol Interactions",
         instructions: `

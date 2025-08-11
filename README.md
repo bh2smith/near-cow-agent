@@ -1,4 +1,4 @@
-# CoWSwap AI Agent
+# CoW Swap AI Agent
 
 This is a [Next.js](https://nextjs.org) project that implements an AI-powered agent for interacting with CoW Protocol (Coincidence of Wants). The agent helps users generate and execute transactions on CoW Protocol across supported EVM networks.
 
