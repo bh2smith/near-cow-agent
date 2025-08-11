@@ -27,7 +27,10 @@ export const CancelOrderSchema = z.object({
   orderUid: z
     .string()
     .startsWith("0x")
-    .length(66, { message: "orderUid must be a 66-character hex string" }),
+    .refine((sig) => /^0x[0-9a-fA-F]{112}$/.test(sig), {
+      message:
+        "Signature must be a 56-byte (112 hex char) string starting with 0x",
+    }),
   signature: signatureSchema.optional(),
 });
 

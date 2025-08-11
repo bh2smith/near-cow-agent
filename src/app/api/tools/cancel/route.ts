@@ -5,7 +5,7 @@ import { logic } from "./logic";
 
 import type { NextRequest } from "next/server";
 
-export async function POST(req: NextRequest): Promise<NextResponse> {
+export async function GET(req: NextRequest): Promise<NextResponse> {
   console.log("cancel/", req.url);
   return handleRequest(req, logic, (result) => NextResponse.json(result));
 }

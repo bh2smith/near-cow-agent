@@ -3,6 +3,7 @@ import {
   OrderBookApi,
   OrderSigningUtils,
 } from "@cowprotocol/cow-sdk";
+import { getAddress } from "viem";
 
 import { withCowErrorHandling } from "@/src/lib/error";
 import { CancelOrderSchema, parseRequest } from "@/src/lib/schema";
@@ -24,13 +25,17 @@ export async function handleCancellationRequest({
   const orderBookApi = new OrderBookApi({ chainId });
 
   if (!signature) {
+    console.log("Preparing Order Cancellation", orderUid);
     return buildCancelOrderData(orderBookApi, orderUid);
   } else {
-    return orderBookApi.sendSignedOrderCancellations({
-      orderUids: [orderUid],
-      signature,
-      signingScheme: EcdsaSigningScheme.EIP712,
-    });
+    console.log("Cancelling order", orderUid);
+    return withCowErrorHandling(
+      orderBookApi.sendSignedOrderCancellations({
+        orderUids: [orderUid],
+        signature,
+        signingScheme: EcdsaSigningScheme.EIP712,
+      }),
+    );
   }
 }
 
@@ -46,18 +51,18 @@ export async function buildCancelOrderData(
   );
   // 2. Create Signable Order Cancellation Payload.
   const typedData = {
-    domain: OrderSigningUtils.getDomain(chainId),
+    domain: await OrderSigningUtils.getDomain(chainId),
     types: {
-      OrderCancellations: [{ name: "orderUid", type: "bytes[]" }],
+      OrderCancellations: [{ name: "orderUids", type: "bytes[]" }],
     },
     primaryType: "OrderCancellations",
     message: {
-      orderUid: [orderUid],
+      orderUids: [orderUid],
     },
   };
   return {
     method: "eth_signTypedData_v4",
     chainId,
-    params: [order.owner as `0x${string}`, JSON.stringify(typedData)],
+    params: [getAddress(order.owner), JSON.stringify(typedData)],
   };
 }

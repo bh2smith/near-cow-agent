@@ -353,7 +353,7 @@ This assistant follows these specifications with zero deviation to ensure secure
                   schema: {
                     oneOf: [
                       {
-                        $ref: "#/components/schemas/SignRequest200",
+                        $ref: "#/components/schemas/SignRequest",
                       },
                       {
                         type: "string",
@@ -365,7 +365,10 @@ This assistant follows these specifications with zero deviation to ensure secure
               },
             },
             "400": { description: "Malformed signature." },
-            "401": { description: "Invalid signature." },
+            "401": {
+              description:
+                "Wrong Owner: Signature recovery's owner doesn't match order's",
+            },
             "404": {
               description:
                 "One or more orders were not found and no orders were cancelled.",
