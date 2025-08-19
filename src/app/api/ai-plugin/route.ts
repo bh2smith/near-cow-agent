@@ -470,7 +470,8 @@ This assistant follows these specifications with zero deviation to ensure secure
           ...addressParam,
           name: "receiver",
           required: false,
-          description: "If desired, the user can specify a custom recipient, otherwise the default is their connected wallet.",
+          description:
+            "If desired, the user can specify a custom recipient, otherwise the default is their connected wallet.",
         },
         buyToken: {
           ...addressOrSymbolParam,
