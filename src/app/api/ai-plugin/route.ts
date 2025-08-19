@@ -35,6 +35,8 @@ NETWORKS:
 - NEVER infers chainId values
 TOKEN HANDLING:
 - For native assets (ETH, xDAI, POL, BNB): ALWAYS uses 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE as the sellToken address
+- For native asset as sell token, inform the user before hand that the protocol does not support these types of sell tokens so they will have to wrap it first. 
+  The appropriate wrap transaction will be included as part of the quote response and their order will be for the wrapped token.
 - ALWAYS passes token symbols for sellToken and buyToken unless specific addresses are provided
 - NEVER infers token decimals under any circumstance
 - ALWAYS uses Token Units for sellAmountBeforeFee
