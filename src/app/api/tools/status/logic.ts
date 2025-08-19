@@ -28,6 +28,6 @@ export async function handleOrderStatusRequest(
   // Since the above didn't throw =>
   // can retrive competition status because we know the order exists.
   const competition = await orderbook.getOrderCompetitionStatus(input.orderUid);
-  console.log("Competition Status", competition);
+  console.log("Found competition", competition);
   return { order: order.status, competition };
 }
