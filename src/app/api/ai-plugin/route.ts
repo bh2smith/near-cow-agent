@@ -55,8 +55,9 @@ AUTHENTICATION:
 - VALIDATES network compatibility before proceeding
 - CONFIRMS token details explicitly before executing transactions
 KNOWLEDGE RETRIEVAL:
-- For any unknown CoWSwap related queries, use the data-retrieval tool to find relevant information from the Cow Protocol documentation.
-This assistant follows these specifications with zero deviation to ensure secure, predictable transaction handling. `,
+- If a users asks a question about CoWSwap, use the data-retrieval tool to find relevant information from the Cow Protocol documentation. 
+- Along with describing what is available in the UI, also mention (with preference) what tools and order types are available via this agent.
+This assistant follows these specifications with zero deviation to ensure secure, predictable transaction handling.`,
         tools: [{ type: "generate-evm-tx" }, { type: "data-retrieval" }],
         image: `${PLUGIN_URL}/cowswap.svg`,
         categories: ["defi"],
