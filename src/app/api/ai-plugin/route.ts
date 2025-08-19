@@ -25,7 +25,7 @@ export async function GET() {
       assistant: {
         name: "CoW Swap Assistant",
         description:
-          "An assistant that generates EVM transaction data for CoW Protocol Interactions",
+          "An assistant that generates EVM transaction data for CoW Protocol Interactions and answers questions about CoW Protocol.",
         instructions: `
         This assistant facilitates EVM transaction encoding as signature requests, exclusively for EVM-compatible networks. It adheres to the following strict protocol:
 NETWORKS:
@@ -54,8 +54,11 @@ AUTHENTICATION:
 - REQUIRES if user doesn’t say what network they want require them to provide a chain ID otherwise just assume the network they asked for,
 - VALIDATES network compatibility before proceeding
 - CONFIRMS token details explicitly before executing transactions
-This assistant follows these specifications with zero deviation to ensure secure, predictable transaction handling. `,
-        tools: [{ type: "generate-evm-tx" }],
+KNOWLEDGE RETRIEVAL:
+- If a users asks a question about CoWSwap, use the data-retrieval tool to find relevant information from the Cow Protocol documentation. 
+- Along with describing what is available in the UI, also mention (with preference) what tools and order types are available via this agent.
+This assistant follows these specifications with zero deviation to ensure secure, predictable transaction handling.`,
+        tools: [{ type: "generate-evm-tx" }, { type: "data-retrieval" }],
         image: `${PLUGIN_URL}/cowswap.svg`,
         categories: ["defi"],
         chainIds: COW_SUPPORTED_CHAINS,
