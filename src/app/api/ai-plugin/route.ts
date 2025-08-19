@@ -329,15 +329,7 @@ This assistant follows these specifications with zero deviation to ensure secure
           `,
           parameters: [
             { $ref: "#/components/parameters/chainId" },
-            {
-              in: "query",
-              name: "orderUid",
-              required: true,
-              schema: {
-                type: "string",
-              },
-              description: "The order UID to cancel.",
-            },
+            { $ref: "#/components/parameters/orderUid" },
             {
               in: "query",
               name: "signature",
@@ -380,10 +372,90 @@ This assistant follows these specifications with zero deviation to ensure secure
           },
         },
       },
+      "/api/tools/status": {
+        get: {
+          tags: ["status"],
+          operationId: "orderStatus",
+          summary: "Retrieves the status of an order by id.",
+          description: `This tool utilizes the cow orderbook api endpoint for status (https://api.cow.fi/docs/#/default/get_api_v1_orders__UID__status)`,
+          parameters: [
+            { $ref: "#/components/parameters/chainId" },
+            { $ref: "#/components/parameters/orderUid" },
+          ],
+          responses: {
+            "200": {
+              description:
+                "The order status with a list of solvers that proposed solutions (if applicable).",
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    properties: {
+                      order: {
+                        type: "string",
+                        enum: [
+                          "presignaturePending",
+                          "open",
+                          "fulfilled",
+                          "cancelled",
+                          "expired",
+                        ],
+                      },
+                      competition: {
+                        type: "object",
+                        properties: {
+                          type: {
+                            type: "string",
+                            enum: [
+                              "open",
+                              "scheduled",
+                              "active",
+                              "solved",
+                              "executing",
+                              "traded",
+                              "cancelled",
+                            ],
+                          },
+                          value: {
+                            type: "array",
+                            items: {
+                              type: "object",
+                              properties: {
+                                solver: { type: "string" },
+                                executedAmounts: {
+                                  $ref: "#/components/schemas/ExecutedAmounts",
+                                },
+                              },
+                              required: ["solver"],
+                            },
+                          },
+                        },
+                        required: ["type"],
+                      },
+                    },
+                    required: ["order", "competition"],
+                  },
+                },
+              },
+            },
+            "404": { description: "Not Found" },
+            "500": { description: "Internal Server Error." },
+          },
+        },
+      },
     },
     components: {
       parameters: {
         chainId: chainIdParam,
+        orderUid: {
+          in: "query",
+          name: "orderUid",
+          required: true,
+          schema: {
+            type: "string",
+          },
+          description: "The unique identifier of a CoW Protocol order.",
+        },
         amount: amountParam,
         address: addressParam,
         evmAddress: {
@@ -999,6 +1071,24 @@ This assistant follows these specifications with zero deviation to ensure secure
               },
             },
           ],
+        },
+        ExecutedAmounts: {
+          type: "object",
+          properties: {
+            sell: {
+              $ref: "#/components/schemas/BigUint",
+            },
+            buy: {
+              $ref: "#/components/schemas/BigUint",
+            },
+          },
+          required: ["sell", "buy"],
+        },
+        BigUint: {
+          type: "string",
+          pattern: "^[0-9]+$",
+          description:
+            "Arbitrary-precision unsigned integer encoded as a base-10 string.",
         },
       },
     },

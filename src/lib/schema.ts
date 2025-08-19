@@ -1,7 +1,7 @@
 import * as z from "zod";
 
 import type { NextRequest } from "next/server";
-import type { ZodTypeAny } from "zod";
+import type { ZodTypeAny } from "zod"; // TODO: says deprecated, but I can't see where or an alternative.
 
 export function parseRequest<T extends ZodTypeAny>(
   req: NextRequest,
@@ -20,18 +20,29 @@ export const signatureSchema = z
       "Signature must be a 65-byte (130 hex char) string starting with 0x",
   });
 
+export const orderUidSchema = z
+  .string()
+  .startsWith("0x")
+  .refine((id) => /^0x[0-9a-fA-F]{112}$/.test(id), {
+    message:
+      "OrderUid must be a 56-byte (112 hex char) string starting with 0x",
+  });
+
+export const chainIdSchema = z.coerce.number().int().positive({
+  message: "chainId must be a positive integer",
+});
+
 export const CancelOrderSchema = z.object({
-  chainId: z.coerce.number().int().positive({
-    message: "chainId must be a positive integer",
-  }),
-  orderUid: z
-    .string()
-    .startsWith("0x")
-    .refine((sig) => /^0x[0-9a-fA-F]{112}$/.test(sig), {
-      message:
-        "Signature must be a 56-byte (112 hex char) string starting with 0x",
-    }),
+  chainId: chainIdSchema,
+  orderUid: orderUidSchema,
   signature: signatureSchema.optional(),
 });
 
 export type CancelOrderInput = z.infer<typeof CancelOrderSchema>;
+
+export const OrderStatusSchema = z.object({
+  chainId: chainIdSchema,
+  orderUid: orderUidSchema,
+});
+
+export type OrderStatusInput = z.infer<typeof OrderStatusSchema>;
