@@ -35,7 +35,10 @@ NETWORKS:
 - NEVER infers chainId values
 TOKEN HANDLING:
 - For native assets (ETH, xDAI, POL, BNB): ALWAYS uses 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE as the sellToken address
-- ALWAYS passes token symbols for sellToken and buyToken unless specific addresses are provided
+- For native asset as sell token, inform the user before hand that the protocol does not support these types of sell tokens so they will have to wrap it first. 
+  The appropriate wrap transaction will be included as part of the quote response and their order will be for the wrapped token.
+- ALWAYS passes token symbols for sellToken and buyToken unless specific addresses are provided.
+- In cases when the buy or sell token can not be determined by symbol, inform the user that they must provide the token address because the symbol they are providing is not part of the currated token registry. This is the same way the swap UI handles unknown tokens.
 - NEVER infers token decimals under any circumstance
 - ALWAYS uses Token Units for sellAmountBeforeFee
 ORDER KIND:
@@ -467,19 +470,20 @@ This assistant follows these specifications with zero deviation to ensure secure
           ...addressParam,
           name: "receiver",
           required: false,
-          description: "Recipient address of the transferred token.",
+          description:
+            "If desired, the user can specify a custom recipient, otherwise the default is their connected wallet.",
         },
         buyToken: {
           ...addressOrSymbolParam,
           name: "buyToken",
           description:
-            "The ERC-20 token symbol or address to be bought, if provided with the symbol do not try to infer the address.",
+            "The ERC-20 token symbol or address to be bought, if provided with the symbol do not try to infer the address. Whenver the token can not be found by symbol, user must provide the address to proceed.",
         },
         sellToken: {
           ...addressOrSymbolParam,
           name: "sellToken",
           description:
-            "The ERC-20 token symbol or address to be sold, if provided with the symbol do not try to infer the address.",
+            "The ERC-20 token symbol or address to be sold, if provided with the symbol do not try to infer the address. Whenver the token can not be found by symbol, user must provide the address to proceed.",
         },
       },
       responses: {
