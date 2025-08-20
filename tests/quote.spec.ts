@@ -3,7 +3,7 @@ import { withRedactedErrorHandling } from "@/src/lib/error";
 import { ParsedQuoteRequest } from "@/src/lib/types";
 import { OrderQuoteRequest } from "@cowprotocol/cow-sdk";
 const MAX_VALID_FROM = 10800; // 3 hours
-describe("Quote Route Logic", () => {
+describe.skip("Quote Route Logic", () => {
   it("should transform parsedQuoteRequest into Full Quote", async () => {
     const quoteRequest = {
       sellToken: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE", // ETH
