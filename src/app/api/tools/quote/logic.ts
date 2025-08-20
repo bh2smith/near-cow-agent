@@ -8,6 +8,7 @@ import { getAddress, type Address } from "viem";
 import { isNativeAsset } from "zerion-sdk";
 
 import { COW_SUPPORTED_CHAINS, getAlchemyKey } from "@/src/app/config";
+import { withCowErrorHandling } from "@/src/lib/error";
 import { basicParseQuote, preliminarySteps } from "@/src/lib/protocol/quote";
 import { applySlippage, setPresignatureTx } from "@/src/lib/protocol/util";
 import { getClient } from "@/src/lib/rpc";
@@ -54,7 +55,9 @@ export async function handleQuoteRequest({
   const orderBookApi = new OrderBookApi({ chainId });
 
   // WARNING: Do not unpack this result as { quote, ...}. It causes confusion due to modifications.
-  const result = await orderBookApi.getQuote(quoteRequest);
+  const result = await withCowErrorHandling(
+    orderBookApi.getQuote(quoteRequest),
+  );
 
   console.log("POST Response for quote:", result.quote);
   if (result.from === undefined) {
