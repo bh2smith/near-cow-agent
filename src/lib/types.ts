@@ -32,6 +32,7 @@ export type QuoteRequestBody = {
   evmAddress: `0x${string}`;
   receiver: string;
   slippageBps?: number;
+  validFor?: number;
 };
 export interface ParsedQuoteRequest {
   quoteRequest: OrderQuoteRequest;

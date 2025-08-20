@@ -82,6 +82,15 @@ This assistant follows these specifications with zero deviation to ensure secure
             { $ref: "#/components/parameters/buyToken" },
             { $ref: "#/components/parameters/receiver" },
             {
+              name: "validFor",
+              in: "query",
+              schema: {
+                type: "number",
+              },
+              description:
+                "Number of seconds (from now) that the order should be valid for. Max 3 hours (10800).",
+            },
+            {
               name: "slippageBps",
               in: "query",
               schema: {

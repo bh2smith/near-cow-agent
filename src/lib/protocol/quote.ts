@@ -29,6 +29,7 @@ export async function basicParseQuote(
     amount,
     orderKind,
     evmAddress: sender,
+    validFor,
     receiver,
     slippageBps,
   } = requestBody;
@@ -59,6 +60,7 @@ export async function basicParseQuote(
       receiver: receiver ?? sender,
       from: sender,
       signingScheme: senderIsEoa ? SigningScheme.EIP712 : SigningScheme.PRESIGN,
+      validFor,
     },
     tokenData: {
       buy: buyTokenData,
