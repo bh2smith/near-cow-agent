@@ -60,7 +60,7 @@ export async function basicParseQuote(
       receiver: receiver ?? sender,
       from: sender,
       signingScheme: senderIsEoa ? SigningScheme.EIP712 : SigningScheme.PRESIGN,
-      validFor,
+      ... validFor ? {validFor}: {},
     },
     tokenData: {
       buy: buyTokenData,
