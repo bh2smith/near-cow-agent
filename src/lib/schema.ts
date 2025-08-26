@@ -12,6 +12,13 @@ export function parseRequest<T extends ZodTypeAny>(
   return parsed;
 }
 
+export const addressSchema = z
+  .string()
+  .startsWith("0x")
+  .refine((sig) => /^0x[0-9a-fA-F]{40}$/.test(sig), {
+    message: "Address must be a 20-byte (40 hex char) string starting with 0x",
+  });
+
 export const signatureSchema = z
   .string()
   .startsWith("0x")
@@ -46,3 +53,10 @@ export const OrderStatusSchema = z.object({
 });
 
 export type OrderStatusInput = z.infer<typeof OrderStatusSchema>;
+
+export const OrderHistorySchema = z.object({
+  chainId: chainIdSchema,
+  evmAddress: addressSchema,
+});
+
+export type OrderHistoryInput = z.infer<typeof OrderHistorySchema>;

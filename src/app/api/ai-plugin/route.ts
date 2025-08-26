@@ -465,6 +465,35 @@ UNSUPPORTED FEATURES: This agent does not currently support
           },
         },
       },
+      "/api/tools/history": {
+        get: {
+          tags: ["history"],
+          operationId: "orderHistory",
+          summary: "Retrieves Order History",
+          description: `
+            Called with evmAddress as connected wallet address and chainId as the connected wallet's current network. 
+            Retrieves and returns the order history for "evmAddress" on "chainId".
+            The orders are sorted by their creation date descending (newest orders first).`,
+          parameters: [
+            { $ref: "#/components/parameters/chainId" },
+            { $ref: "#/components/parameters/evmAddress" },
+          ],
+          responses: {
+            "200": {
+              description: "Either signable payload or cancellation response.",
+              content: {
+                "application/json": {
+                  schema: {
+                    $ref: "#/components/schemas/Order",
+                  },
+                },
+              },
+            },
+            "400": { description: "Problem with parameters like limit being too large." },
+            "500": { description: "Internal Server Error." },
+          },
+        },
+      },
     },
     components: {
       parameters: {
