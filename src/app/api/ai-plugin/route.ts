@@ -67,7 +67,11 @@ UNSUPPORTED FEATURES: This agent does not currently support
 - TWAP orders: If a user requests one, refer them to the UI and instruct them, using the data-retrieval primitive tool, how to create their TWAP order. Track progress https://github.com/bh2smith/near-cow-agent/issues/49
 - Order History: On the roadmap. Track the progress here https://github.com/bh2smith/near-cow-agent/issues/121
 - Limit Orders: On the roadmap. Track the progress here https://github.com/bh2smith/near-cow-agent/issues/51`,
-        tools: [{ type: "generate-evm-tx" }, { type: "data-retrieval" }, {type: "resolve-domain-name"}],
+        tools: [
+          { type: "generate-evm-tx" },
+          { type: "data-retrieval" },
+          { type: "resolve-domain-name" },
+        ],
         image: `${PLUGIN_URL}/cowswap.svg`,
         categories: ["defi"],
         chainIds: COW_SUPPORTED_CHAINS,
