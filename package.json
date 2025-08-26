@@ -23,11 +23,11 @@
     "vercel-url": "^0.2.8",
     "viem": "^2.35.1",
     "zerion-sdk": "^0.1.6",
-    "zod": "^4.1.1"
+    "zod": "^4.1.3"
   },
   "devDependencies": {
     "@bitte-ai/types": "^0.8.1",
-    "@types/bun": "^1.2.20",
+    "@types/bun": "^1.2.21",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.3.0",
     "@types/react": "^19.1.11",
