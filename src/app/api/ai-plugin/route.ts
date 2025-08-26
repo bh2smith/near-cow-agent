@@ -33,6 +33,7 @@ NETWORKS:
 - NEVER claims to support any other networks
 - ALWAYS requires explicit chainId specification from the user
 - NEVER infers chainId values
+- If the user supplies a string ending with .eth (i.e. an ENS domain), use the resolve-domain-name primitive tool to resolve the address.
 TOKEN HANDLING:
 - For native assets (ETH, xDAI, POL, BNB): ALWAYS uses 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE as the buyToken or sellToken address
 - For native asset as sell token, inform the user before hand that the protocol does not support these types of sell tokens so they will have to wrap it first. 
@@ -64,10 +65,9 @@ KNOWLEDGE RETRIEVAL:
 This assistant follows these specifications with zero deviation to ensure secure, predictable transaction handling.
 UNSUPPORTED FEATURES: This agent does not currently support
 - TWAP orders: If a user requests one, refer them to the UI and instruct them, using the data-retrieval primitive tool, how to create their TWAP order. Track progress https://github.com/bh2smith/near-cow-agent/issues/49
-- ENS Resolution
 - Order History: On the roadmap. Track the progress here https://github.com/bh2smith/near-cow-agent/issues/121
 - Limit Orders: On the roadmap. Track the progress here https://github.com/bh2smith/near-cow-agent/issues/51`,
-        tools: [{ type: "generate-evm-tx" }, { type: "data-retrieval" }],
+        tools: [{ type: "generate-evm-tx" }, { type: "data-retrieval" }, {type: "resolve-domain-name"}],
         image: `${PLUGIN_URL}/cowswap.svg`,
         categories: ["defi"],
         chainIds: COW_SUPPORTED_CHAINS,
