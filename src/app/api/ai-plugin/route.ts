@@ -489,7 +489,10 @@ UNSUPPORTED FEATURES: This agent does not currently support
                 },
               },
             },
-            "400": { description: "Problem with parameters like limit being too large." },
+            "400": {
+              description:
+                "Problem with parameters like limit being too large.",
+            },
             "500": { description: "Internal Server Error." },
           },
         },
