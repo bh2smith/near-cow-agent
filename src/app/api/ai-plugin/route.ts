@@ -65,7 +65,6 @@ KNOWLEDGE RETRIEVAL:
 This assistant follows these specifications with zero deviation to ensure secure, predictable transaction handling.
 UNSUPPORTED FEATURES: This agent does not currently support
 - TWAP orders: If a user requests one, refer them to the UI and instruct them, using the data-retrieval primitive tool, how to create their TWAP order. Track progress https://github.com/bh2smith/near-cow-agent/issues/49
-- Order History: On the roadmap. Track the progress here https://github.com/bh2smith/near-cow-agent/issues/121
 - Limit Orders: On the roadmap. Track the progress here https://github.com/bh2smith/near-cow-agent/issues/51`,
         tools: [
           { type: "generate-evm-tx" },
@@ -473,18 +472,71 @@ UNSUPPORTED FEATURES: This agent does not currently support
           description: `
             Called with evmAddress as connected wallet address and chainId as the connected wallet's current network. 
             Retrieves and returns the order history for "evmAddress" on "chainId".
-            The orders are sorted by their creation date descending (newest orders first).`,
+            The orders are sorted by their creation date descending (newest orders first).
+            Order History results should be displayed in a tabular format.
+            Display only the five most recent orders and refer the user to https://explorer.cow.fi/address/{evmAddress} for more orders.
+            The Table should have the following columns:
+            - Type (Buy or Sell) - this is the class combined with the kind
+            - Status (Open, Fulfilled, Cancelled, Expired) - this is the status of the order
+            - Date (Date of Order Creation) - this is the creationDate of the order
+            - Sell Amount (Amount of Tokens Sold) - this is the sellAmount of the order
+            - Buy Amount (Amount of Tokens Bought) - this is the buyAmount of the order
+            - Fees (Fees Paid for the Order in ETH) - this is the totalFee of the order
+            - Order UID - this is the uid of the order
+            `,
           parameters: [
             { $ref: "#/components/parameters/chainId" },
             { $ref: "#/components/parameters/evmAddress" },
           ],
           responses: {
             "200": {
-              description: "Either signable payload or cancellation response.",
+              description: "Array of OrderHistory Items",
               content: {
                 "application/json": {
                   schema: {
-                    $ref: "#/components/schemas/Order",
+                    type: "array",
+                    items: {
+                      type: "object",
+                      properties: {
+                        creationData: { type: "string" },
+                        owner: { type: "string" },
+                        uid: { type: "string" },
+                        executedBuyAmount: { type: "string" },
+                        executedSellAmount: { type: "string" },
+                        executedSellAmountBeforeFees: { type: "string" },
+                        executedFeeAmount: { type: "string" },
+                        executedFee: { type: "string" },
+                        executedFeeToken: { type: "string" },
+                        status: { type: "string" },
+                        class: { type: "string" },
+                        settlementContract: { type: "string" },
+                        fullAppData: { type: "string" },
+                        sellToken: { type: "string" },
+                        buyToken: { type: "string" },
+                        receiver: { type: "string" },
+                        sellAmount: { type: "string" },
+                        buyAmount: { type: "string" },
+                        validTo: { type: "number" },
+                        appData: { type: "string" },
+                        feeAmount: { type: "string" },
+                        feeToken: { type: "string" },
+                        kind: { type: "string" },
+                        partiallyFillable: { type: "boolean" },
+                        signer: { type: "string" },
+                        signingScheme: { type: "string" },
+                        signature: { type: "string" },
+                        totalFee: { type: "string" },
+                      },
+                    },
+                    required: [
+                      "kind",
+                      "status",
+                      "creationDate",
+                      "sellAmount",
+                      "buyAmount",
+                      "totalFee",
+                      "orderUid",
+                    ],
                   },
                 },
               },
