@@ -17,12 +17,14 @@ import type { Address } from "viem";
 
 interface SwapDetails {
   chainId: number;
+  feeAmount: string;
   tokenData: { buy: TokenInfo; sell: TokenInfo };
   quote: OrderParameters;
 }
 
 export async function parseWidgetData({
   chainId,
+  feeAmount,
   tokenData,
   quote,
 }: SwapDetails): Promise<SwapFTData> {
@@ -56,7 +58,7 @@ export async function parseWidgetData({
       icon: CHAIN_ICONS[chainId] ?? "",
     },
     type: "swap",
-    fee: quote.feeAmount,
+    fee: formatUnits(BigInt(feeAmount), tokenData.sell.decimals),
     tokenIn: {
       // TODO: Remove this duplicated field.
       contractAddress: quote.sellToken,

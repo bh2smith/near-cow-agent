@@ -115,6 +115,7 @@ export async function handleQuoteRequest({
       quote: result,
       ui: await parseWidgetData({
         chainId,
+        feeAmount,
         tokenData,
         quote: result.quote,
       }),
