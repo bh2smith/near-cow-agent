@@ -44,6 +44,7 @@ describe("getPriceAndIcon", () => {
     };
     const swapData = await parseWidgetData({
       chainId: 100,
+      feeAmount: "123",
       tokenData,
       quote,
     });
