@@ -4,9 +4,9 @@ import {
   OrderQuoteSideKindSell,
   SigningScheme,
 } from "@cowprotocol/cow-sdk";
-import { isHex, parseUnits } from "viem";
+import { parseUnits } from "viem";
 
-import { sellTokenApprovalTx } from "./util";
+import { isEOA, sellTokenApprovalTx } from "./util";
 
 import type { EthRpc, ParsedQuoteRequest, QuoteRequestBody } from "../types";
 import type { BlockchainMapping, TokenInfo } from "@bitte-ai/agent-sdk";
@@ -68,24 +68,6 @@ export async function basicParseQuote(
     },
     slippageBps: slippageBps ?? slippageDefault,
   };
-}
-
-export async function isEOA(
-  client: EthRpc,
-  address: Address,
-): Promise<boolean> {
-  const code = await client.getCode({ address });
-
-  if (!code || code === "0x" || code === "0x0") return true;
-
-  // EIP-7702 delegation indicator: 0xef0100 || <20-byte address>
-  // Hex prefix bytes: ef 01 00  => "0xef0100"
-  const normalized = code.toLowerCase();
-  if (normalized.startsWith("0xef0100")) {
-    return true; // EOA with EIP-7702 delegation
-  }
-
-  return false; // regular contract account
 }
 
 function getOrderQuoteSide(

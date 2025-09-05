@@ -1,6 +1,13 @@
 import { OrderSigningUtils } from "@cowprotocol/cow-sdk";
-import { getTokenDetails, loadTokenMap } from "@bitte-ai/agent-sdk";
+import {
+  getClientForChain,
+  getTokenDetails,
+  loadTokenMap,
+} from "@bitte-ai/agent-sdk";
 import { COW_SUPPORTED_CHAINS } from "@/src/app/config";
+import { isEOA } from "@/src/lib/protocol/util";
+import { zeroAddress } from "viem";
+import { EthRpc } from "@/src/lib/types";
 
 describe("CoW Domain", () => {
   it("should get the domain", async () => {
@@ -25,5 +32,22 @@ describe("CoW Domain", () => {
       decimals: 18,
       symbol: "xDAI",
     });
+  });
+});
+
+describe("isEOA", () => {
+  it("returns true for known EOAs", async () => {
+    const client = getClientForChain(8453) as EthRpc;
+    const eip7702User = "0x66268791B55e1F5fA585D990326519F101407257";
+    expect(await isEOA(client, eip7702User)).toBe(true);
+
+    expect(await isEOA(client, zeroAddress)).toBe(true);
+  });
+
+  it("returns false for known contracts", async () => {
+    const client = getClientForChain(8453) as EthRpc;
+    expect(
+      await isEOA(client, "0x4200000000000000000000000000000000000006"),
+    ).toBe(false);
   });
 });

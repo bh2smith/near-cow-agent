@@ -19,6 +19,8 @@ import {
   toBytes,
 } from "viem";
 
+import { type EthRpc } from "../types";
+
 import type { MetaTransaction } from "@bitte-ai/types";
 
 const MAX_APPROVAL = BigInt(
@@ -207,4 +209,22 @@ export async function appDataExists(
       return false; // Or any default value to indicate the data does not exist
     });
   return exists;
+}
+
+export async function isEOA(
+  client: EthRpc,
+  address: Address,
+): Promise<boolean> {
+  const code = await client.getCode({ address });
+
+  if (!code || code === "0x" || code === "0x0") return true;
+
+  // EIP-7702 delegation indicator: 0xef0100 || <20-byte address>
+  // Hex prefix bytes: ef 01 00  => "0xef0100"
+  const normalized = code.toLowerCase();
+  if (normalized.startsWith("0xef0100")) {
+    return true; // EOA with EIP-7702 delegation
+  }
+
+  return false; // regular contract account
 }
