@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@bitte-ai/agent-sdk": "^0.3.0",
-    "@cowprotocol/cow-sdk": "6.2.0",
+    "@cowprotocol/cow-sdk": "6.3.2",
     "json-stringify-deterministic": "^1.0.12",
     "next": "^15.5.2",
     "react": "^19.1.1",
