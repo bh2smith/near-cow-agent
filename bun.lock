@@ -5,14 +5,14 @@
       "name": "bitte-cowswap-agent",
       "dependencies": {
         "@bitte-ai/agent-sdk": "^0.3.0",
-        "@cowprotocol/cow-sdk": "6.2.0",
+        "@cowprotocol/cow-sdk": "6.3.2",
         "json-stringify-deterministic": "^1.0.12",
         "next": "^15.5.2",
         "react": "^19.1.1",
         "react-dom": "^19.1.1",
         "redoc": "^2.5.0",
         "vercel-url": "^0.2.8",
-        "viem": "^2.37.1",
+        "viem": "^2.37.3",
         "zerion-sdk": "^0.1.6",
         "zod": "^4.1.5",
       },
@@ -20,11 +20,11 @@
         "@bitte-ai/types": "^0.8.1",
         "@types/bun": "^1.2.21",
         "@types/jest": "^30.0.0",
-        "@types/node": "^24.3.0",
+        "@types/node": "^24.3.1",
         "@types/react": "^19.1.12",
         "biome": "^0.3.3",
         "concurrently": "^9.2.1",
-        "dotenv": "^17.2.1",
+        "dotenv": "^17.2.2",
         "eslint-config-next": "^15.5.2",
         "make-agent": "^0.3.5",
         "prettier": "^3.6.2",
@@ -270,7 +270,7 @@
 
     "@cowprotocol/contracts": ["@cowprotocol/contracts@1.8.0", "", { "peerDependencies": { "ethers": "^5.4.0" } }, "sha512-rMEHo1UBB6k4kRoWejHZNGggg6IBVt7vAd8x0FhEvjxhbq3zlAex61f9HpAcDExJNuvfwwDjsOc/7UGztCzhSw=="],
 
-    "@cowprotocol/cow-sdk": ["@cowprotocol/cow-sdk@6.2.0", "", { "dependencies": { "@cowprotocol/app-data": "^3.3.0", "@cowprotocol/contracts": "^1.8.0", "@ethersproject/abstract-signer": "^5.8.0", "@openzeppelin/merkle-tree": "^1.0.8", "@weiroll/weiroll.js": "^0.3.0", "cross-fetch": "^3.2.0", "deepmerge": "^4.3.1", "exponential-backoff": "^3.1.2", "graphql": "^16.11.0", "graphql-request": "^6.1.0", "limiter": "^3.0.0" }, "peerDependencies": { "ethers": "^5.7.2" } }, "sha512-2LiMVXwIKeu29T1d68TVzyQdPqgf+8HvWIxrkR/EfzUf1X+ACUGeSCDZ9sZNwUTRh4mUaqQOyzcMe9mS5wobYw=="],
+    "@cowprotocol/cow-sdk": ["@cowprotocol/cow-sdk@6.3.2", "", { "dependencies": { "@cowprotocol/app-data": "^3.3.0", "@cowprotocol/contracts": "^1.8.0", "@ethersproject/abstract-signer": "^5.8.0", "@openzeppelin/merkle-tree": "^1.0.8", "@weiroll/weiroll.js": "^0.3.0", "cross-fetch": "^3.2.0", "deepmerge": "^4.3.1", "exponential-backoff": "^3.1.2", "graphql": "^16.11.0", "graphql-request": "^6.1.0", "limiter": "^3.0.0" }, "peerDependencies": { "ethers": "^5.7.2" } }, "sha512-Q7a2jUE3EAcTcs0hdkJ1ExgjRITR8rCo6Qaf2P0d8m7iHc/K2apyyf62dCVqa0jXMk9Q/LpKO1WSv4BKYbgiMw=="],
 
     "@cspotcode/source-map-support": ["@cspotcode/source-map-support@0.8.1", "", { "dependencies": { "@jridgewell/trace-mapping": "0.3.9" } }, "sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw=="],
 
