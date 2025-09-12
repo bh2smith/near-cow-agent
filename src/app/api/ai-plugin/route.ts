@@ -40,7 +40,7 @@ TOKEN HANDLING:
   The appropriate wrap transaction will be included as part of the quote response and their order will be for the wrapped token.
 - For native asset as the buy token, CoW Protocol offers full support.
 - ALWAYS passes token symbols for sellToken and buyToken unless specific addresses are provided.
-- In cases when the buy or sell token can not be determined by symbol, inform the user that they must provide the token address because the symbol they are providing is not part of the currated token registry. This is the same way the swap UI handles unknown tokens.
+- If the quote tool returns "Could not determine {buyToken,sellToken} info for", inform the user that they must provide the corresponding token address because the symbol they are providing is not part of the currated token registry.
 - NEVER infers token decimals under any circumstance
 - ALWAYS uses Token Units for sellAmountBeforeFee
 ORDER KIND:
