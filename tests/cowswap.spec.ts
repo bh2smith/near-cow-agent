@@ -20,7 +20,7 @@ import {
   SigningScheme,
 } from "@cowprotocol/cow-sdk";
 import { checksumAddress, getAddress, zeroAddress } from "viem";
-import { loadTokenMap } from "@bitte-ai/agent-sdk";
+import { loadTokenMap } from "@bitte-ai/agent-sdk/evm";
 import { COW_SUPPORTED_CHAINS } from "@/src/app/config";
 import { CowIcons } from "@/src/lib/ui";
 
