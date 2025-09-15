@@ -2,7 +2,7 @@ import { erc20Abi, formatUnits, type Address, type PublicClient } from "viem";
 
 import { NATIVE_ASSET } from "./protocol/util";
 
-import type { TokenInfo } from "@bitte-ai/agent-sdk";
+import type { TokenInfo } from "@bitte-ai/agent-sdk/evm";
 
 export async function sufficientBalance(
   client: PublicClient,

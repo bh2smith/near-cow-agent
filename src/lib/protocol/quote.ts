@@ -1,4 +1,4 @@
-import { getTokenDetails, wrapMetaTransaction } from "@bitte-ai/agent-sdk";
+import { getTokenDetails, wrapMetaTransaction } from "@bitte-ai/agent-sdk/evm";
 import {
   OrderQuoteSideKindBuy,
   OrderQuoteSideKindSell,
@@ -9,7 +9,7 @@ import { parseUnits } from "viem";
 import { isEOA, sellTokenApprovalTx } from "./util";
 
 import type { EthRpc, ParsedQuoteRequest, QuoteRequestBody } from "../types";
-import type { BlockchainMapping, TokenInfo } from "@bitte-ai/agent-sdk";
+import type { BlockchainMapping, TokenInfo } from "@bitte-ai/agent-sdk/evm";
 import type { MetaTransaction } from "@bitte-ai/types";
 import type { OrderParameters, OrderQuoteSide } from "@cowprotocol/cow-sdk";
 import type { Address } from "viem";

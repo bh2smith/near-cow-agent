@@ -3,7 +3,7 @@ import {
   getClientForChain,
   getTokenDetails,
   loadTokenMap,
-} from "@bitte-ai/agent-sdk";
+} from "@bitte-ai/agent-sdk/evm";
 import { COW_SUPPORTED_CHAINS } from "@/src/app/config";
 import { isEOA } from "@/src/lib/protocol/util";
 import { zeroAddress } from "viem";
