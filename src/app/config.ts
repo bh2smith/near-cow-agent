@@ -1,4 +1,4 @@
-import { loadTokenMap, type BlockchainMapping } from "@bitte-ai/agent-sdk";
+import { loadTokenMap, type BlockchainMapping } from "@bitte-ai/agent-sdk/evm";
 import { unstable_cache } from "next/cache";
 import { DEPLOYMENT_URL } from "vercel-url";
 

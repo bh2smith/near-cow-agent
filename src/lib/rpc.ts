@@ -1,4 +1,4 @@
-import { getClientForChain } from "@bitte-ai/agent-sdk";
+import { getClientForChain } from "@bitte-ai/agent-sdk/evm";
 
 import type { EthRpc } from "./types";
 

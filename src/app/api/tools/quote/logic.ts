@@ -2,7 +2,7 @@ import {
   getNativeAsset,
   loadTokenMap,
   signRequestFor,
-} from "@bitte-ai/agent-sdk";
+} from "@bitte-ai/agent-sdk/evm";
 import { OrderBookApi, OrderSigningUtils } from "@cowprotocol/cow-sdk";
 import { getAddress, type Address } from "viem";
 import { isNativeAsset } from "zerion-sdk";

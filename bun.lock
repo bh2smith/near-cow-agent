@@ -4,7 +4,7 @@
     "": {
       "name": "bitte-cowswap-agent",
       "dependencies": {
-        "@bitte-ai/agent-sdk": "^0.3.2",
+        "@bitte-ai/agent-sdk": "^0.4.0",
         "@cowprotocol/cow-sdk": "6.3.2",
         "json-stringify-deterministic": "^1.0.12",
         "next": "^15.5.3",
@@ -12,16 +12,16 @@
         "react-dom": "^19.1.1",
         "redoc": "^2.5.0",
         "vercel-url": "^0.2.8",
-        "viem": "^2.37.5",
+        "viem": "^2.37.6",
         "zerion-sdk": "^0.1.7",
         "zod": "^4.1.8",
       },
       "devDependencies": {
         "@bitte-ai/types": "^0.8.1",
-        "@types/bun": "^1.2.21",
+        "@types/bun": "^1.2.22",
         "@types/jest": "^30.0.0",
-        "@types/node": "^24.3.1",
-        "@types/react": "^19.1.12",
+        "@types/node": "^24.4.0",
+        "@types/react": "^19.1.13",
         "biome": "^0.3.3",
         "concurrently": "^9.2.1",
         "dotenv": "^17.2.2",
@@ -260,7 +260,7 @@
 
     "@babel/types": ["@babel/types@7.28.1", "", { "dependencies": { "@babel/helper-string-parser": "^7.27.1", "@babel/helper-validator-identifier": "^7.27.1" } }, "sha512-x0LvFTekgSX+83TI28Y9wYPUfzrnl2aT5+5QLnO6v7mSJYtEEevuDRN0F0uSHRk1G1IWZC43o00Y0xDDrpBGPQ=="],
 
-    "@bitte-ai/agent-sdk": ["@bitte-ai/agent-sdk@0.3.2", "", { "dependencies": { "@bitte-ai/types": "^0.8.1", "near-api-js": "^6.3.0", "viem": "^2.37.5", "zerion-sdk": "^0.1.6" } }, "sha512-wzY+QK7rKJLmex52Iso0ZnTmn3Uugn9gThM3f9WaPwvfqRPnHcfJkOmyRDxDo1yb6LYbNJUHycsv6oTBqdj7Uw=="],
+    "@bitte-ai/agent-sdk": ["@bitte-ai/agent-sdk@0.4.0", "", { "dependencies": { "@bitte-ai/types": "^0.8.1", "near-api-js": "^6.3.0", "viem": "^2.37.5", "zerion-sdk": "^0.1.6" } }, "sha512-GyOPjGfHTdT98UQaULAXL8/1LG6ZfdBVkZ2gwTaWsq3oXkzZZTZy7EKjLFff9ab9d7mU7BwYQFkkq/cL/FNMug=="],
 
     "@bitte-ai/types": ["@bitte-ai/types@0.8.1", "", { "dependencies": { "@mysten/sui": "^1.26.0", "@near-wallet-selector/core": "^8.9.0", "@suiet/wallet-kit": "^0.3.4", "ai": "^4.1.51", "bn.js": "^5.2.1", "near-api-js": "^5.0.0", "near-safe": "^0.10.0", "openapi-types": "^12.0.0", "react": "^18.0.0", "viem": "2.29.1", "wagmi": "^2.15.6" } }, "sha512-1vgHQWrIFpSpqYUGNC3XQga1ODR8F7eCVA4dspKRZa/hmsCFV6fVHRoRvFvmAQuamwyhN8dDwhAoss+Lsh8w5Q=="],
 
@@ -2551,8 +2551,6 @@
     "@babel/preset-env/semver": ["semver@6.3.1", "", { "bin": { "semver": "bin/semver.js" } }, "sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA=="],
 
     "@bitte-ai/agent-sdk/near-api-js": ["near-api-js@6.3.0", "", { "dependencies": { "@near-js/accounts": "2.3.0", "@near-js/crypto": "2.3.0", "@near-js/keystores": "2.3.0", "@near-js/keystores-browser": "2.3.0", "@near-js/keystores-node": "2.3.0", "@near-js/providers": "2.3.0", "@near-js/signers": "2.3.0", "@near-js/transactions": "2.3.0", "@near-js/types": "2.3.0", "@near-js/utils": "2.3.0", "@noble/curves": "1.8.1", "borsh": "1.0.0", "depd": "2.0.0", "http-errors": "1.7.2", "near-abi": "0.2.0", "node-fetch": "2.6.7" } }, "sha512-UPM/a03vMni5ljx82dQ1C/TkRvz1o+AN77gM3mXiQ02tXiepyl9sVElisW5qwic1N2sEqPdI4yeetmScHcE1yw=="],
-
-    "@bitte-ai/agent-sdk/viem": ["viem@2.37.5", "", { "dependencies": { "@noble/curves": "1.9.1", "@noble/hashes": "1.8.0", "@scure/bip32": "1.7.0", "@scure/bip39": "1.6.0", "abitype": "1.1.0", "isows": "1.0.7", "ox": "0.9.3", "ws": "8.18.3" }, "peerDependencies": { "typescript": ">=5.0.4" }, "optionalPeers": ["typescript"] }, "sha512-bLKvKgLcge6KWBMLk8iP9weu5tHNr0hkxPNwQd+YQrHEgek7ogTBBeE10T0V6blwBMYmeZFZHLnMhDmPjp63/A=="],
 
     "@bitte-ai/types/react": ["react@18.3.1", "", { "dependencies": { "loose-envify": "^1.1.0" } }, "sha512-wS+hAgJShR0KhEvPJArfuPVN1+Hz1t0Y6n5jLrGQbkb4urgPE/0Rve+1kMB1v/oWgHgm4WIcV+i7F2pTVj+2iQ=="],
 

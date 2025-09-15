@@ -1,7 +1,7 @@
 export * from "./icon";
 export * from "./types";
 
-import { getChainById } from "@bitte-ai/agent-sdk";
+import { getChainById } from "@bitte-ai/agent-sdk/evm";
 import { formatUnits } from "viem";
 import { ZerionAPI } from "zerion-sdk";
 
@@ -10,7 +10,7 @@ import { getZerionKey } from "@/src/app/config";
 import { CHAIN_ICONS } from "./icon";
 
 import type { TokenQuery } from "./types";
-import type { TokenInfo } from "@bitte-ai/agent-sdk";
+import type { TokenInfo } from "@bitte-ai/agent-sdk/evm";
 import type { SwapFTData } from "@bitte-ai/types";
 import type { OrderParameters } from "@cowprotocol/cow-sdk";
 import type { Address } from "viem";

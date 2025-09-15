@@ -1,4 +1,4 @@
-import type { TokenInfo } from "@bitte-ai/agent-sdk";
+import type { TokenInfo } from "@bitte-ai/agent-sdk/evm";
 import type {
   OrderQuoteRequest,
   OrderKind,
