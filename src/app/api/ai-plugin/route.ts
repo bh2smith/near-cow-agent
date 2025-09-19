@@ -551,8 +551,6 @@ UNSUPPORTED FEATURES: This agent does not currently support
           ...addressParam,
           name: "evmAddress",
           description: "The address of the connected account",
-          // TODO: update agent-sdk: https://github.com/BitteProtocol/core/pull/65
-          example: "0x6810e776880c02933d47db1b9fc05908e5386b96",
         },
         receiver: {
           ...addressParam,
@@ -560,7 +558,6 @@ UNSUPPORTED FEATURES: This agent does not currently support
           required: false,
           description:
             "If desired, the user can specify a custom recipient, otherwise the default is their connected wallet.",
-          example: "0x6810e776880c02933d47db1b9fc05908e5386b96",
         },
         buyToken: {
           ...addressOrSymbolParam,
@@ -630,10 +627,9 @@ UNSUPPORTED FEATURES: This agent does not currently support
       schemas: {
         Address: AddressSchema,
         AddressOrSymbol: {
+          ...AddressSchema,
           description:
             "The ERC-20 token symbol or address to be sold, if provided with the symbol do not try to infer the address.",
-          type: "string",
-          example: "0x6810e776880c02933d47db1b9fc05908e5386b96",
         },
         AppData: {
           description:
