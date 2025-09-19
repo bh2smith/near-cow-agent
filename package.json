@@ -26,7 +26,7 @@
     "zod": "^4.1.9"
   },
   "devDependencies": {
-    "@bitte-ai/types": "^0.8.1",
+    "@bitte-ai/types": "^0.9.1",
     "@types/bun": "^1.2.22",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.5.2",
@@ -35,7 +35,7 @@
     "concurrently": "^9.2.1",
     "dotenv": "^17.2.2",
     "eslint-config-next": "^15.5.3",
-    "make-agent": "^0.3.5",
+    "make-agent": "^0.4.1",
     "prettier": "^3.6.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.2"
