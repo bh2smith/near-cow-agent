@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "api": "next dev",
     "dev": "concurrently \"next dev\" \"make-agent dev\"",
     "dev-testnet": "concurrently \"next dev\" \"make-agent dev -t\"",
     "build": "next build",
@@ -23,19 +24,19 @@
     "vercel-url": "^0.2.8",
     "viem": "^2.37.6",
     "zerion-sdk": "^0.1.7",
-    "zod": "^4.1.8"
+    "zod": "^4.1.9"
   },
   "devDependencies": {
-    "@bitte-ai/types": "^0.8.1",
+    "@bitte-ai/types": "^0.9.1",
     "@types/bun": "^1.2.22",
     "@types/jest": "^30.0.0",
-    "@types/node": "^24.4.0",
+    "@types/node": "^24.5.2",
     "@types/react": "^19.1.13",
     "biome": "^0.3.3",
     "concurrently": "^9.2.1",
     "dotenv": "^17.2.2",
     "eslint-config-next": "^15.5.3",
-    "make-agent": "^0.3.5",
+    "make-agent": "^0.4.1",
     "prettier": "^3.6.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.2"
