@@ -9,10 +9,9 @@ import { getZerionKey } from "@/src/app/config";
 
 import { CHAIN_ICONS } from "./icon";
 
-import type { TokenQuery } from "./types";
+import type { TokenQuery, SwapFTData } from "./types";
 import type { TokenInfo } from "@bitte-ai/agent-sdk/evm";
-import type { SwapFTData } from "@bitte-ai/types";
-import type { OrderParameters } from "@cowprotocol/cow-sdk";
+import type { OrderParameters } from "@cowprotocol/sdk-order-book";
 import type { Address } from "viem";
 
 interface SwapDetails {

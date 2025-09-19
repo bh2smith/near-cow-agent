@@ -3,7 +3,7 @@ import { handleQuoteRequest } from "@/src/app/api/tools/quote/logic";
 import { withCowErrorHandling } from "@/src/lib/error";
 import { createOrder } from "@/src/lib/protocol/order";
 import { OrderRequestBody, ParsedQuoteRequest } from "@/src/lib/types";
-import { OrderQuoteRequest } from "@cowprotocol/cow-sdk";
+import { OrderQuoteRequest } from "@cowprotocol/sdk-order-book";
 import {
   createWalletClient,
   http,

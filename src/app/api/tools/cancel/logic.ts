@@ -1,15 +1,12 @@
-import {
-  EcdsaSigningScheme,
-  OrderBookApi,
-  OrderSigningUtils,
-} from "@cowprotocol/cow-sdk";
+import { EcdsaSigningScheme, OrderBookApi } from "@cowprotocol/sdk-order-book";
+import { OrderSigningUtils } from "@cowprotocol/sdk-order-signing";
 import { getAddress } from "viem";
 
 import { withCowErrorHandling } from "@/src/lib/error";
 import { CancelOrderSchema, parseRequest } from "@/src/lib/schema";
 
 import type { CancelOrderInput } from "@/src/lib/schema";
-import type { SignRequest } from "@bitte-ai/types";
+import type { SignRequest } from "@bitte-ai/agent-sdk/evm";
 import type { NextRequest } from "next/server";
 
 export async function logic(req: NextRequest): Promise<SignRequest | void> {

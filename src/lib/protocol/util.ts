@@ -5,7 +5,7 @@ import {
   type OrderParameters,
   type OrderQuoteResponse,
   SigningScheme,
-} from "@cowprotocol/cow-sdk";
+} from "@cowprotocol/sdk-order-book";
 import stringify from "json-stringify-deterministic";
 import {
   type Address,
@@ -21,7 +21,7 @@ import {
 
 import { type EthRpc } from "../types";
 
-import type { MetaTransaction } from "@bitte-ai/types";
+import type { MetaTransaction } from "@bitte-ai/agent-sdk/evm";
 
 const MAX_APPROVAL = BigInt(
   "115792089237316195423570985008687907853269984665640564039457584007913129639935",

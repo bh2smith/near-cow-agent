@@ -3,16 +3,22 @@ import {
   OrderQuoteSideKindBuy,
   OrderQuoteSideKindSell,
   SigningScheme,
-} from "@cowprotocol/cow-sdk";
+} from "@cowprotocol/sdk-order-book";
 import { parseUnits } from "viem";
 
 import { isEOA, sellTokenApprovalTx } from "./util";
 
-import type { QuoteRequestInput } from "../schema";
+import { type QuoteRequestInput } from "../schema";
 import type { EthRpc, ParsedQuoteRequest } from "../types";
-import type { BlockchainMapping, TokenInfo } from "@bitte-ai/agent-sdk/evm";
-import type { MetaTransaction } from "@bitte-ai/types";
-import type { OrderParameters, OrderQuoteSide } from "@cowprotocol/cow-sdk";
+import type {
+  BlockchainMapping,
+  TokenInfo,
+  MetaTransaction,
+} from "@bitte-ai/agent-sdk/evm";
+import type {
+  OrderParameters,
+  OrderQuoteSide,
+} from "@cowprotocol/sdk-order-book";
 import type { Address } from "viem";
 
 export async function basicParseQuote(

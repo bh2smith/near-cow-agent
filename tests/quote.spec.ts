@@ -1,7 +1,7 @@
 import { handleQuoteRequest } from "@/src/app/api/tools/quote/logic";
 import { withRedactedErrorHandling } from "@/src/lib/error";
 import { ParsedQuoteRequest } from "@/src/lib/types";
-import { OrderQuoteRequest } from "@cowprotocol/cow-sdk";
+import { OrderQuoteRequest } from "@cowprotocol/sdk-order-book";
 
 const MAX_VALID_FROM = 10800; // 3 hours
 describe.skip("Quote Route Logic", () => {
