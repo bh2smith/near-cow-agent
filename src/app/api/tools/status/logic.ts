@@ -1,10 +1,13 @@
-import { OrderBookApi } from "@cowprotocol/cow-sdk";
+import { OrderBookApi } from "@cowprotocol/sdk-order-book";
 
 import { withCowErrorHandling } from "@/src/lib/error";
 import { OrderStatusSchema, parseRequest } from "@/src/lib/schema";
 
 import type { OrderStatusInput } from "@/src/lib/schema";
-import type { CompetitionOrderStatus, OrderStatus } from "@cowprotocol/cow-sdk";
+import type {
+  CompetitionOrderStatus,
+  OrderStatus,
+} from "@cowprotocol/sdk-order-book";
 import type { NextRequest } from "next/server";
 
 type StatusResponse = {

@@ -3,7 +3,7 @@ import type {
   OrderQuoteRequest,
   OrderKind,
   SigningScheme,
-} from "@cowprotocol/cow-sdk";
+} from "@cowprotocol/sdk-order-book";
 import type { Chain, PublicClient, Transport } from "viem";
 
 export interface OrderRequestBody {

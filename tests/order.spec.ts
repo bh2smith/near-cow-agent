@@ -1,6 +1,6 @@
 import { createOrder } from "@/src/lib/protocol/order";
 import { OrderRequestBody } from "@/src/lib/types";
-import { OrderKind, SigningScheme } from "@cowprotocol/cow-sdk";
+import { OrderKind, SigningScheme } from "@cowprotocol/sdk-order-book";
 
 describe.skip("Order Route Logic", () => {
   it("should validate a real request", async () => {

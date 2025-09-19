@@ -2,8 +2,8 @@ import {
   buildCancelOrderData,
   handleCancellationRequest,
 } from "@/src/app/api/tools/cancel/logic";
-import { OrderBookApi } from "@cowprotocol/cow-sdk";
-import { getAddress, recoverTypedDataAddress } from "viem";
+import { OrderBookApi } from "@cowprotocol/sdk-order-book";
+import { recoverTypedDataAddress } from "viem";
 
 const mainnetOrder =
   "0xf944f0de097e6c3724ebbd4e18881df348ca6e8fc388b322e76b5aa139a819fcb00b4c1e371dee4f6f32072641430656d3f7c0646884e57b";
