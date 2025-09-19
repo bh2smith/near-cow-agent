@@ -8,7 +8,8 @@ import { parseUnits } from "viem";
 
 import { isEOA, sellTokenApprovalTx } from "./util";
 
-import type { EthRpc, ParsedQuoteRequest, QuoteRequestBody } from "../types";
+import { type QuoteRequestInput } from "../schema";
+import type { EthRpc, ParsedQuoteRequest } from "../types";
 import type {
   BlockchainMapping,
   TokenInfo,
@@ -20,11 +21,9 @@ import type {
 } from "@cowprotocol/sdk-order-book";
 import type { Address } from "viem";
 
-const slippageDefault = Number.parseInt(process.env.SLIPPAGE_BPS || "100");
-
 export async function basicParseQuote(
   client: EthRpc,
-  requestBody: QuoteRequestBody,
+  req: QuoteRequestInput,
   // TODO: Replace with Data Provider.
   tokenMap: BlockchainMapping,
 ): Promise<ParsedQuoteRequest> {
@@ -34,12 +33,12 @@ export async function basicParseQuote(
     chainId,
     amount,
     orderKind,
-    evmAddress: sender,
+    evmAddress,
     validFor,
     receiver,
     slippageBps,
-  } = requestBody;
-  console.log("Quote Request Body", requestBody);
+  } = req;
+  console.log("Quote Request", req);
 
   const [sellTokenData, buyTokenData] = await Promise.all([
     getTokenDetails(chainId, sellToken, tokenMap),
@@ -51,11 +50,11 @@ export async function basicParseQuote(
   if (!sellTokenData) {
     throw new Error(`Could not determine sellToken info for: ${sellToken}`);
   }
-  const orderQuoteSide = getOrderQuoteSide(amount, orderKind, {
+  const orderQuoteSide = getOrderQuoteSide(amount.toString(), orderKind, {
     buy: buyTokenData,
     sell: sellTokenData,
   });
-  const senderIsEoa = await isEOA(client, sender);
+  const senderIsEoa = await isEOA(client, evmAddress);
 
   return {
     chainId,
@@ -63,8 +62,8 @@ export async function basicParseQuote(
       sellToken: sellTokenData.address,
       buyToken: buyTokenData.address,
       ...orderQuoteSide,
-      receiver: receiver ?? sender,
-      from: sender,
+      receiver: receiver ?? evmAddress,
+      from: evmAddress,
       signingScheme: senderIsEoa ? SigningScheme.EIP712 : SigningScheme.PRESIGN,
       ...(validFor ? { validFor } : {}),
     },
@@ -72,7 +71,7 @@ export async function basicParseQuote(
       buy: buyTokenData,
       sell: sellTokenData,
     },
-    slippageBps: slippageBps ?? slippageDefault,
+    slippageBps,
   };
 }
 

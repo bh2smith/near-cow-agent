@@ -15,13 +15,13 @@ import { applySlippage, setPresignatureTx } from "@/src/lib/protocol/util";
 import { getClient } from "@/src/lib/rpc";
 import { parseWidgetData, type SwapFTData } from "@/src/lib/ui";
 
+import type { QuoteRequestInput } from "@/src/lib/schema";
 import type { ParsedQuoteRequest } from "@/src/lib/types";
 import type { MetaTransaction, SignRequest } from "@bitte-ai/agent-sdk/evm";
 import type {
   OrderParameters,
   OrderQuoteResponse,
 } from "@cowprotocol/sdk-order-book";
-import type { NextRequest } from "next/server";
 
 type ResponseData = {
   meta: { quote: OrderQuoteResponse; ui: SwapFTData };
@@ -29,13 +29,12 @@ type ResponseData = {
   transaction: SignRequest[];
 };
 
-export async function logic(req: NextRequest): Promise<ResponseData> {
-  const requestBody = await req.json();
+export async function logic(req: QuoteRequestInput): Promise<ResponseData> {
   // Early Extract ChainId
-  const client = getClient(requestBody.chainId, getAlchemyKey());
+  const client = getClient(req.chainId, getAlchemyKey());
   const parsed = await basicParseQuote(
     client,
-    requestBody,
+    req,
     // Temporarily disable tokenMap Caching
     await loadTokenMap(COW_SUPPORTED_CHAINS),
   );
@@ -163,15 +162,7 @@ async function buildTransaction(
   if (quote.signingScheme === "eip712") {
     notes.push("Off Chain Order Placement (EIP712)");
     const typedData = {
-      types: {
-        // EIP712Domain: [
-        //   { name: "name", type: "string" },
-        //   { name: "version", type: "string" },
-        //   { name: "chainId", type: "uint256" },
-        //   { name: "verifyingContract", type: "address" },
-        // ],
-        ...OrderSigningUtils.getEIP712Types(),
-      },
+      types: OrderSigningUtils.getEIP712Types(),
       domain: await OrderSigningUtils.getDomain(chainId),
       primaryType: "Order",
       message: quote,
@@ -187,7 +178,6 @@ async function buildTransaction(
       transaction.push(signRequestFor({ chainId, metaTransactions: steps }));
     }
     transaction.push(orderRequest);
-    // return { meta, summary: summarizeNotes(notes), transaction: orderRequest };
   } else {
     // (Safe) In this case all the steps and the order signing are all transactions.
     notes.push("On Chain Order Signing via setPresignature");
