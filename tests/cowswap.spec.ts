@@ -18,7 +18,7 @@ import {
   OrderQuoteSideKindSell,
   SellTokenSource,
   SigningScheme,
-} from "@cowprotocol/cow-sdk";
+} from "@cowprotocol/sdk-order-book";
 import { checksumAddress, getAddress, zeroAddress } from "viem";
 import { loadTokenMap } from "@bitte-ai/agent-sdk/evm";
 import { COW_SUPPORTED_CHAINS } from "@/src/app/config";

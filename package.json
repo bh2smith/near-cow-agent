@@ -14,8 +14,9 @@
     "fmt": "biome format --write . && prettier --write '{src,tests}/**/*.{js,jsx,ts,tsx}'"
   },
   "dependencies": {
-    "@bitte-ai/agent-sdk": "^0.4.0",
-    "@cowprotocol/cow-sdk": "6.3.2",
+    "@bitte-ai/agent-sdk": "^0.4.1",
+    "@cowprotocol/sdk-order-book": "^0.1.0",
+    "@cowprotocol/sdk-order-signing": "^0.1.0",
     "json-stringify-deterministic": "^1.0.12",
     "next": "^15.5.3",
     "react": "^19.1.1",
@@ -27,7 +28,6 @@
     "zod": "^4.1.9"
   },
   "devDependencies": {
-    "@bitte-ai/types": "^0.9.1",
     "@types/bun": "^1.2.22",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.5.2",
@@ -35,7 +35,6 @@
     "biome": "^0.3.3",
     "concurrently": "^9.2.1",
     "dotenv": "^17.2.2",
-    "eslint-config-next": "^15.5.3",
     "make-agent": "^0.4.1",
     "prettier": "^3.6.2",
     "ts-node": "^10.9.2",

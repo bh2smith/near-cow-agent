@@ -1,4 +1,4 @@
-import { OrderBookApi } from "@cowprotocol/cow-sdk";
+import { OrderBookApi, type Order } from "@cowprotocol/sdk-order-book";
 
 import { withCowErrorHandling } from "@/src/lib/error";
 import {
@@ -7,7 +7,6 @@ import {
   parseRequest,
 } from "@/src/lib/schema";
 
-import type { Order } from "@cowprotocol/cow-sdk";
 import type { NextRequest } from "next/server";
 
 export async function logic(req: NextRequest): Promise<Order[]> {

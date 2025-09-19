@@ -1,4 +1,4 @@
-import { OrderSigningUtils } from "@cowprotocol/cow-sdk";
+import { OrderSigningUtils } from "@cowprotocol/sdk-order-signing";
 import {
   getClientForChain,
   getTokenDetails,
