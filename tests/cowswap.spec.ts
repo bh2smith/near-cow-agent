@@ -23,6 +23,7 @@ import { checksumAddress, getAddress, zeroAddress } from "viem";
 import { loadTokenMap } from "@bitte-ai/agent-sdk/evm";
 import { COW_SUPPORTED_CHAINS } from "@/src/app/config";
 import { CowIcons } from "@/src/lib/ui";
+import { QuoteRequestInput } from "@/src/lib/schema";
 
 const SEPOLIA_DAI = getAddress("0xb4f1737af37711e9a5890d9510c9bb60e170cb0d");
 const SEPOLIA_COW = getAddress("0x0625afb445c3b6b7b929342a04a22599fd5dbb59");
@@ -147,14 +148,16 @@ describe("CowSwap Plugin", () => {
 
   it("basicParseQuote", async () => {
     const tokenMap = await loadTokenMap(COW_SUPPORTED_CHAINS);
-    const request = {
-      amount: "1",
+    const request: QuoteRequestInput = {
+      amount: 1,
       chainId: 8453,
       buyToken: "ETH",
       receiver: "0x968dc7336Ba79cA4304549089345F9292bBA65bB",
       orderKind: "sell",
       sellToken: "USDC",
       evmAddress: getAddress("0x968dc7336Ba79cA4304549089345F9292bBA65bB"),
+      slippageBps: 50,
+      validFor: 1800,
     };
     const client = getClient(request.chainId);
     const parsed = await basicParseQuote(client, request, tokenMap);
@@ -167,6 +170,7 @@ describe("CowSwap Plugin", () => {
       receiver: "0x968dc7336Ba79cA4304549089345F9292bBA65bB",
       from: "0x968dc7336Ba79cA4304549089345F9292bBA65bB",
       signingScheme: "eip712",
+      validFor: 1800,
     });
   });
 

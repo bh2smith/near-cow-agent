@@ -23,17 +23,6 @@ export interface OrderRequestBody {
   evmAddress: string;
 }
 
-export type QuoteRequestBody = {
-  sellToken: string;
-  buyToken: string;
-  chainId: number;
-  amount: string;
-  orderKind: string;
-  evmAddress: `0x${string}`;
-  receiver: string;
-  slippageBps?: number;
-  validFor?: number;
-};
 export interface ParsedQuoteRequest {
   quoteRequest: OrderQuoteRequest;
   chainId: number;
