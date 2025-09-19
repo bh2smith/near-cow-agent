@@ -91,12 +91,7 @@ UNSUPPORTED FEATURES: This agent does not currently support
             { $ref: "#/components/parameters/sellToken" },
             { $ref: "#/components/parameters/buyToken" },
             {
-              name: "amount",
-              in: "query",
-              required: true,
-              schema: {
-                type: "string",
-              },
+              ...amountParam,
               description:
                 "The amount of tokens to buy or sell after or before fees, represented as a decimal string in token units. Not Atoms.",
             },
@@ -106,7 +101,7 @@ UNSUPPORTED FEATURES: This agent does not currently support
               required: true,
               schema: {
                 type: "string",
-                enum: ["buy", "sell"],
+                enum: ["sell", "buy"],
               },
               description:
                 "Whether the order is a buy order or sell order. Usually inferred from the users text (I want to buy or I want to sell or swap)",
@@ -118,6 +113,7 @@ UNSUPPORTED FEATURES: This agent does not currently support
               schema: {
                 type: "number",
               },
+              example: 1800,
               description:
                 "Number of seconds (from now) that the order should be valid for. Max 3 hours (10800).",
             },
@@ -127,6 +123,7 @@ UNSUPPORTED FEATURES: This agent does not currently support
               schema: {
                 type: "number",
               },
+              example: 100,
               description:
                 "The slippage tolerance for the quote, represented as a percentage in basis points (BPS).",
             },
@@ -549,11 +546,13 @@ UNSUPPORTED FEATURES: This agent does not currently support
           description: "The unique identifier of a CoW Protocol order.",
         },
         amount: amountParam,
-        address: addressParam,
+        address: { addressParam },
         evmAddress: {
           ...addressParam,
           name: "evmAddress",
           description: "The address of the connected account",
+          // TODO: update agent-sdk: https://github.com/BitteProtocol/core/pull/65
+          example: "0x6810e776880c02933d47db1b9fc05908e5386b96"
         },
         receiver: {
           ...addressParam,
@@ -561,6 +560,7 @@ UNSUPPORTED FEATURES: This agent does not currently support
           required: false,
           description:
             "If desired, the user can specify a custom recipient, otherwise the default is their connected wallet.",
+          example: "0x6810e776880c02933d47db1b9fc05908e5386b96"
         },
         buyToken: {
           ...addressOrSymbolParam,
