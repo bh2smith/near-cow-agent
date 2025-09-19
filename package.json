@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "api": "next dev",
     "dev": "concurrently \"next dev\" \"make-agent dev\"",
     "dev-testnet": "concurrently \"next dev\" \"make-agent dev -t\"",
     "build": "next build",

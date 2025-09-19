@@ -79,7 +79,6 @@ UNSUPPORTED FEATURES: This agent does not currently support
     paths: {
       "/api/tools/quote": {
         post: {
-          tags: ["quote"],
           operationId: "getQuote",
           summary: `Quote a price and fee for the specified order parameters. Returns the quote and payload for signing.
             In some cases, this tool will return multiple SignRequests. 
@@ -173,7 +172,6 @@ UNSUPPORTED FEATURES: This agent does not currently support
       },
       "/api/tools/order": {
         post: {
-          tags: ["order"],
           operationId: "createOrder",
           summary: "Posts signed order to CoW and Explorer Order Url",
           description:
@@ -345,7 +343,6 @@ UNSUPPORTED FEATURES: This agent does not currently support
       },
       "/api/tools/cancel": {
         get: {
-          tags: ["cancel"],
           operationId: "cancelOrder",
           summary: "Sets in motion the off-chain cancellation of an order.",
           description: `
@@ -401,7 +398,6 @@ UNSUPPORTED FEATURES: This agent does not currently support
       },
       "/api/tools/status": {
         get: {
-          tags: ["status"],
           operationId: "orderStatus",
           summary: "Retrieves the status of an order by id.",
           description: `This tool utilizes the cow orderbook api endpoint for status (https://api.cow.fi/docs/#/default/get_api_v1_orders__UID__status)`,
@@ -472,7 +468,6 @@ UNSUPPORTED FEATURES: This agent does not currently support
       },
       "/api/tools/history": {
         get: {
-          tags: ["history"],
           operationId: "orderHistory",
           summary: "Retrieves Order History",
           description: `
