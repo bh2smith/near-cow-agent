@@ -1,4 +1,4 @@
-import { OrderBookApi, type Order } from "@cowprotocol/sdk-order-book";
+import { OrderBookApi, type Order } from "@cowprotocol/cow-sdk";
 
 import { withCowErrorHandling } from "@/src/lib/error";
 import {

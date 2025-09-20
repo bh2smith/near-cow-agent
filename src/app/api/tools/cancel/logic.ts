@@ -1,5 +1,8 @@
-import { EcdsaSigningScheme, OrderBookApi } from "@cowprotocol/sdk-order-book";
-import { OrderSigningUtils } from "@cowprotocol/sdk-order-signing";
+import {
+  EcdsaSigningScheme,
+  OrderBookApi,
+  OrderSigningUtils,
+} from "@cowprotocol/cow-sdk";
 import { getAddress } from "viem";
 
 import { withCowErrorHandling } from "@/src/lib/error";

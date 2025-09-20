@@ -3,8 +3,12 @@ import {
   loadTokenMap,
   signRequestFor,
 } from "@bitte-ai/agent-sdk/evm";
-import { OrderBookApi } from "@cowprotocol/sdk-order-book";
-import { OrderSigningUtils } from "@cowprotocol/sdk-order-signing";
+import {
+  OrderBookApi,
+  OrderSigningUtils,
+  setGlobalAdapter,
+} from "@cowprotocol/cow-sdk";
+import { ViemAdapter } from "@cowprotocol/sdk-viem-adapter";
 import { getAddress, type Address } from "viem";
 import { isNativeAsset } from "zerion-sdk";
 
@@ -15,12 +19,9 @@ import { applySlippage, setPresignatureTx } from "@/src/lib/protocol/util";
 import { getClient } from "@/src/lib/rpc";
 import { parseWidgetData, type SwapFTData } from "@/src/lib/ui";
 
-import type { ParsedQuoteRequest } from "@/src/lib/types";
+import type { EthRpc, ParsedQuoteRequest } from "@/src/lib/types";
 import type { MetaTransaction, SignRequest } from "@bitte-ai/agent-sdk/evm";
-import type {
-  OrderParameters,
-  OrderQuoteResponse,
-} from "@cowprotocol/sdk-order-book";
+import type { OrderParameters, OrderQuoteResponse } from "@cowprotocol/cow-sdk";
 import type { NextRequest } from "next/server";
 
 type ResponseData = {
@@ -39,17 +40,13 @@ export async function logic(req: NextRequest): Promise<ResponseData> {
     // Temporarily disable tokenMap Caching
     await loadTokenMap(COW_SUPPORTED_CHAINS),
   );
-  return handleQuoteRequest(parsed);
+  return handleQuoteRequest(client, parsed);
 }
 
-export async function handleQuoteRequest({
-  chainId,
-  quoteRequest,
-  tokenData,
-  slippageBps,
-}: ParsedQuoteRequest): Promise<ResponseData> {
-  // TODO: Instantiate only one chainId
-  const client = getClient(chainId, getAlchemyKey());
+export async function handleQuoteRequest(
+  provider: EthRpc,
+  { chainId, quoteRequest, tokenData, slippageBps }: ParsedQuoteRequest,
+): Promise<ResponseData> {
   console.log("Parsed Quote Request", quoteRequest);
   // Flag used a few times later.
   const nativeSell = isNativeAsset(quoteRequest.sellToken);
@@ -95,7 +92,7 @@ export async function handleQuoteRequest({
   const notes: string[] = [];
   const from = getAddress(quoteRequest.from);
   const steps = await preliminarySteps(
-    client,
+    provider,
     from,
     {
       ...result.quote,
@@ -107,6 +104,7 @@ export async function handleQuoteRequest({
   );
   console.log("Preliminary Steps", steps);
   const transaction = await buildTransaction(
+    provider,
     result.quote,
     notes,
     chainId,
@@ -136,12 +134,16 @@ function summarizeNotes(notes: string[]): string {
 }
 
 async function buildTransaction(
+  provider: EthRpc,
   quote: OrderParameters,
   notes: string[],
   chainId: number,
   owner: Address,
   steps: MetaTransaction[],
 ): Promise<SignRequest[]> {
+  const cowAdapter = new ViemAdapter({ provider });
+  // This is required by generateOrderId... (for the ZeroAddress). Seems weird.
+  setGlobalAdapter(cowAdapter);
   const { orderId } = await OrderSigningUtils.generateOrderId(
     chainId,
     {

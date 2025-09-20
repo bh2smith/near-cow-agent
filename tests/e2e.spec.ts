@@ -3,7 +3,8 @@ import { handleQuoteRequest } from "@/src/app/api/tools/quote/logic";
 import { withCowErrorHandling } from "@/src/lib/error";
 import { createOrder } from "@/src/lib/protocol/order";
 import { OrderRequestBody, ParsedQuoteRequest } from "@/src/lib/types";
-import { OrderQuoteRequest } from "@cowprotocol/sdk-order-book";
+import { getClient } from "@/src/lib/rpc";
+import { OrderQuoteRequest } from "@cowprotocol/cow-sdk";
 import {
   createWalletClient,
   http,
@@ -14,6 +15,12 @@ import { privateKeyToAccount } from "viem/accounts";
 import { mainnet } from "viem/chains";
 
 const tokenData = {
+  // sell: {
+  //   address: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+  //   decimals: 18,
+  //   symbol: "WETH",
+  //   name: "Wrapped Ether",
+  // },
   sell: {
     address: "0xe485E2f1bab389C08721B291f6b59780feC83Fd7",
     decimals: 18,
@@ -64,7 +71,7 @@ describe("End To End", () => {
     const {
       transaction,
       meta: { quote },
-    } = await handleQuoteRequest(input);
+    } = await handleQuoteRequest(getClient(1), input);
     console.log("Order to Sign", transaction);
     const typedDataString = transaction[0].params[1] as string;
     const typedData = JSON.parse(typedDataString);
@@ -79,7 +86,7 @@ describe("End To End", () => {
       signature,
       chainId,
       // receiver: wallet.account.address,
-      // evmAddress: wallet.account.address,
+      evmAddress: wallet.account.address,
     } as OrderRequestBody;
     const order = await createOrder(orderRequest);
     console.log("Order", order);

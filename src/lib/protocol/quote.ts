@@ -3,7 +3,7 @@ import {
   OrderQuoteSideKindBuy,
   OrderQuoteSideKindSell,
   SigningScheme,
-} from "@cowprotocol/sdk-order-book";
+} from "@cowprotocol/cow-sdk";
 import { parseUnits } from "viem";
 
 import { isEOA, sellTokenApprovalTx } from "./util";
@@ -14,10 +14,7 @@ import type {
   TokenInfo,
   MetaTransaction,
 } from "@bitte-ai/agent-sdk/evm";
-import type {
-  OrderParameters,
-  OrderQuoteSide,
-} from "@cowprotocol/sdk-order-book";
+import type { OrderParameters, OrderQuoteSide } from "@cowprotocol/cow-sdk";
 import type { Address } from "viem";
 
 const slippageDefault = Number.parseInt(process.env.SLIPPAGE_BPS || "100");
