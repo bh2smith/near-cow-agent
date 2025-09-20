@@ -15,13 +15,15 @@ import { applySlippage, setPresignatureTx } from "@/src/lib/protocol/util";
 import { getClient } from "@/src/lib/rpc";
 import { parseWidgetData, type SwapFTData } from "@/src/lib/ui";
 
-import type { ParsedQuoteRequest } from "@/src/lib/types";
+import type { EthRpc, ParsedQuoteRequest } from "@/src/lib/types";
 import type { MetaTransaction, SignRequest } from "@bitte-ai/agent-sdk/evm";
 import type {
   OrderParameters,
   OrderQuoteResponse,
 } from "@cowprotocol/sdk-order-book";
 import type { NextRequest } from "next/server";
+import { ViemAdapter } from "@cowprotocol/sdk-viem-adapter";
+import { setGlobalAdapter } from "@cowprotocol/cow-sdk";
 
 type ResponseData = {
   meta: { quote: OrderQuoteResponse; ui: SwapFTData };
@@ -39,18 +41,16 @@ export async function logic(req: NextRequest): Promise<ResponseData> {
     // Temporarily disable tokenMap Caching
     await loadTokenMap(COW_SUPPORTED_CHAINS),
   );
-  return handleQuoteRequest(parsed);
+  return handleQuoteRequest(client, parsed);
 }
 
-export async function handleQuoteRequest({
-  chainId,
-  quoteRequest,
-  tokenData,
-  slippageBps,
-}: ParsedQuoteRequest): Promise<ResponseData> {
-  // TODO: Instantiate only one chainId
-  const client = getClient(chainId, getAlchemyKey());
+export async function handleQuoteRequest(
+  client: EthRpc,
+  { chainId, quoteRequest, tokenData, slippageBps }: ParsedQuoteRequest,
+): Promise<ResponseData> {
   console.log("Parsed Quote Request", quoteRequest);
+  const cowAdapter = new ViemAdapter({ provider: client });
+  setGlobalAdapter(cowAdapter);
   // Flag used a few times later.
   const nativeSell = isNativeAsset(quoteRequest.sellToken);
   if (nativeSell) {

@@ -3,6 +3,7 @@ import { handleQuoteRequest } from "@/src/app/api/tools/quote/logic";
 import { withCowErrorHandling } from "@/src/lib/error";
 import { createOrder } from "@/src/lib/protocol/order";
 import { OrderRequestBody, ParsedQuoteRequest } from "@/src/lib/types";
+import { getClient } from "@/src/lib/rpc";
 import { OrderQuoteRequest } from "@cowprotocol/sdk-order-book";
 import {
   createWalletClient,
@@ -37,7 +38,7 @@ describe("End To End", () => {
    * 4. Cancellation Tool: build signable payload
    * 5. Cancellation Tool: post signed cancellation
    */
-  it.skip("Quote to Order", async () => {
+  it("Quote to Order", async () => {
     const slippageBps = 1; // So the order will not get filled before we can cancel
     const wallet = createWalletClient({
       transport: http(),
@@ -64,7 +65,7 @@ describe("End To End", () => {
     const {
       transaction,
       meta: { quote },
-    } = await handleQuoteRequest(input);
+    } = await handleQuoteRequest(getClient(1), input);
     console.log("Order to Sign", transaction);
     const typedDataString = transaction[0].params[1] as string;
     const typedData = JSON.parse(typedDataString);
