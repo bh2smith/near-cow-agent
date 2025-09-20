@@ -1,7 +1,8 @@
 import { handleQuoteRequest } from "@/src/app/api/tools/quote/logic";
 import { withRedactedErrorHandling } from "@/src/lib/error";
 import { ParsedQuoteRequest } from "@/src/lib/types";
-import { OrderQuoteRequest } from "@cowprotocol/sdk-order-book";
+import { getClient } from "@/src/lib/rpc";
+import { OrderQuoteRequest } from "@cowprotocol/cow-sdk";
 
 const MAX_VALID_FROM = 10800; // 3 hours
 describe.skip("Quote Route Logic", () => {
@@ -31,8 +32,9 @@ describe.skip("Quote Route Logic", () => {
         name: "Circles USD",
       },
     };
+    const chainId = 8453;
     const input = {
-      chainId: 8453,
+      chainId,
       quoteRequest,
       tokenData,
       slippageBps: 100,
@@ -40,7 +42,7 @@ describe.skip("Quote Route Logic", () => {
     // const quote = await handleQuoteRequest(input);
     // console.log(JSON.stringify(quote.meta.quote, null, 2));
     await expect(
-      withRedactedErrorHandling(handleQuoteRequest(input)),
+      withRedactedErrorHandling(handleQuoteRequest(getClient(chainId), input)),
     ).rejects.toThrow("ExcessiveValidTo: validTo is too far into the future");
   }, 10000);
 });

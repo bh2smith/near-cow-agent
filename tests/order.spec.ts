@@ -1,8 +1,12 @@
 import { createOrder } from "@/src/lib/protocol/order";
 import { getClient } from "@/src/lib/rpc";
 import { OrderRequestBody } from "@/src/lib/types";
-import { OrderSigningUtils, setGlobalAdapter } from "@cowprotocol/cow-sdk";
-import { OrderKind, SigningScheme } from "@cowprotocol/sdk-order-book";
+import {
+  OrderSigningUtils,
+  setGlobalAdapter,
+  OrderKind,
+  SigningScheme,
+} from "@cowprotocol/cow-sdk";
 import { ViemAdapter } from "@cowprotocol/sdk-viem-adapter";
 
 describe("Order Route Logic", () => {

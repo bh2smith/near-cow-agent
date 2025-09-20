@@ -3,8 +3,12 @@ import {
   loadTokenMap,
   signRequestFor,
 } from "@bitte-ai/agent-sdk/evm";
-import { OrderBookApi } from "@cowprotocol/sdk-order-book";
-import { OrderSigningUtils } from "@cowprotocol/sdk-order-signing";
+import {
+  OrderBookApi,
+  OrderSigningUtils,
+  setGlobalAdapter,
+} from "@cowprotocol/cow-sdk";
+import { ViemAdapter } from "@cowprotocol/sdk-viem-adapter";
 import { getAddress, type Address } from "viem";
 import { isNativeAsset } from "zerion-sdk";
 
@@ -17,13 +21,8 @@ import { parseWidgetData, type SwapFTData } from "@/src/lib/ui";
 
 import type { EthRpc, ParsedQuoteRequest } from "@/src/lib/types";
 import type { MetaTransaction, SignRequest } from "@bitte-ai/agent-sdk/evm";
-import type {
-  OrderParameters,
-  OrderQuoteResponse,
-} from "@cowprotocol/sdk-order-book";
+import type { OrderParameters, OrderQuoteResponse } from "@cowprotocol/cow-sdk";
 import type { NextRequest } from "next/server";
-import { ViemAdapter } from "@cowprotocol/sdk-viem-adapter";
-import { setGlobalAdapter } from "@cowprotocol/cow-sdk";
 
 type ResponseData = {
   meta: { quote: OrderQuoteResponse; ui: SwapFTData };

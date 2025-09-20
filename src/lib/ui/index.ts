@@ -11,7 +11,7 @@ import { CHAIN_ICONS } from "./icon";
 
 import type { TokenQuery, SwapFTData } from "./types";
 import type { TokenInfo } from "@bitte-ai/agent-sdk/evm";
-import type { OrderParameters } from "@cowprotocol/sdk-order-book";
+import type { OrderParameters } from "@cowprotocol/cow-sdk";
 import type { Address } from "viem";
 
 interface SwapDetails {

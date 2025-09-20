@@ -4,7 +4,7 @@ import { withCowErrorHandling } from "@/src/lib/error";
 import { createOrder } from "@/src/lib/protocol/order";
 import { OrderRequestBody, ParsedQuoteRequest } from "@/src/lib/types";
 import { getClient } from "@/src/lib/rpc";
-import { OrderQuoteRequest } from "@cowprotocol/sdk-order-book";
+import { OrderQuoteRequest } from "@cowprotocol/cow-sdk";
 import {
   createWalletClient,
   http,

@@ -1,5 +1,5 @@
 import { getPriceAndIcon, parseWidgetData } from "@/src/lib/ui";
-import { OrderKind, OrderParameters } from "@cowprotocol/sdk-order-book";
+import { OrderKind, OrderParameters } from "@cowprotocol/cow-sdk";
 import { getAddress } from "viem";
 
 const GNOSIS_GNO = getAddress("0x9c58bacc331c9aa871afd802db6379a98e80cedb");

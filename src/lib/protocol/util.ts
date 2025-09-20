@@ -5,7 +5,7 @@ import {
   type OrderParameters,
   type OrderQuoteResponse,
   SigningScheme,
-} from "@cowprotocol/sdk-order-book";
+} from "@cowprotocol/cow-sdk";
 import stringify from "json-stringify-deterministic";
 import {
   type Address,
