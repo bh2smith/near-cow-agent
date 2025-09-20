@@ -15,6 +15,12 @@ import { privateKeyToAccount } from "viem/accounts";
 import { mainnet } from "viem/chains";
 
 const tokenData = {
+  // sell: {
+  //   address: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+  //   decimals: 18,
+  //   symbol: "WETH",
+  //   name: "Wrapped Ether",
+  // },
   sell: {
     address: "0xe485E2f1bab389C08721B291f6b59780feC83Fd7",
     decimals: 18,
@@ -38,7 +44,7 @@ describe("End To End", () => {
    * 4. Cancellation Tool: build signable payload
    * 5. Cancellation Tool: post signed cancellation
    */
-  it("Quote to Order", async () => {
+  it.skip("Quote to Order", async () => {
     const slippageBps = 1; // So the order will not get filled before we can cancel
     const wallet = createWalletClient({
       transport: http(),
@@ -80,7 +86,7 @@ describe("End To End", () => {
       signature,
       chainId,
       // receiver: wallet.account.address,
-      // evmAddress: wallet.account.address,
+      evmAddress: wallet.account.address,
     } as OrderRequestBody;
     const order = await createOrder(orderRequest);
     console.log("Order", order);

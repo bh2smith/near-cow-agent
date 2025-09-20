@@ -45,12 +45,10 @@ export async function logic(req: NextRequest): Promise<ResponseData> {
 }
 
 export async function handleQuoteRequest(
-  client: EthRpc,
+  provider: EthRpc,
   { chainId, quoteRequest, tokenData, slippageBps }: ParsedQuoteRequest,
 ): Promise<ResponseData> {
   console.log("Parsed Quote Request", quoteRequest);
-  const cowAdapter = new ViemAdapter({ provider: client });
-  setGlobalAdapter(cowAdapter);
   // Flag used a few times later.
   const nativeSell = isNativeAsset(quoteRequest.sellToken);
   if (nativeSell) {
@@ -95,7 +93,7 @@ export async function handleQuoteRequest(
   const notes: string[] = [];
   const from = getAddress(quoteRequest.from);
   const steps = await preliminarySteps(
-    client,
+    provider,
     from,
     {
       ...result.quote,
@@ -107,6 +105,7 @@ export async function handleQuoteRequest(
   );
   console.log("Preliminary Steps", steps);
   const transaction = await buildTransaction(
+    provider,
     result.quote,
     notes,
     chainId,
@@ -136,12 +135,16 @@ function summarizeNotes(notes: string[]): string {
 }
 
 async function buildTransaction(
+  provider: EthRpc,
   quote: OrderParameters,
   notes: string[],
   chainId: number,
   owner: Address,
   steps: MetaTransaction[],
 ): Promise<SignRequest[]> {
+  const cowAdapter = new ViemAdapter({ provider });
+  // This is required by generateOrderId... (for the ZeroAddress). Seems weird.
+  setGlobalAdapter(cowAdapter);
   const { orderId } = await OrderSigningUtils.generateOrderId(
     chainId,
     {
