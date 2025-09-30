@@ -15,29 +15,29 @@
   },
   "dependencies": {
     "@bitte-ai/agent-sdk": "^0.4.1",
-    "@cowprotocol/cow-sdk": "^7.0.0",
+    "@cowprotocol/cow-sdk": "^7.0.3",
     "@cowprotocol/sdk-viem-adapter": "^0.1.0",
     "json-stringify-deterministic": "^1.0.12",
-    "next": "^15.5.3",
+    "next": "^15.5.4",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
-    "redoc": "^2.5.0",
+    "redoc": "^2.5.1",
     "vercel-url": "^0.2.8",
-    "viem": "^2.37.6",
-    "zerion-sdk": "^0.1.7",
-    "zod": "^4.1.9"
+    "viem": "^2.37.9",
+    "zerion-sdk": "^0.1.8",
+    "zod": "^4.1.11"
   },
   "devDependencies": {
-    "@types/bun": "^1.2.22",
+    "@types/bun": "^1.2.23",
     "@types/jest": "^30.0.0",
-    "@types/node": "^24.5.2",
-    "@types/react": "^19.1.13",
+    "@types/node": "^24.6.0",
+    "@types/react": "^19.1.16",
     "biome": "^0.3.3",
     "concurrently": "^9.2.1",
-    "dotenv": "^17.2.2",
+    "dotenv": "^17.2.3",
     "make-agent": "^0.4.1",
     "prettier": "^3.6.2",
     "ts-node": "^10.9.2",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.3"
   }
 }
