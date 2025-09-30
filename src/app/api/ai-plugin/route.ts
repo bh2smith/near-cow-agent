@@ -80,7 +80,8 @@ UNSUPPORTED FEATURES: This agent does not currently support
       "/api/tools/quote": {
         post: {
           operationId: "getQuote",
-          summary: `Quote a price and fee for the specified order parameters. Returns the quote and payload for signing.
+          summary: "Retrive quote from CoW API",
+          description: `Quote a price and fee for the specified order parameters. Returns the quote and payload for signing.
             In some cases, this tool will return multiple SignRequests. 
             For example (wrapping ETH and/or sell token approvals).
             The last SignRequest will always be the user's swap order.
@@ -88,7 +89,6 @@ UNSUPPORTED FEATURES: This agent does not currently support
             That is, only show the user's order after the preliminary transactions have succeeded. 
             Use the meta.summary data to describe what they are signing. 
             Keep the description brief.`,
-          description: "Retrive quote from CoW API",
           parameters: [
             { $ref: "#/components/parameters/chainId" },
             { $ref: "#/components/parameters/evmAddress" },
