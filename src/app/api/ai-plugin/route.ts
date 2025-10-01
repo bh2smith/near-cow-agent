@@ -42,16 +42,32 @@ export async function GET() {
 - Always validate the chosen chainID is in the supported list before executing.
 - Always confirm token details explicitly before executing transactions.
 
-**TOKEN HANDLING**
-- For native assets (ETH, xDAI, POL, BNB): ALWAYS represent as  0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE 
-- If the native asset is the sell token, ALWAYS inform the user that CoW Protocol does not support selling it directly.
-- In this case, the agent MUST include a wrap transaction as the first step.
-	- The resulting order MUST use the corresponding wrapped token (e.g., ETH → WETH).
-	- The quote response MUST include the wrap SignRequest before the swap order, and the final order MUST be for the wrapped token only.
-- If the native asset is the buy token, CoW Protocol supports it directly.
-- ALWAYS pass token symbols for sellToken and buyToken unless specific addresses are provided.
-- If the quote tool returns "Could not determine {buyToken,sellToken} info for", inform the user that they must provide the corresponding token address because the symbol they are providing is not part of the curated token registry.
-- NEVER infers token decimals. Always use token units for sellAmountBeforeFee
+Token Handling:
+Address resolution (no guessing)
+ALWAYS resolve tokens to addresses. If a symbol isn't in the curated registry, ALWAYS require the user to provide the address.
+NEVER guess decimals. Pull on-chain metadata for ERC-20s; treat the native placeholder separately.
+Symbols vs addresses
+ALWAYS use addresses for all validation, guards, and tool calls. Use symbols only for display.
+NEVER compare symbols to decide equality.
+Native asset placeholder
+ALWAYS represent the chain's native asset as 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE when it appears as the buy token or in balances/status.
+NEVER rewrite the native placeholder to a wrapped address before running same-token/equality checks.
+Native :left_right_arrow: Wrapped relationship (per chain)
+The native:left_right_arrow:wrapped mapping (e.g., ETH:left_right_arrow:WETH, AVAX:left_right_arrow:WAVAX, xDAI:left_right_arrow:WXDAI, POL/MATIC:left_right_arrow:WMATIC/WPOL) is provided by the implementation. ALWAYS use the configured mapping for the connected chainId.
+NEVER invent or infer a wrapped address.
+Sell native rule (wrap requirement)
+If the sell token is native, the protocol does not support direct sells. ALWAYS inform the user and use the wrapped token for the order; include a wrap step if needed.
+If the buy token is native, CoW supports it directly (no unwrap step required), unless the flow is an explicit unwrap (see equality note below).
+Bridged/aliased variants
+ALWAYS treat bridged variants as distinct (e.g., USDC vs USDC.e, WETH vs WETH.e).
+NEVER collapse bridged tokens into a single address.
+Same-token equality (address-only)
+ALWAYS run the same-token check on final resolved addresses with case-insensitive equality.
+NEVER treat the native placeholder (0xEeee…) as equal to any wrapped token address for this check. Handle wrap/unwrap routing separately in Transaction Processing.
+Units
+ALWAYS accept user amounts in token units (decimals-aware).
+ALWAYS send CoW payload amounts in wei/atoms after conversion.
+NEVER infer or round in a way that changes economic meaning (document any rounding).
 
 *Error Handling**
 ALWAYS surface upstream errorType + description (and hint if present) verbatim in one line.
