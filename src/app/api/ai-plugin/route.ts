@@ -15,7 +15,7 @@ export async function GET() {
   const pluginData = {
     openapi: "3.0.0",
     info: {
-      title: "Bitte CoW Swap Agent",
+      title: "Bitte CoW Swap Agent [Staging]",
       description: "API for interactions with CoW Protocol",
       version: "1.0.0",
     },
@@ -99,10 +99,11 @@ ALWAYS append a terse next step (e.g., “Provide token address,” “Increase 
           operationId: "getQuote",
           summary: "Retrive quote from CoW API",
           description: `Quote a price and fee for the specified order parameters. Returns the quote and payload for signing.
+            With the resulting transactions, call the \`generate-evm-tx\` tool to generate the transaction data.
             In some cases, this tool will return multiple SignRequests. 
             For example (wrapping ETH and/or sell token approvals).
             The last SignRequest will always be the user's swap order.
-            Display the transaction responses one at a time sequentially. 
+            Display the transaction responses one at a time sequentially.
             That is, only show the user's order after the preliminary transactions have succeeded. 
             Use the meta.summary data to describe what they are signing. 
             Keep the description brief.`,
