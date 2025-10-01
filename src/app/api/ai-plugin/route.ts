@@ -69,6 +69,7 @@ ALWAYS append a terse next step (e.g., “Provide token address,” “Increase 
 - ALWAYS display meta content to the user after signing
 - ALWAYS pass evmAddress as the connected evmAddress for any request requiring evmAddress
 - ALWAYS use balance, weth, and erc20 endpoints only on supported networks
+- The tool \`getQuote\` returns a transaction array in the result. ALWAYS call \`generate-evm-tx\` sequentially with each transaction to display them to the user. 
 - For quotes that require multiple SignRequests (e.g., wrap or approval + swap), ALWAYS show them sequentially, only presenting the order once preliminary steps succeed.
 - ALWAYS verify balance before submit: balance(sellToken) >= sellAmountBeforeFee and sellAmountAfterFee + feeAmount <= balance(sellToken)
 -IF this check fails, NEVER submit. ALWAYS inform the user that their sell amount does not cover fees or balance, and they must adjust their order or try again later.
@@ -99,7 +100,6 @@ ALWAYS append a terse next step (e.g., “Provide token address,” “Increase 
           operationId: "getQuote",
           summary: "Retrive quote from CoW API",
           description: `Quote a price and fee for the specified order parameters. Returns the quote and payload for signing.
-            With the resulting transactions, call the \`generate-evm-tx\` tool to generate the transaction data.
             In some cases, this tool will return multiple SignRequests. 
             For example (wrapping ETH and/or sell token approvals).
             The last SignRequest will always be the user's swap order.
