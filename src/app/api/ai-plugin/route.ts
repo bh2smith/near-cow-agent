@@ -364,7 +364,28 @@ UNSUPPORTED FEATURES: This agent does not currently support
       },
       "/api/tools/cancel": {
         get: {
-          operationId: "cancelOrder",
+          operationId: "buildCancel",
+          summary: "Request signable payload for cancelation.",
+          description: ``,
+          parameters: [
+            { $ref: "#/components/parameters/chainId" },
+            { $ref: "#/components/parameters/orderUid" },
+          ],
+          responses: {
+            "200": {
+              description: "A signable payload to cancel an order.",
+              content: {
+                "application/json": {
+                  schema: {
+                    $ref: "#/components/schemas/SignRequest",
+                  },
+                },
+              },
+            },
+          },
+        },
+        post: {
+          operationId: "sendCancel",
           summary: "Sets in motion the off-chain cancellation of an order.",
           description: `
             This is a best effort cancellation, and might not prevent solvers from settling the orders (if the order is part of an in-flight settlement transaction for example). 
@@ -373,8 +394,15 @@ UNSUPPORTED FEATURES: This agent does not currently support
             ELSE tool will post the order & signature to the CoW API order cancellation endpoint.
           `,
           parameters: [
-            { $ref: "#/components/parameters/chainId" },
-            { $ref: "#/components/parameters/orderUid" },
+            {
+              in: "query",
+              name: "cancellationData",
+              schema: {
+                type: "string",
+              },
+              description:
+                "JSON stringified SignRequest returned from the cancellation GET route.",
+            },
             {
               in: "query",
               name: "signature",
@@ -387,33 +415,15 @@ UNSUPPORTED FEATURES: This agent does not currently support
           ],
           responses: {
             "200": {
-              description: "Either signable payload or cancellation response.",
+              description: "A signable payload to cancel an order.",
               content: {
                 "application/json": {
                   schema: {
-                    oneOf: [
-                      {
-                        $ref: "#/components/schemas/SignRequest",
-                      },
-                      {
-                        type: "string",
-                        description: "Order(s) are cancelled.",
-                      },
-                    ],
+                    $ref: "#/components/schemas/SignRequest",
                   },
                 },
               },
             },
-            "400": { description: "Malformed signature." },
-            "401": {
-              description:
-                "Wrong Owner: Signature recovery's owner doesn't match order's",
-            },
-            "404": {
-              description:
-                "One or more orders were not found and no orders were cancelled.",
-            },
-            "500": { description: "Internal Server Error." },
           },
         },
       },

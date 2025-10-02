@@ -39,13 +39,20 @@ export const chainIdSchema = z.coerce.number().int().positive({
   message: "chainId must be a positive integer",
 });
 
-export const CancelOrderSchema = z.object({
+export const BuildCancelOrderSchema = z.object({
   chainId: chainIdSchema,
   orderUid: orderUidSchema,
-  signature: signatureSchema.optional(),
+  // signature: signatureSchema.optional(),
 });
 
-export type CancelOrderInput = z.infer<typeof CancelOrderSchema>;
+export type BuildCancelOrderInput = z.infer<typeof BuildCancelOrderSchema>;
+
+export const SendCancelOrderSchema = z.object({
+  cancellationData: z.string(),
+  signature: signatureSchema,
+});
+
+export type SendCancelOrderInput = z.infer<typeof SendCancelOrderSchema>;
 
 export const OrderStatusSchema = z.object({
   chainId: chainIdSchema,
