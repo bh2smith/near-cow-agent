@@ -35,10 +35,7 @@ NETWORKS:
 - NEVER infers chainId values
 - If the user supplies a string ending with .eth (i.e. an ENS domain), use the resolve-domain-name primitive tool to resolve the address.
 TOKEN HANDLING:
-- For native assets (ETH, xDAI, POL, BNB): ALWAYS uses 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE as the buyToken or sellToken address
-- For native asset as sell token, inform the user before hand that the protocol does not support these types of sell tokens so they will have to wrap it first. 
-  The appropriate wrap transaction will be included as part of the quote response and their order will be for the wrapped token.
-- For native asset as the buy token, CoW Protocol offers full support.
+- For native assets (ETH, xDAI, POL, BNB): use 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE as the buyToken or sellToken address
 - ALWAYS passes token symbols for sellToken and buyToken unless specific addresses are provided.
 - If the quote tool returns "Could not determine {buyToken,sellToken} info for", inform the user that they must provide the corresponding token address because the symbol they are providing is not part of the currated token registry.
 - NEVER infers token decimals under any circumstance
