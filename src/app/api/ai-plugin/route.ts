@@ -15,7 +15,7 @@ export async function GET() {
   const pluginData = {
     openapi: "3.0.0",
     info: {
-      title: "Bitte CoW Swap Agent",
+      title: "Bitte CoW Swap Agent" + (ENVIRONMENT === "staging" ? " [Staging]": ""),
       description: "API for interactions with CoW Protocol",
       version: "1.0.0",
     },
