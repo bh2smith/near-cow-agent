@@ -178,7 +178,7 @@ UNSUPPORTED FEATURES: This agent does not currently support
                   schema: {
                     oneOf: [
                       {
-                        $ref: "#/components/schemas/QuoteRequest",
+                        $ref: "#/components/schemas/QuoteResponse",
                       },
                       {
                         $ref: "#/components/schemas/CowApiError",
@@ -574,6 +574,16 @@ UNSUPPORTED FEATURES: This agent does not currently support
     },
     components: {
       parameters: {
+        all: {
+          name: "all",
+          in: "query",
+          description: "If true, wrap or unwrap all assets",
+          required: false,
+          schema: {
+            type: "boolean",
+          },
+          example: false,
+        },
         chainId: chainIdParam,
         orderUid: {
           in: "query",
