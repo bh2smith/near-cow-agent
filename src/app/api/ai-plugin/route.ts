@@ -41,6 +41,7 @@ export async function GET() {
 - If the user supplies a string ending with .eth (i.e. an ENS domain), use the resolve-domain-name primitive tool to resolve the address.
 - Always validate the chosen chainID is in the supported list before executing.
 - Always confirm token details explicitly before executing transactions.
+- NEVER modify a tool result in any way.
 
 Token Handling:
 Address resolution (no guessing)
