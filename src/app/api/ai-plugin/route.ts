@@ -36,8 +36,7 @@ NETWORKS:
 - If the user supplies a string ending with .eth (i.e. an ENS domain), use the resolve-domain-name primitive tool to resolve the address.
 TOKEN HANDLING:
 - For native assets (ETH, xDAI, POL, BNB): use 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE as the buyToken or sellToken address
-- ALWAYS passes token symbols for sellToken and buyToken unless specific addresses are provided.
-- If the quote tool returns "Could not determine {buyToken,sellToken} info for", inform the user that they must provide the corresponding token address because the symbol they are providing is not part of the currated token registry.
+- ALWAYS passes token symbols exactly as provided by the user for sellToken and buyToken.
 - NEVER infers token decimals under any circumstance
 - ALWAYS uses Token Units for sellAmountBeforeFee
 ORDER KIND:
@@ -144,25 +143,23 @@ UNSUPPORTED FEATURES: This agent does not currently support
           //   },
           // },
           responses: {
-            "200": { $ref: "#/components/responses/QuoteResponse200" },
-            "400": {
-              description: "Error quoting order.",
+            "200": {
+              description:
+                "Either a Quote response or CoW API Error with message",
               content: {
                 "application/json": {
                   schema: {
-                    $ref: "#/components/schemas/PriceEstimationError",
+                    oneOf: [
+                      {
+                        $ref: "#/components/schemas/SignRequest",
+                      },
+                      {
+                        $ref: "#/components/schemas/CowApiError",
+                      },
+                    ],
                   },
                 },
               },
-            },
-            "404": {
-              description: "No route was found for the specified order.",
-            },
-            "429": {
-              description: "Too many order quotes.",
-            },
-            "500": {
-              description: "Unexpected error quoting an order.",
             },
           },
         },
@@ -593,21 +590,7 @@ UNSUPPORTED FEATURES: This agent does not currently support
           content: {
             "application/json": {
               schema: {
-                type: "object",
-                properties: {
-                  meta: {
-                    type: "object",
-                    properties: {
-                      quote: {
-                        $ref: "#/components/schemas/OrderQuoteResponse",
-                      },
-                      ui: { $ref: "#/components/schemas/SwapFTData" },
-                    },
-                    required: ["quote", "ui"],
-                  },
-                  transaction: { $ref: "#/components/schemas/SignRequest" },
-                },
-                required: ["meta", "transaction"],
+                $ref: "#/components/schemas/QuoteResponse",
               },
             },
           },
@@ -690,6 +673,33 @@ UNSUPPORTED FEATURES: This agent does not currently support
           description:
             "32 bytes encoded as hex with `0x` prefix. It's expected to be the hash of the stringified JSON object representing the `appData`.",
           type: "string",
+        },
+        CowApiError: {
+          description: "Data a user provides when creating a new order.",
+          type: "object",
+          properties: {
+            message: {
+              type: "string",
+              description: "Error Message",
+            },
+          },
+        },
+        QuoteResponse: {
+          type: "object",
+          properties: {
+            meta: {
+              type: "object",
+              properties: {
+                quote: {
+                  $ref: "#/components/schemas/OrderQuoteResponse",
+                },
+                ui: { $ref: "#/components/schemas/SwapFTData" },
+              },
+              required: ["quote", "ui"],
+            },
+            transaction: { $ref: "#/components/schemas/SignRequest" },
+          },
+          required: ["meta", "transaction"],
         },
         SellTokenSource: {
           description: "Where should the `sellToken` be drawn from?",
