@@ -9,13 +9,20 @@ import {
 } from "@bitte-ai/agent-sdk";
 import { NextResponse } from "next/server";
 
-import { ACCOUNT_ID, PLUGIN_URL, COW_SUPPORTED_CHAINS, ENVIRONMENT } from "@/src/app/config";
+import {
+  ACCOUNT_ID,
+  PLUGIN_URL,
+  COW_SUPPORTED_CHAINS,
+  ENVIRONMENT,
+} from "@/src/app/config";
 
 export async function GET() {
   const pluginData = {
     openapi: "3.0.0",
     info: {
-      title: "Bitte CoW Swap Agent" + (ENVIRONMENT === "staging" ? " [Staging]": ""),
+      title:
+        "Bitte CoW Swap Agent" +
+        (ENVIRONMENT === "staging" ? " [Staging]" : ""),
       description: "API for interactions with CoW Protocol",
       version: "1.0.0",
     },
@@ -23,7 +30,9 @@ export async function GET() {
     "x-mb": {
       "account-id": ACCOUNT_ID || "max-normal.near",
       assistant: {
-        name: "CoW Swap Assistant" + (ENVIRONMENT === "staging" ? " [Staging]": ""),
+        name:
+          "CoW Swap Assistant" +
+          (ENVIRONMENT === "staging" ? " [Staging]" : ""),
         description:
           "An assistant that generates EVM transaction data for CoW Protocol Interactions and answers questions about CoW Protocol.",
         instructions: `
@@ -151,7 +160,7 @@ UNSUPPORTED FEATURES: This agent does not currently support
                   schema: {
                     oneOf: [
                       {
-                        $ref: "#/components/schemas/SignRequest",
+                        $ref: "#/components/schemas/QuoteRequest",
                       },
                       {
                         $ref: "#/components/schemas/CowApiError",
@@ -697,9 +706,13 @@ UNSUPPORTED FEATURES: This agent does not currently support
               },
               required: ["quote", "ui"],
             },
+            summary: {
+              type: "string",
+              description: "Summary of transaction",
+            },
             transaction: { $ref: "#/components/schemas/SignRequest" },
           },
-          required: ["meta", "transaction"],
+          required: ["summary", "transaction"],
         },
         SellTokenSource: {
           description: "Where should the `sellToken` be drawn from?",
