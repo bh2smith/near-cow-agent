@@ -9,7 +9,7 @@ import {
 } from "@bitte-ai/agent-sdk";
 import { NextResponse } from "next/server";
 
-import { ACCOUNT_ID, PLUGIN_URL, COW_SUPPORTED_CHAINS } from "@/src/app/config";
+import { ACCOUNT_ID, PLUGIN_URL, COW_SUPPORTED_CHAINS, ENVIRONMENT } from "@/src/app/config";
 
 export async function GET() {
   const pluginData = {
@@ -23,7 +23,7 @@ export async function GET() {
     "x-mb": {
       "account-id": ACCOUNT_ID || "max-normal.near",
       assistant: {
-        name: "CoW Swap Assistant",
+        name: "CoW Swap Assistant" + (ENVIRONMENT === "staging" ? " [Staging]": ""),
         description:
           "An assistant that generates EVM transaction data for CoW Protocol Interactions and answers questions about CoW Protocol.",
         instructions: `
