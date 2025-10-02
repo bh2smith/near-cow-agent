@@ -25,9 +25,9 @@ import type { OrderParameters, OrderQuoteResponse } from "@cowprotocol/cow-sdk";
 import type { NextRequest } from "next/server";
 
 type ResponseData = {
-  meta: { quote: OrderQuoteResponse; ui: SwapFTData };
+  transaction: SignRequest;
   summary: string;
-  transaction: SignRequest[];
+  meta?: { quote: OrderQuoteResponse; ui: SwapFTData };
 };
 
 export async function logic(req: NextRequest): Promise<ResponseData> {
@@ -102,14 +102,19 @@ export async function handleQuoteRequest(
     notes,
     nativeSell,
   );
-  console.log("Preliminary Steps", steps);
+  if (steps.length > 0) {
+    // Early return with wraps & approvals.
+    return {
+      transaction: signRequestFor({ chainId, metaTransactions: steps }),
+      summary: `Preliminary Steps: ${summarizeNotes(notes)}`,
+    };
+  }
+
   const transaction = await buildTransaction(
     provider,
     result.quote,
-    notes,
     chainId,
     from,
-    steps,
   );
 
   const responsePayload = {
@@ -136,11 +141,9 @@ function summarizeNotes(notes: string[]): string {
 async function buildTransaction(
   provider: EthRpc,
   quote: OrderParameters,
-  notes: string[],
   chainId: number,
   owner: Address,
-  steps: MetaTransaction[],
-): Promise<SignRequest[]> {
+): Promise<SignRequest> {
   const cowAdapter = new ViemAdapter({ provider });
   // This is required by generateOrderId... (for the ZeroAddress). Seems weird.
   setGlobalAdapter(cowAdapter);
@@ -163,7 +166,6 @@ async function buildTransaction(
 
   const transaction: SignRequest[] = [];
   if (quote.signingScheme === "eip712") {
-    notes.push("Off Chain Order Placement (EIP712)");
     const typedData = {
       types: {
         // EIP712Domain: [
@@ -184,20 +186,15 @@ async function buildTransaction(
       chainId,
       params: [owner, JSON.stringify(typedData)],
     };
-
-    if (steps.length > 0) {
-      transaction.push(signRequestFor({ chainId, metaTransactions: steps }));
-    }
     transaction.push(orderRequest);
     // return { meta, summary: summarizeNotes(notes), transaction: orderRequest };
   } else {
     // (Safe) In this case all the steps and the order signing are all transactions.
-    notes.push("On Chain Order Signing via setPresignature");
     transaction.push({
       method: "eth_sendTransaction",
       chainId: chainId,
-      params: [...steps, { from: owner, ...setPresignatureTx(orderId) }],
+      params: [{ from: owner, ...setPresignatureTx(orderId) }],
     });
   }
-  return transaction;
+  return transaction[0];
 }

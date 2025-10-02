@@ -105,15 +105,15 @@ export async function preliminarySteps(
   nativeSell: boolean,
 ): Promise<MetaTransaction[]> {
   const steps: MetaTransaction[] = [];
-  if (nativeSell) {
-    // Technically, should only need to wrap their sellAmount - current WETH Balance, but this might be confusing.
-    const wrapTx = wrapMetaTransaction(
-      client.chain.id,
-      BigInt(orderParams.sellAmount),
-    );
-    steps.push(wrapTx);
-    notes.push("Wrap Native Asset for Sell Token.");
-  }
+  // if (nativeSell) {
+  //   // Technically, should only need to wrap their sellAmount - current WETH Balance, but this might be confusing.
+  //   const wrapTx = wrapMetaTransaction(
+  //     client.chain.id,
+  //     BigInt(orderParams.sellAmount),
+  //   );
+  //   steps.push(wrapTx);
+  //   notes.push("Wrap Native Asset for Sell Token.");
+  // }
   const approvalTx = await sellTokenApprovalTx({
     from,
     sellToken: orderParams.sellToken,

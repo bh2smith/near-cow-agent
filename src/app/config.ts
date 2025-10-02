@@ -18,6 +18,8 @@ if (!PLUGIN_URL) {
 
 const COW_SUPPORTED_CHAINS = [1, 100, 137, 8453, 42161, 43114, 11155111];
 
+const ENVIRONMENT = process.env.DEPLOYMENT_ENV || "Staging";
+
 export function getEnvVar(key: string, defaultValue?: string): string {
   const value = process.env[key];
   if (!value) {
@@ -53,4 +55,4 @@ export async function getTokenMap(): Promise<BlockchainMapping> {
   return getCachedTokenMap();
 }
 
-export { ACCOUNT_ID, PLUGIN_URL, COW_SUPPORTED_CHAINS };
+export { ACCOUNT_ID, PLUGIN_URL, COW_SUPPORTED_CHAINS, ENVIRONMENT };
