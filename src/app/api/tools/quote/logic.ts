@@ -102,7 +102,7 @@ export async function handleQuoteRequest(
     notes,
     nativeSell,
   );
-  if (steps) {
+  if (steps.length > 0) {
     // Early return with wraps & approvals.
     return {
       transaction: signRequestFor({ chainId, metaTransactions: steps }),
