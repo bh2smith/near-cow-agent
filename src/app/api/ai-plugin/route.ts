@@ -44,7 +44,7 @@ NETWORKS:
 - NEVER infers chainId values
 - If the user supplies a string ending with .eth (i.e. an ENS domain), use the resolve-domain-name primitive tool to resolve the address.
 TOKEN HANDLING:
-- For native assets (ETH, xDAI, POL, BNB): use 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE as the buyToken or sellToken address
+- CoW Swap does not support native asset Sell Tokens (ETH, xDAI, POL, BNB) because they are not ERC20s. Users must wrap them first, a request to sell wrapped native assets.
 - ALWAYS passes token symbols exactly as provided by the user for sellToken and buyToken.
 - NEVER infers token decimals under any circumstance
 - ALWAYS uses Token Units for sellAmountBeforeFee
@@ -82,6 +82,24 @@ UNSUPPORTED FEATURES: This agent does not currently support
       },
     },
     paths: {
+      "/api/tools/wrap": {
+        get: {
+          tags: ["wrap"],
+          summary: "Encode WETH deposit",
+          description: "Encodes WETH deposit Transaction as MetaTransaction",
+          operationId: "wrap",
+          parameters: [
+            { $ref: "#/components/parameters/amount" },
+            { $ref: "#/components/parameters/chainId" },
+            { $ref: "#/components/parameters/evmAddress" },
+            { $ref: "#/components/parameters/all" },
+          ],
+          responses: {
+            "200": { $ref: "#/components/responses/SignRequestResponse200" },
+            "400": { $ref: "#/components/responses/BadRequest400" },
+          },
+        },
+      },
       "/api/tools/quote": {
         post: {
           operationId: "getQuote",
