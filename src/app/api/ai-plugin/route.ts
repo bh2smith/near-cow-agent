@@ -362,16 +362,33 @@ UNSUPPORTED FEATURES: This agent does not currently support
           },
         },
       },
-      "/api/tools/cancel": {
+      "/api/tools/cancel/build": {
         get: {
-          operationId: "cancelOrder",
-          summary: "Sets in motion the off-chain cancellation of an order.",
-          description: `
-            This is a best effort cancellation, and might not prevent solvers from settling the orders (if the order is part of an in-flight settlement transaction for example). 
-            Authentication must be provided by an EIP-712 signature of an OrderCancellations(bytes[] orderUids) message.
-            CASE WHEN signature is not provided, the tool returns signable payload.
-            ELSE tool will post the order & signature to the CoW API order cancellation endpoint.
-          `,
+          operationId: "buildCancellation",
+          description:
+            "Constructs a signable message for an order cancellation",
+          parameters: [
+            { $ref: "#/components/parameters/chainId" },
+            { $ref: "#/components/parameters/orderUid" },
+          ],
+          responses: {
+            "200": {
+              description: "Either signable payload or cancellation response.",
+              content: {
+                "application/json": {
+                  schema: {
+                    $ref: "#/components/schemas/SignRequest",
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      "/api/tools/cancel/send": {
+        get: {
+          operationId: "sendCancellation",
+          description: "Relays signed order cancellation to CoW Services",
           parameters: [
             { $ref: "#/components/parameters/chainId" },
             { $ref: "#/components/parameters/orderUid" },
@@ -383,6 +400,7 @@ UNSUPPORTED FEATURES: This agent does not currently support
                 format: "hex",
               },
               description: "A hex encoded signature.",
+              required: true,
             },
           ],
           responses: {
@@ -391,15 +409,8 @@ UNSUPPORTED FEATURES: This agent does not currently support
               content: {
                 "application/json": {
                   schema: {
-                    oneOf: [
-                      {
-                        $ref: "#/components/schemas/SignRequest",
-                      },
-                      {
-                        type: "string",
-                        description: "Order(s) are cancelled.",
-                      },
-                    ],
+                    type: "string",
+                    description: "Order(s) are cancelled.",
                   },
                 },
               },
