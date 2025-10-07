@@ -377,12 +377,12 @@ UNSUPPORTED FEATURES: This agent does not currently support
             { $ref: "#/components/parameters/orderUid" },
             {
               in: "query",
-              name: "signature",
+              name: "cancellationSignature",
               schema: {
                 type: "string",
                 format: "hex",
               },
-              description: "A hex encoded signature.",
+              description: "A hex encoded signature to cancel an order.",
             },
           ],
           responses: {
