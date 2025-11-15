@@ -6,7 +6,6 @@ import {
 import {
   OrderBookApi,
   OrderSigningUtils,
-  setGlobalAdapter,
 } from "@cowprotocol/cow-sdk";
 import { ViemAdapter } from "@cowprotocol/sdk-viem-adapter";
 import { getAddress, type Address } from "viem";
@@ -144,9 +143,6 @@ async function buildTransaction(
   chainId: number,
   owner: Address,
 ): Promise<SignRequest> {
-  const cowAdapter = new ViemAdapter({ provider });
-  // This is required by generateOrderId... (for the ZeroAddress). Seems weird.
-  setGlobalAdapter(cowAdapter);
   const { orderId } = await OrderSigningUtils.generateOrderId(
     chainId,
     {
