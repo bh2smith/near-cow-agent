@@ -15,8 +15,8 @@
   },
   "dependencies": {
     "@bitte-ai/agent-sdk": "^0.4.1",
-    "@cowprotocol/cow-sdk": "7.1.1",
-    "@cowprotocol/sdk-viem-adapter": "0.2.0",
+    "@cowprotocol/cow-sdk": "7.0.9",
+    "@cowprotocol/sdk-viem-adapter": "0.1.2",
     "json-stringify-deterministic": "^1.0.12",
     "next": "^16.0.3",
     "react": "^19.2.0",

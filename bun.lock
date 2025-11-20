@@ -5,8 +5,8 @@
       "name": "bitte-cowswap-agent",
       "dependencies": {
         "@bitte-ai/agent-sdk": "^0.4.1",
-        "@cowprotocol/cow-sdk": "7.1.1",
-        "@cowprotocol/sdk-viem-adapter": "0.2.0",
+        "@cowprotocol/cow-sdk": "7.0.9",
+        "@cowprotocol/sdk-viem-adapter": "0.1.2",
         "json-stringify-deterministic": "^1.0.12",
         "next": "^16.0.3",
         "react": "^19.2.0",
@@ -53,23 +53,23 @@
 
     "@bitte-ai/agent-sdk": ["@bitte-ai/agent-sdk@0.4.1", "", { "dependencies": { "near-api-js": "^6.3.0", "viem": "^2.37.5", "zerion-sdk": "^0.1.6" } }, "sha512-VoxWp+wpb1k5YtT0Sr1NHdH0IFEbXtCv2igK9FHyaPzZq/OB2YibNI+FmJFVAInYkY0vAhlLMOSPzvgGzZWFiQ=="],
 
-    "@cowprotocol/cow-sdk": ["@cowprotocol/cow-sdk@7.1.1", "", { "dependencies": { "@cowprotocol/sdk-app-data": "4.1.6", "@cowprotocol/sdk-common": "0.3.0", "@cowprotocol/sdk-config": "0.3.0", "@cowprotocol/sdk-contracts-ts": "0.5.0", "@cowprotocol/sdk-order-book": "0.2.0", "@cowprotocol/sdk-order-signing": "0.1.11", "@cowprotocol/sdk-trading": "0.4.6" }, "peerDependencies": { "@openzeppelin/merkle-tree": "^1.x", "cross-fetch": "^3.x", "ipfs-only-hash": "^4.x", "multiformats": "^9.x" }, "optionalPeers": ["@openzeppelin/merkle-tree", "ipfs-only-hash", "multiformats"] }, "sha512-geUTHOxfMxAEK6Yd4NtglGI4uo1ecEk6VtX5a2wzw3YSz5iWKw/GamyIMp75y48+Qud1xgvQ0v+u9xLtpBMlyg=="],
+    "@cowprotocol/cow-sdk": ["@cowprotocol/cow-sdk@7.0.9", "", { "dependencies": { "@cowprotocol/sdk-app-data": "4.1.2", "@cowprotocol/sdk-common": "0.2.1", "@cowprotocol/sdk-config": "0.1.0", "@cowprotocol/sdk-contracts-ts": "0.4.0", "@cowprotocol/sdk-order-book": "0.1.2", "@cowprotocol/sdk-order-signing": "0.1.6", "@cowprotocol/sdk-trading": "0.4.0" }, "peerDependencies": { "@openzeppelin/merkle-tree": "^1.x", "cross-fetch": "^3.x", "ipfs-only-hash": "^4.x", "multiformats": "^9.x" }, "optionalPeers": ["@openzeppelin/merkle-tree", "ipfs-only-hash", "multiformats"] }, "sha512-U7lH8RjkY2wjK+batB9CcU9SbEV74Y+lPN2jkoCuMrGl/5Z/H7nN6rzVWrTxvHfWktTP9ONCPoNyu9zFyjZDkg=="],
 
-    "@cowprotocol/sdk-app-data": ["@cowprotocol/sdk-app-data@4.1.6", "", { "dependencies": { "@cowprotocol/sdk-common": "0.3.0", "ajv": "^8.11.0", "cross-fetch": "^3.1.5", "ipfs-only-hash": "^4.0.0", "json-stringify-deterministic": "^1.0.8", "multiformats": "^9.6.4" } }, "sha512-wPy0p1HibKKBjGrH9iRYDGGYIzIJQORRAdy/IB+PRojBLTeBEkTp9HKvNHwDaPhdAlV19e/U5p65WM4b5sKW5A=="],
+    "@cowprotocol/sdk-app-data": ["@cowprotocol/sdk-app-data@4.1.2", "", { "dependencies": { "@cowprotocol/sdk-common": "0.2.1", "ajv": "^8.11.0", "cross-fetch": "^3.1.5", "ipfs-only-hash": "^4.0.0", "json-stringify-deterministic": "^1.0.8", "multiformats": "^9.6.4" } }, "sha512-7SEafCoYbSv9jU5GWQylD9044fDU4KUtlYRYYzLaJBzESKExuhPvTOsbF+NYeusBwMlcg7Sji54RZINjqa7I8Q=="],
 
-    "@cowprotocol/sdk-common": ["@cowprotocol/sdk-common@0.3.0", "", {}, "sha512-xk2VUjO4+XI5968r1pYFbqUxM2nmBcVPvGIw0pcqDpx4OLef0Flr3tuHtZY42RYYa6nNsNKOBV9Jd4RauYUOgQ=="],
+    "@cowprotocol/sdk-common": ["@cowprotocol/sdk-common@0.2.1", "", {}, "sha512-7EBKg7CyKLAtmDZdAh5Nsv2KPstUNbdLuNXtCimQk+TNb6OhWgNnCuCf9tOCyQ/yllQvXfNEc5shdXQfx5VXdw=="],
 
-    "@cowprotocol/sdk-config": ["@cowprotocol/sdk-config@0.3.0", "", { "dependencies": { "exponential-backoff": "^3.1.1", "limiter": "^2.1.0" } }, "sha512-EUDqXMSYsgLdXDnvC9sc9ozpsjQdP6R738R0kKNWp/mTI9j7wsI9sVrDcKIoX7qH+pu0aRmRxEFbEbW7uXUcIg=="],
+    "@cowprotocol/sdk-config": ["@cowprotocol/sdk-config@0.1.0", "", { "dependencies": { "exponential-backoff": "^3.1.1", "limiter": "^2.1.0" } }, "sha512-tbGbsa0IzlwDEAzl/03m/p7/AHe3p2BmdUykytVfLAGzKT8/8TDgD2FULtr5n4oaBFDpHCApaFZvpplQufZDGQ=="],
 
-    "@cowprotocol/sdk-contracts-ts": ["@cowprotocol/sdk-contracts-ts@0.5.0", "", { "dependencies": { "@cowprotocol/sdk-common": "0.3.0", "@cowprotocol/sdk-config": "0.3.0" } }, "sha512-QAx07lJG1HoldgzMSqXTf5iXB7eihTBS20h3WYD7h6yaoDcKjb06/vVp1g4aCgze0n/3ceYpthVDAVTnn3/fOw=="],
+    "@cowprotocol/sdk-contracts-ts": ["@cowprotocol/sdk-contracts-ts@0.4.0", "", { "dependencies": { "@cowprotocol/sdk-common": "0.2.1", "@cowprotocol/sdk-config": "0.1.0" } }, "sha512-JYfsMvijdV5wZAgBJkyxgbB6rvcYsj6kS74BgkTawEJ3dQw6jnlFCsHrvgLNTom1ZlRhYPdm1jLC8oKDChJDZQ=="],
 
-    "@cowprotocol/sdk-order-book": ["@cowprotocol/sdk-order-book@0.2.0", "", { "dependencies": { "@cowprotocol/sdk-common": "0.3.0", "@cowprotocol/sdk-config": "0.3.0", "cross-fetch": "^3.2.0", "exponential-backoff": "^3.1.2", "limiter": "^3.0.0" } }, "sha512-OeSHMGVEx7LCX+7ZnoRwLdIkJX25/tiquCVaocagrqzyPPPxD/TOg6BGLjgvl0kzoXLtfoSQ3CSz3IfvN/Etlg=="],
+    "@cowprotocol/sdk-order-book": ["@cowprotocol/sdk-order-book@0.1.2", "", { "dependencies": { "@cowprotocol/sdk-common": "0.2.1", "@cowprotocol/sdk-config": "0.1.0", "cross-fetch": "^3.2.0", "exponential-backoff": "^3.1.2", "limiter": "^3.0.0" } }, "sha512-dYJESuhxqJ1mcrp8Fmxg88dRildymh88xeOtJsOYIep8yMixCluSBQTmfokNeraYGytTWL187cyPtOvC95pneg=="],
 
-    "@cowprotocol/sdk-order-signing": ["@cowprotocol/sdk-order-signing@0.1.11", "", { "dependencies": { "@cowprotocol/sdk-common": "0.3.0", "@cowprotocol/sdk-config": "0.3.0", "@cowprotocol/sdk-contracts-ts": "0.5.0", "@cowprotocol/sdk-order-book": "0.2.0" } }, "sha512-6tbAC0yv0T4fm8y8xUFQqLGooyIJt5e0XKc40KZdLOMqHBzsocgOqPDLcalWMaTREVYTgO1bUUFqfPTNjLZJBA=="],
+    "@cowprotocol/sdk-order-signing": ["@cowprotocol/sdk-order-signing@0.1.6", "", { "dependencies": { "@cowprotocol/sdk-common": "0.2.1", "@cowprotocol/sdk-config": "0.1.0", "@cowprotocol/sdk-contracts-ts": "0.4.0", "@cowprotocol/sdk-order-book": "0.1.2" } }, "sha512-z/KUPsIPo3NcclR/K6QrvXlIX9EC9Bum4FrqLIIHWTouute7FRAk2mkdCgVvqZaIrzhzwx9Qs8rkUoMl74/fzw=="],
 
-    "@cowprotocol/sdk-trading": ["@cowprotocol/sdk-trading@0.4.6", "", { "dependencies": { "@cowprotocol/sdk-app-data": "4.1.6", "@cowprotocol/sdk-common": "0.3.0", "@cowprotocol/sdk-config": "0.3.0", "@cowprotocol/sdk-contracts-ts": "0.5.0", "@cowprotocol/sdk-order-book": "0.2.0", "@cowprotocol/sdk-order-signing": "0.1.11", "deepmerge": "^4.3.1" } }, "sha512-vGuTZl+js0TAOa+3eeglEQvy7HA4+9uaVFwWViZm+GsqEEUuL273Xfsig3ETqIpQTk8iD7BI1D+WBn5NvEOtjA=="],
+    "@cowprotocol/sdk-trading": ["@cowprotocol/sdk-trading@0.4.0", "", { "dependencies": { "@cowprotocol/sdk-app-data": "4.1.2", "@cowprotocol/sdk-common": "0.2.1", "@cowprotocol/sdk-config": "0.1.0", "@cowprotocol/sdk-contracts-ts": "0.4.0", "@cowprotocol/sdk-order-book": "0.1.2", "@cowprotocol/sdk-order-signing": "0.1.6", "deepmerge": "^4.3.1" } }, "sha512-R60yOEa3HGgLqS03ejLGzTLz2mUC6oJiTrtlR01pj8CUqJKdKOZmUCA/CfOs6R4pjrYlYRUnY1hBicQENW7xKg=="],
 
-    "@cowprotocol/sdk-viem-adapter": ["@cowprotocol/sdk-viem-adapter@0.2.0", "", { "dependencies": { "@cowprotocol/sdk-common": "0.3.0" }, "peerDependencies": { "viem": "^2.28.4" } }, "sha512-7bn2606tLmGba/sQfJYpxniU+Ztn/eKUABi8VVcE7JYaiCaDF5SbWd6i6E1/3LBSd3VoSJq/b77a5aU5g8fkrg=="],
+    "@cowprotocol/sdk-viem-adapter": ["@cowprotocol/sdk-viem-adapter@0.1.2", "", { "dependencies": { "@cowprotocol/sdk-common": "0.2.1" }, "peerDependencies": { "viem": "^2.28.4" } }, "sha512-3+hyq97YO/YtSR04qyPJCscliniKOxgiAlBSOaObkp8d+J6G4zkMgGMzSlk4G84hy6lacmtsKPwz/Aeht5kX+w=="],
 
     "@cspotcode/source-map-support": ["@cspotcode/source-map-support@0.8.1", "", { "dependencies": { "@jridgewell/trace-mapping": "0.3.9" } }, "sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw=="],
 
