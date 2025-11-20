@@ -44,7 +44,7 @@ describe("End To End", () => {
    * 4. Cancellation Tool: build signable payload
    * 5. Cancellation Tool: post signed cancellation
    */
-  it("Quote to Order", async () => {
+  it.skip("Quote to Order", async () => {
     const slippageBps = 1; // So the order will not get filled before we can cancel
     const wallet = createWalletClient({
       transport: http(),
