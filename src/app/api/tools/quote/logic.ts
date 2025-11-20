@@ -3,7 +3,11 @@ import {
   loadTokenMap,
   signRequestFor,
 } from "@bitte-ai/agent-sdk/evm";
-import { OrderBookApi, OrderSigningUtils } from "@cowprotocol/cow-sdk";
+import {
+  OrderBookApi,
+  OrderSigningUtils,
+  setGlobalAdapter,
+} from "@cowprotocol/cow-sdk";
 import { ViemAdapter } from "@cowprotocol/sdk-viem-adapter";
 import { getAddress, type Address } from "viem";
 import { isNativeAsset } from "zerion-sdk";
@@ -140,6 +144,10 @@ async function buildTransaction(
   chainId: number,
   owner: Address,
 ): Promise<SignRequest> {
+  const cowAdapter = new ViemAdapter({ provider });
+
+  // This is required by generateOrderId... (for the ZeroAddress). Seems weird.
+  setGlobalAdapter(cowAdapter);
   const { orderId } = await OrderSigningUtils.generateOrderId(
     chainId,
     {
